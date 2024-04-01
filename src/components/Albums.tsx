@@ -15,7 +15,7 @@ export default function Albums(props) {
   let params = useParams();
 
   useEffect(() => {
-    let url = `${apiConfig.photoApiEndpoint}/collections/${params.collection}/albums`;
+    let url = `${apiConfig.photoApiEndpoint}/${params.collection}`;
     axios.get(url)
       .then(response => {
         console.log(url);
@@ -28,7 +28,7 @@ export default function Albums(props) {
   }, [props.collection, props.album]);
 
   const renderPhoto: RenderPhoto = ({ wrapperStyle, renderDefaultPhoto, photo, layout, layoutOptions, imageProps: { alt, style, ...restImageProps } }) => (
-    <Link to={"/collections/" + photo.collection + "/albums/" + photo.album} style={wrapperStyle}>
+    <Link to={photo.album} style={wrapperStyle}>
       {renderDefaultPhoto({ wrapped: true })}
       <div className="uppercase text-white text-center">{photo.album}</div>
     </Link>
@@ -36,6 +36,7 @@ export default function Albums(props) {
 
   return (
     <>
+    <Link to=".." className="text-white" relative="path">Back to Collections</Link>
       <Box sx={{ width: "90%", mx: "auto" }}>
         <PhotoAlbum
           photos={photos}

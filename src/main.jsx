@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import Collections from './components/Collections'
 import Albums from './components/Albums'
-import Photos from './components/Photos'
+import AlbumPhotos from './components/AlbumPhotos'
 import About from './components/About'
 import ErrorPage from "./error-page"
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
@@ -12,23 +12,22 @@ import './App.css'
 
 const router = createBrowserRouter([
   {
-    path: "/",
     element: <Layout />,
     errorElement: <ErrorPage />,
     children: [
       {
-        path: "/collections",
+        path: "/",
         element: <Collections />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "/collections/:collection/albums",
+        path: "/:collection",
         element: <Albums />,
         errorElement: <ErrorPage />,
       },
       {
-        path: "/collections/:collection/albums/:album",
-        element: <Photos />,
+        path: "/:collection/:album",
+        element: <AlbumPhotos />,
         errorElement: <ErrorPage />,
       },
       {

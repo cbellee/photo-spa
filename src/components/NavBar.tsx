@@ -27,7 +27,7 @@ function Navbar() {
           <ul className="hidden sm:flex gap-2">
             <li className="mr-8">
               <a
-                href="/collections"
+                href="/"
                 className="text-xl uppercase hover:border-b-4 hover:border-red-300"
               >
                 Collections

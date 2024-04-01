@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, Link, Outlet } from 'react-router-dom';
+import { useParams, Outlet, Link } from 'react-router-dom';
 import Box from "@mui/material/Box"
 import { apiConfig } from '../config/apiConfig.js'
 import axios from 'axios'
 
-import { PhotoAlbum, RenderContainer, RenderPhoto, RenderRowContainer } from 'react-photo-album';
+import { PhotoAlbum } from 'react-photo-album';
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 
@@ -14,14 +14,14 @@ import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 
-export default function Photos(props) {
+export default function AlbumPhotos(props) {
   const [photos, setPhotos] = useState([]);
   const [index, setIndex] = useState(-1);
 
   let params = useParams();
 
   useEffect(() => {
-    let url = `${apiConfig.photoApiEndpoint}/collections/${params.collection}/albums/${params.album}`;
+    let url = `${apiConfig.photoApiEndpoint}/${params.collection}/${params.album}`;
     axios.get(url)
       .then(response => {
         console.log(url);
@@ -32,15 +32,15 @@ export default function Photos(props) {
         console.error(error);
       });
   }, [props.collection, props.album]);
-
-  const renderPhoto: RenderPhoto = ({ wrapperStyle, renderDefaultPhoto, photo, layout, layoutOptions, imageProps: { alt, style, ...restImageProps } }) => (
-    <Link to={"/collections/" + photo.collection + "/albums/" + photo.album} style={wrapperStyle}>
+/*   const renderPhoto: RenderPhoto = ({ wrapperStyle, renderDefaultPhoto, photo, layout, layoutOptions, imageProps: { alt, style, ...restImageProps } }) => (
+    <Link to={photo.collection + "/" + photo.album} style={wrapperStyle}>
       {renderDefaultPhoto({ wrapped: true })}
     </Link>
-  );
+  ); */
 
   return (
     <>
+    <Link to=".." className="text-white" relative="path">Back to Albums</Link>
       <Box sx={{ width: "90%", mx: "auto" }}>
         <PhotoAlbum
           photos={photos}
@@ -52,7 +52,7 @@ export default function Photos(props) {
           componentsProps={() => ({
             imageProps: { loading: "eager" },
           })}
-          renderPhoto={renderPhoto}
+          //renderPhoto={renderPhoto}
         />
         <Outlet />
       </Box>
