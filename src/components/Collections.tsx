@@ -14,7 +14,7 @@ export default function Collections(props) {
   let params = useParams();
 
   useEffect(() => {
-    let url = `${apiConfig.photoApiEndpoint}/`;
+    let url = `${apiConfig.photoApiEndpoint}`;
     axios.get(url)
       .then(response => {
         console.log(url);
