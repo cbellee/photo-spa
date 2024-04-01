@@ -6,12 +6,12 @@ export default function Header() {
   return (
     <div className="flex items-center justify-between bg-white text-black py-8">
       <a href="/">
-        <img src="src/assets/app-icon.png" className="h-14 w-14" alt="logo" />
+        <img src="/app-icon.png" className="justify-start sm:px-4 max-w-24 max-h-24" alt="logo" />
       </a>
       <nav>
         <section className="MOBILE-MENU flex lg:hidden">
           <div
-            className="HAMBURGER-ICON space-y-2"
+            className="HAMBURGER-ICON space-y-2 pr-5"
             onClick={() => setIsNavOpen((prev) => !prev)}
           >
             <span className="block h-0.5 w-8 animate-pulse bg-gray-600"></span>
@@ -41,14 +41,14 @@ export default function Header() {
               <li className="uppercase">
                 <a href="/">Collections</a>
               </li>
-              <li className="">
+              <li className="uppercase">
                 <a href="/about">About</a>
               </li>
             </ul>
           </div>
         </section>
 
-        <ul className="DESKTOP-MENU hidden space-x-8 lg:flex uppercase">
+        <ul className="DESKTOP-MENU hidden space-x-8 lg:flex pr-5 uppercase">
           <li>
             <a href="/">Collections</a>
           </li>
