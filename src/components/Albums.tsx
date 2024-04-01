@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, Link, Outlet } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import Box from "@mui/material/Box"
 import { apiConfig } from '../config/apiConfig.js'
 import axios from 'axios'
 
-import { PhotoAlbum, RenderContainer, RenderPhoto, RenderRowContainer } from 'react-photo-album';
+import { PhotoAlbum, RenderPhoto } from 'react-photo-album';
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 
@@ -36,7 +36,9 @@ export default function Albums(props) {
 
   return (
     <>
-    <Link to=".." className="text-white" relative="path">Back to Collections</Link>
+      <div className="container text-left pl-16 pb-5">
+        <Link to=".." className="text-white uppercase" relative="path">&lt;&lt; {params.collection}</Link>
+      </div>
       <Box sx={{ width: "90%", mx: "auto" }}>
         <PhotoAlbum
           photos={photos}

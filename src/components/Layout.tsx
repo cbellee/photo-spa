@@ -7,7 +7,7 @@ export default function Layout() {
     return (
         <div className="text-white">
             <NavBar />
-            <main className="bg-black pt-10">
+            <main className="bg-black pt-5">
                 <Outlet /> {/* Nested routes render here */}
             </main>
             <Footer />

@@ -32,15 +32,12 @@ export default function AlbumPhotos(props) {
         console.error(error);
       });
   }, [props.collection, props.album]);
-/*   const renderPhoto: RenderPhoto = ({ wrapperStyle, renderDefaultPhoto, photo, layout, layoutOptions, imageProps: { alt, style, ...restImageProps } }) => (
-    <Link to={photo.collection + "/" + photo.album} style={wrapperStyle}>
-      {renderDefaultPhoto({ wrapped: true })}
-    </Link>
-  ); */
 
   return (
     <>
-    <Link to=".." className="text-white" relative="path">Back to Albums</Link>
+    <div className="container text-left pl-16 pb-5">
+    <Link to=".." className="text-white uppercase" relative="path"> &lt;&lt; {params.collection} / {params.album}</Link>
+    </div>
       <Box sx={{ width: "90%", mx: "auto" }}>
         <PhotoAlbum
           photos={photos}
@@ -52,7 +49,6 @@ export default function AlbumPhotos(props) {
           componentsProps={() => ({
             imageProps: { loading: "eager" },
           })}
-          //renderPhoto={renderPhoto}
         />
         <Outlet />
       </Box>
