@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom/client'
 import Collections from './components/Collections'
 import Albums from './components/AlbumCollections'
 import Photos from './components/Photos'
-import About from './components/About'
 import Upload from './components/Upload'
+import UploadImages from './components/UploadImages'
 import ErrorPage from "./components/ErrorPage"
 import { createBrowserRouter } from 'react-router-dom'
 import Layout from './components/Layout'
@@ -58,12 +58,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/upload",
-        element: <Upload />,
-        errorElement: <ErrorPage />,
-      },
-      {
-        path: "/about",
-        element: <About />,
+        element: <UploadImages />,
         errorElement: <ErrorPage />,
       }
     ]

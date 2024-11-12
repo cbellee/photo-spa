@@ -1,5 +1,6 @@
 import React, { useState, Fragment } from 'react'
 import { useFormContext } from 'react-hook-form';
+import './multiradio.css';
 
 export default function MultiRadio(props) {
 

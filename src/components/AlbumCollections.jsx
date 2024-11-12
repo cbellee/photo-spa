@@ -3,7 +3,6 @@ import { useParams, Link } from 'react-router-dom';
 import Box from "@mui/material/Box"
 import { apiConfig } from '../config/apiConfig.js'
 import axios from 'axios'
-
 import { PhotoAlbum } from 'react-photo-album';
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
