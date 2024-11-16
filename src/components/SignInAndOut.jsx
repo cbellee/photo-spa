@@ -22,8 +22,8 @@ export default function SignInAndOut() {
         if (!interactionInProgress) {
             const logoutRequest = {
                 account: instance.getActiveAccount(),
-                mainWindowRedirectUri: "http://localhost:5173",
-                postLogoutRedirectUri: "http://localhost:5173",
+                mainWindowRedirectUri: "https://gallery.bellee.net",
+                postLogoutRedirectUri: "https://gallery.bellee.net",
             }
             setInteractionInProgress(true);
             await instance.logoutPopup(logoutRequest);

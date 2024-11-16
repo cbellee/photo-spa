@@ -1,5 +1,5 @@
 export const apiConfig = {
-    azureTenantId: "b9dcb86c-3d9f-4bc5-aba3-1de6cc56f6dc",
+    azureTenantId: "dd3cd82b-4ff1-4e7e-9220-1a9879b8d596",
     storageApiEndpoint: "https://storhw3eyjlyy236y.blob.core.windows.net",
     photoApiEndpoint: "https://photo.whitepond-0f27873b.australiaeast.azurecontainerapps.io/api"
 }
