@@ -19,10 +19,9 @@ export default function MultiRadio(props) {
             checkState.options.filter(o => o.checked && o.label === e.target.id)
                 .length === def.limit
 
-        //props.handler(props.imageName);
         let isChecked = checkState.options.map(o => o.checked && o.label === e.target.id)
-        console.log("image name: " + props.imageName)
-        console.log("checked: " + e.target.checked)
+        //console.log("image name: " + props.imageName)
+        //console.log("checked: " + e.target.checked)
         props.handler(props.imageName);
 
         setCheckState({

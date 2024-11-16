@@ -35,38 +35,38 @@ const UploadImages = () => {
     async function isFormValid() {
         if ((collection === "" || collectionImage) && !collectionExists) {
             let msg = "collection is not set";
-            console.log(msg)
+            //console.log(msg)
             setIsValid(false);
             setValidationMessage(msg);
         } else if (album === "") {
             let msg = "album is not set";
-            console.log(msg)
+            //console.log(msg)
             setIsValid(false);
             setValidationMessage(msg);
         } else if (albumImage === "" && selectedFiles) {
             let msg = "album image thumbnail is not set";
-            console.log(msg)
+            //console.log(msg)
             setIsValid(false);
             setValidationMessage(msg);
         } else if (collectionImage === "" && !collectionExists) {
             let msg = "collection image thumbnail is not set";
-            console.log(msg)
+            //console.log(msg)
             setIsValid(false);
             setValidationMessage(msg);
         }
         else if (!selectedFiles && !uploadCompleted) {
             let msg = "no files selected";
-            console.log(msg)
+            //console.log(msg)
             setIsValid(false);
             setValidationMessage(msg);
         }
         else if (uploadCompleted) {
             let msg = "upload completed";
-            console.log(msg)
+            //console.log(msg)
             setIsValid(false);
             setValidationMessage(msg);
         } else {
-            console.log("form is valid")
+            //console.log("form is valid")
             setIsValid(true);
             setValidationMessage("");
         }
@@ -78,7 +78,7 @@ const UploadImages = () => {
         for (const [c, a] of Object.entries(data.data)) {
             if (c === collection) {
                 // collection already exists, so we don't require the collectionImage
-                console.log("collection exists: " + c)
+                //console.log("collection exists: " + c)
                 setCollectionExists(true);
             }
         }
@@ -86,22 +86,22 @@ const UploadImages = () => {
 
     const handleAlbumThumbnail = (imageName) => {
         setAlbumImage(imageName);
-        console.log("album thumbnail: " + imageName)
+        //console.log("album thumbnail: " + imageName)
     }
 
     const handleCollectionThumbnail = (imageName) => {
         setCollectionImage(imageName);
-        console.log("collection thumbnail: " + imageName)
+        //console.log("collection thumbnail: " + imageName)
     }
 
     const onChangeCollection = (collection) => {
-        console.log("collection: " + collection)
+        //console.log("collection: " + collection)
         checkCollectionExists(collection);
         setCollection(collection);
     }
 
     const onChangeAlbum = (album) => {
-        console.log("album: " + album)
+        //console.log("album: " + album)
         setAlbum(album);
     }
 
@@ -111,9 +111,9 @@ const UploadImages = () => {
             ...tokenRequest
         })
             .then((response) => {
-                console.log("access token: " + response.accessToken);
+                /* console.log("access token: " + response.accessToken);
                 console.log("token token: " + response.tokenType);
-                console.log("id token: " + response.idToken);
+                console.log("id token: " + response.idToken); */
                 setToken(response.accessToken);
             })
             .catch((error) => {
@@ -167,7 +167,7 @@ const UploadImages = () => {
         });
 
         return await UploadService.upload(file, imagePreviews[idx], token, (event) => {
-            console.log(file.name + " progress: " + (100 * event.loaded) / event.total);
+            //console.log(file.name + " progress: " + (100 * event.loaded) / event.total);
         })
             .then(() => {
                 setImagePreviews((prevImages) => {
@@ -178,8 +178,7 @@ const UploadImages = () => {
                 });
             })
             .catch((e) => {
-                console.log("error: " + e);
-                console.log("Could not upload the image: " + file.name);
+                console.log("Could not upload the image: " + file.name + "with error: " + e);
 
                 setImagePreviews((prevImages) => {
                     let _images = [...prevImages];

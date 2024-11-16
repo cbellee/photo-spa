@@ -13,18 +13,18 @@ export default function TagSelect(props) {
 
     const handleCollection = (event) => {
         let albums = collectionAlbumData.get(event.value);
-        console.log("albums: " + albums);
+       // console.log("albums: " + albums);
 
         clearSelectedAlbum();
 
         if (albums && albums.length > 0) {
             setAlbumData(albums);
-            console.log("current collection: " + event.value)
+            //console.log("current collection: " + event.value)
             props.selectedCollection(event.value)
         } else {
             setAlbumData([]);
             props.selectedCollection(event.value)
-            console.log("current collection: " + event.value)
+            //console.log("current collection: " + event.value)
         }
         props.isFormValid();
     }
@@ -32,7 +32,7 @@ export default function TagSelect(props) {
     const handleAlbum = (event) => {
         if (event) {
             props.selectedAlbum(event.label)
-            console.log("current album: " + event.label)
+            //console.log("current album: " + event.label)
         }
         props.isFormValid();
     }

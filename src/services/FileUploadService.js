@@ -1,16 +1,14 @@
 import axios from "axios";
 import { apiConfig } from "../config/apiConfig.js";
-import { useMsal } from '@azure/msal-react';
-import { loginRequest } from '../config/msalConfig';
 
 let url = `${apiConfig.photoApiEndpoint}`;
-console.log("url: " + url);
+//console.log("url: " + url);
 
 async function upload(file, data, token, onUploadProgress) {
   let formData = new FormData();
 
-  console.log("file: " + JSON.stringify(file));
-  console.log("data: " + JSON.stringify(data));
+  //console.log("file: " + JSON.stringify(file));
+  //console.log("data: " + JSON.stringify(data));
 
   formData.append("photo", file);
   formData.append("metadata", JSON.stringify({

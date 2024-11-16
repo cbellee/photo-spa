@@ -28,7 +28,7 @@ export default function Photos(props) {
     axios.get(url)
       .then(response => {
         setPhotos(response.data);
-        console.log(response.data);
+        //console.log(response.data);
       })
       .catch(error => {
         console.error(error);
@@ -39,7 +39,7 @@ export default function Photos(props) {
     if (data) {
       return (
         Object.keys(data).forEach(function (key) {
-          { console.log('Key : ' + key + ', Value : ' + data[key]) }
+         // { console.log('Key : ' + key + ', Value : ' + data[key]) }
           <Fragment>
             <div>
               <div className='text-white'>{key}</div>
