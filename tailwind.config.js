@@ -6,7 +6,17 @@ export default {
   ],
   darkMode: "class",
   theme: {
-    extend: {},
+    extend: {
+      keyframes: {
+        pop: {
+          "0%, 100%": { transform: "scale(.90)" },
+          "50%": { transform: "scale(1.02)" }
+        }
+      },
+      animation: {
+        pop: "pop 200ms ease-in-out"
+      }
+    }
   },
   plugins: [],
 }

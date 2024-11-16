@@ -1,29 +1,145 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import UploadService from "../services/FileUploadService";
+import TagSelect from "./TagSelect";
+import MultiRadio from "./MultiRadio";
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import { useIsAuthenticated } from '@azure/msal-react';
+import { AuthenticatedTemplate, UnauthenticatedTemplate } from '@azure/msal-react';
+import { useMsal } from '@azure/msal-react';
+import { tokenRequest } from '../config/msalConfig';
+import axios from 'axios';
+import { apiConfig } from '../config/apiConfig';
 
 const UploadImages = () => {
     const [selectedFiles, setSelectedFiles] = useState(undefined);
     const [imagePreviews, setImagePreviews] = useState([]);
     const [uploading, setUploading] = useState(false);
-    const [collection, setCollection] = useState('travel');
-    const [album, setAlbum] = useState('karanjini');
+    const [uploadCompleted, setUploadCompleted] = useState(false);
+    const [collection, setCollection] = useState('');
+    const [album, setAlbum] = useState('');
+    const [collectionImage, setCollectionImage] = useState('');
+    const [collectionExists, setCollectionExists] = useState(false);
+    const [albumImage, setAlbumImage] = useState('');
+    const [isValid, setIsValid] = useState(false);
+    const isAuthenticated = useIsAuthenticated();
+    const { instance, accounts } = useMsal();
+    const [token, setToken] = useState(null);
+    const [validationMessage, setValidationMessage] = useState("");
+
+    useEffect(() => {
+        setToken(getAccessToken());
+    }, [isAuthenticated]);
+
+    async function isFormValid() {
+        if ((collection === "" || collectionImage) && !collectionExists) {
+            let msg = "collection is not set";
+            console.log(msg)
+            setIsValid(false);
+            setValidationMessage(msg);
+        } else if (album === "") {
+            let msg = "album is not set";
+            console.log(msg)
+            setIsValid(false);
+            setValidationMessage(msg);
+        } else if (albumImage === "" && selectedFiles) {
+            let msg = "album image thumbnail is not set";
+            console.log(msg)
+            setIsValid(false);
+            setValidationMessage(msg);
+        } else if (collectionImage === "" && !collectionExists) {
+            let msg = "collection image thumbnail is not set";
+            console.log(msg)
+            setIsValid(false);
+            setValidationMessage(msg);
+        }
+        else if (!selectedFiles && !uploadCompleted) {
+            let msg = "no files selected";
+            console.log(msg)
+            setIsValid(false);
+            setValidationMessage(msg);
+        }
+        else if (uploadCompleted) {
+            let msg = "upload completed";
+            console.log(msg)
+            setIsValid(false);
+            setValidationMessage(msg);
+        } else {
+            console.log("form is valid")
+            setIsValid(true);
+            setValidationMessage("");
+        }
+    }
+
+    async function checkCollectionExists(collection) {
+        const data = await axios.get(`${apiConfig.photoApiEndpoint}/tags`)
+
+        for (const [c, a] of Object.entries(data.data)) {
+            if (c === collection) {
+                // collection already exists, so we don't require the collectionImage
+                console.log("collection exists: " + c)
+                setCollectionExists(true);
+            }
+        }
+    }
+
+    const handleAlbumThumbnail = (imageName) => {
+        setAlbumImage(imageName);
+        console.log("album thumbnail: " + imageName)
+    }
+
+    const handleCollectionThumbnail = (imageName) => {
+        setCollectionImage(imageName);
+        console.log("collection thumbnail: " + imageName)
+    }
+
+    const onChangeCollection = (collection) => {
+        console.log("collection: " + collection)
+        checkCollectionExists(collection);
+        setCollection(collection);
+    }
+
+    const onChangeAlbum = (album) => {
+        console.log("album: " + album)
+        setAlbum(album);
+    }
+
+    const getAccessToken = () => {
+        instance.setActiveAccount(accounts[0]);
+        instance.acquireTokenSilent({
+            ...tokenRequest
+        })
+            .then((response) => {
+                console.log("access token: " + response.accessToken);
+                console.log("token token: " + response.tokenType);
+                console.log("id token: " + response.idToken);
+                setToken(response.accessToken);
+            })
+            .catch((error) => {
+                console.log("error while getting access token: " + error);
+            });
+    }
 
     const selectFiles = (event) => {
+        setSelectedFiles([]);
+        setImagePreviews([]);
+
         let images = [];
 
         for (let i = 0; i < event.target.files.length; i++) {
             images.push(
                 {
                     uploading: false,
-                    message: "",
+                    uploadComplete: false,
                     src: URL.createObjectURL(event.target.files[i]),
                     width: 0,
                     height: 0,
                     name: event.target.files[i].name,
                     type: event.target.files[i].type,
                     size: event.target.files[i].size,
-                    collection: '',
-                    album: '',
+                    collection: collection,
+                    album: album,
                     collectionImage: false,
                     albumImage: false
                 }
@@ -31,162 +147,176 @@ const UploadImages = () => {
         }
 
         setSelectedFiles(event.target.files);
-        //setSelectedFiles(images);
         setImagePreviews(images);
     };
 
     async function upload(idx, file) {
-
         await setImagePreviews((prevImages) => {
             let _images = [...prevImages];
             _images[idx].uploading = true;
-            _images[idx].message = 'Uploading';
+            _images[idx].uploadComplete = false;
             _images[idx].collection = 'travel';
             _images[idx].album = 'karinjini';
-            _images[idx].collectionImage = false;
-            _images[idx].albumImage = false;
+            _images[idx].collectionImage = collectionImage === file.name ? true : false;
+            _images[idx].albumImage = albumImage === file.name ? true : false;
             _images[idx].type = file.type;
-            _images[idx].description = 'yoyoyo';
+            _images[idx].description = file.name.split(".")[0];
+            _images[idx].collection = collection;
+            _images[idx].album = album;
             return _images;
         });
 
-        return await UploadService.upload(file, imagePreviews[idx], (event) => {
-            //console.log(file.name + " progress: " + (100 * event.loaded) / event.total);
-            
-            
+        return await UploadService.upload(file, imagePreviews[idx], token, (event) => {
+            console.log(file.name + " progress: " + (100 * event.loaded) / event.total);
         })
             .then(() => {
                 setImagePreviews((prevImages) => {
                     let _images = [...prevImages];
                     _images[idx].uploading = false;
-                    _images[idx].message = 'Completed';
+                    _images[idx].uploadComplete = true;
                     return _images;
                 });
-                //console.log("file: " + JSON.stringify(imagePreviews[idx]));
             })
-            .catch(() => {
+            .catch((e) => {
+                console.log("error: " + e);
                 console.log("Could not upload the image: " + file.name);
+
+                setImagePreviews((prevImages) => {
+                    let _images = [...prevImages];
+                    _images[idx].uploading = false;
+                    _images[idx].uploadComplete = true;
+                    _images[idx].uploadError = true;
+                    return _images;
+                });
+
+                setUploadCompleted(true);
+                setUploading(false)
             });
     };
 
-    const uploadImages = () => {
+    async function uploadImages() {
+        setUploadCompleted(false);
         setUploading(true)
+
+        if (!isValid) {
+            return;
+        }
+
         const files = Array.from(selectedFiles);
-        //const files = Array.from(imagePreviews);
         const uploadPromises = files.map((file, i) => upload(i, file));
 
         Promise.all(uploadPromises)
             .then(() => UploadService.getFiles())
             .then((files) => {
                 setUploading(false);
+                setUploadCompleted(true);
+                setSelectedFiles(undefined);
+            })
+            .catch(() => {
+                setUploading(false);
+                setUploadCompleted(true);
             });
 
         setUploading(false)
     };
 
+    useEffect(() => {
+        isFormValid();
+    }, [collection, album, collectionImage, albumImage, selectedFiles]);
+
     return (
-        <div>
-            <div className="row">
-                <div className="col-8">
-                    <label className="btn btn-default p-0">
+        <div className="flex-cols font-thin text-white">
+            <AuthenticatedTemplate>
+                <TagSelect selectedAlbum={onChangeAlbum} selectedCollection={onChangeCollection} isFormValid={isFormValid}>
+                    <label className="text-white pl-6">
                         <input
                             type="file"
                             multiple
-                            accept="image/*"
+                            accept="image/jpg, image/jpeg, image/png"
                             onChange={selectFiles}
+                            className="block w-full text-md text-slate-400 active:animate-pop
+                            file:mr-4 file:py-2 file:px-4
+                            file:rounded-full file:border-0
+                            file:text-md file:font-semibold
+                            file:bg-slate-300 file:text-slate-900
+                            hover:file:bg-slate-100 hover:shadow-xl"
                         />
                     </label>
-                </div>
-
-                <div className="col-4">
                     <button
-                        className="text-white"
-                        disabled={!selectedFiles}
+                        className="text-slate-900 bg-slate-300 p-0 pl-2 pr-2 font-semibold text-md rounded-full w-20 hover:bg-slate-100 active:animate-pop hover:shadow-xl"
+                        disabled={!isValid}
                         onClick={uploadImages}
                     >
                         Upload
                     </button>
-                </div>
-            </div>
-
-            {/* {progressInfos &&
-                progressInfos.val.length > 0 &&
-                progressInfos.val.map((progressInfo, index) => (
-                    <div className="mb-0 text-orange-500" key={index}>
-                        <span className="text-white">{progressInfo.fileName}</span>
-                        <div className="bg-green-500">
-                            <div
-                                className="bg-white orange-500"
-                                role="progressbar"
-                                aria-valuenow={progressInfo.percentage}
-                                aria-valuemin="0"
-                                aria-valuemax="100"
-                                style={{ width: progressInfo.percentage + "%" }}
-                            >
-                                {progressInfo.percentage}%
-                            </div>
+                    <div className="mt-2 pl-4 text-red-400">
+                        {validationMessage}
+                    </div>
+                </TagSelect>
+                {imagePreviews && (
+                    <div className="flex flex-col justify-items-center">
+                        <div className="grid grid-cols-5">
+                            {imagePreviews.map((img, i) => {
+                                return (
+                                    <Card className="m-1.5 p-0 text-left border-gray-800 border-2 flex min-w-44">
+                                        <CardContent className="bg-gray-900 text-white">
+                                            <div className="flex items-center justify-center">
+                                                <CardMedia component="img" className={`aspect-square ${img.uploading ? "animate-pulse" : ""}`} image={img.src} alt={"image-" + i} key={i} />
+                                                <span
+                                                    className={`absolute h-8 w-8 animate-spin rounded-full ${!img.uploading ? "invisible" : ""} border-4 border-solid border-current border-r-transparent  motion-reduce:animate-[spin_1.5s_linear_infinite]`}
+                                                >
+                                                </span>
+                                                <span className={`absolute text-md font-semibold ${!img.uploadComplete || !img.uploadError ? "invisible" : ""}`}>
+                                                    {
+                                                        img.uploadError ?
+                                                            "Upload Error" :
+                                                            "Upload Complete"
+                                                    }
+                                                </span>
+                                            </div>
+                                            <div className="grid grid-cols-2 p-0 m-0 pt-2">
+                                                <label className="">name</label>
+                                                <div className="pl-2">{imagePreviews[i].name}</div>
+                                                <label className="">description</label>
+                                                <input type="text"
+                                                    value={imagePreviews[i].description}
+                                                    defaultValue={imagePreviews[i].description}
+                                                    className="bg-gray-600 rounded-sm pl-2"
+                                                    onChange={(e) => { setImagePreviews((prevImages) => { let _images = [...prevImages]; _images[i].description = e.target.value; return _images; }) }}
+                                                >
+                                                </input>
+                                                <div className="col-span-2">
+                                                    {
+                                                        collectionExists ?
+                                                            <></>
+                                                            :
+                                                            <MultiRadio
+                                                                groupName="collection"
+                                                                imageName={`${img.name}`}
+                                                                handler={handleCollectionThumbnail}
+                                                            />
+                                                    }
+                                                    <MultiRadio
+                                                        groupName="album"
+                                                        imageName={`${img.name}`}
+                                                        handler={handleAlbumThumbnail}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                );
+                            })}
                         </div>
                     </div>
-                ))} */}
-
-            {imagePreviews && (
-                <div className="relative grid grid-cols-6">
-                    {imagePreviews.map((img, i) => {
-                        return (
-                            <div className="relative">
-                                <img className={`w-full object-cover ${img.uploading ? "animate-pulse" : ""}`} src={img.src} alt={"image-" + i} key={i} />
-                                <span className="text-white w-full absolute top-0 left-0 text-center mt-10" key={"progress-" + i}>
-                                    {
-                                        img.message
-                                    }
-                                </span>
-                                <input type="hidden"
-                                    value={collection}
-                                    //onChange={(e) => {setImagePreviews( (prevImages) => { let _images = [...prevImages]; _images[i].collection = e.target.value; return _images; })}}
-                                >
-                                </input>
-                                <input type="hidden"
-                                    value={album}
-                                    //onChange={(e) => {setImagePreviews( (prevImages) => { let _images = [...prevImages]; _images[i].collection = e.target.value; return _images; })}}
-                                >
-                                </input>
-                                <input type="text"
-                                    value={imagePreviews[i].description}
-                                    onChange={(e) => {setImagePreviews( (prevImages) => { let _images = [...prevImages]; _images[i].description = e.target.value; return _images; })}}
-                                >
-                                </input>
-                            </div>
-                        );
-                    })}
+                )}
+            </AuthenticatedTemplate>
+            <UnauthenticatedTemplate>
+                <div className="justify-items-center">
+                    <h2 className="text-white text-center mt-20 items-center justify-items-center visible flex transform-none relative rotate-0">
+                        You must be signed in and granted access to upload photos</h2>
                 </div>
-            )}
-
-            {/* {message.length > 0 && (
-                <div className="text-white" role="alert">
-                    <ul>
-                        {message.map((item, i) => {
-                            return <li key={i}>{item}</li>;
-                        })}
-                    </ul>
-                </div>
-            )} */}
-
-            {/* {imageInfos.length > 0 && (
-        <div className="card mt-3">
-          <div className="card-header">List of Images</div>
-          <ul className="list-group list-group-flush">
-            {imageInfos &&
-              imageInfos.map((img, index) => (
-                <li className="list-group-item" key={index}>
-                  <p>
-                    <a href={img.url}>{img.name}</a>
-                  </p>
-                  <img src={img.url} alt={img.name} height="80px" />
-                </li>
-              ))}
-          </ul>
-        </div>
-      )} */}
+            </UnauthenticatedTemplate>
         </div>
     );
 };

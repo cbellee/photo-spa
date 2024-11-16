@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Controller, useFormContext } from 'react-hook-form';
 import { apiConfig } from '../config/apiConfig.js'
 import CreatableSelect from 'react-select/creatable';
 import axios from 'axios'
@@ -11,12 +10,6 @@ export default function TagSelect(props) {
     const [collectionAlbumData, setCollectionAlbumData] = useState(new Map());
 
     const albumDropDownRef = useRef(null);
-
-    const {
-        formState: { errors, isValid, isValidating, isSubmitted, validatingFields, touchedFields, isDirty },
-        control,
-        fieldState
-    } = useFormContext();
 
     const handleCollection = (event) => {
         let albums = collectionAlbumData.get(event.value);
@@ -33,6 +26,7 @@ export default function TagSelect(props) {
             props.selectedCollection(event.value)
             console.log("current collection: " + event.value)
         }
+        props.isFormValid();
     }
 
     const handleAlbum = (event) => {
@@ -40,6 +34,7 @@ export default function TagSelect(props) {
             props.selectedAlbum(event.label)
             console.log("current album: " + event.label)
         }
+        props.isFormValid();
     }
 
     useEffect(() => {
@@ -69,65 +64,39 @@ export default function TagSelect(props) {
     }
 
     return (
-        <div className="bg-slate-800 flex flex-row rounded-md p-2 m-2">
-            <div className="grid grid-cols-2">
-                <label className="text-white pt-2">collections</label>
-                <Controller
+        <div className="bg-slate-800 flex rounded-md p-2 m-0">
+            <div className="flex flex-row pl-4">
+                <label className="text-slate-400 pt-1.5 pr-2">Collection</label>
+                <CreatableSelect
+                    onChange={(event, value) => handleCollection(event, value)}
                     name='collection'
-                    control={control}
-                    render={({
-                        field: { onChange, onBlur, value, name, ref },
-                        fieldState: { invalid, isTouched, isDirty, error },
-                        formState,
-                    }) => (
-                        <CreatableSelect
-                            onBlur={onBlur}
-                            onChange={(event, value) => handleCollection(event, value)}
-                            name='collection'
-                            isClearable={true}
-                            class=""
-                            options={
-                                Array.from(collectionAlbumData.keys()).map((option, idx) => {
-                                    return { value: option, label: option }
-                                })
-                            }
-                        />
-                    )}
+                    isClearable={true}
+                    className="w-48 pr-2 font-semibold text-slate-700"
+                    options={
+                        Array.from(collectionAlbumData.keys()).map((option, idx) => {
+                            return { value: option, label: option }
+                        })
+                    }
                 />
-                {errors.collection && <span>collection is required</span>}
             </div>
-            <div className="grid grid-cols-2">
-                <label className="text-white pt-2" error={errors.album?.message}>albums</label>
+            <div className="flex flex-row pl-4">
+                <label className="text-slate-400 pt-1.5 pr-2">Album</label>
                 <div>
-                    <Controller
-                        name="album"
-                        control={control}
-                        rules={{
-                            required: true
-                        }}
-                        render={({
-                            field: { onChange, onBlur, value, name, ref },
-                            fieldState: { invalid, isTouched, isDirty, error },
-                            formState,
-                        }) => (
-                            <CreatableSelect
-                                onChange={(event, value) => handleAlbum(event, value)}
-                                name='album'
-                                ref={albumDropDownRef}
-                                onBlur={onBlur}
-                                className=""
-                                isClearable={true}
-                                options={
-                                    albumData.map((option, idx) => {
-                                        return { value: idx, label: option }
-                                    })
-                                }
-                            />
-                        )}
+                    <CreatableSelect
+                        onChange={(event, value) => handleAlbum(event, value)}
+                        name='album'
+                        ref={albumDropDownRef}
+                        className="w-48 font-semibold text-slate-700"
+                        isClearable={true}
+                        options={
+                            albumData.map((option, idx) => {
+                                return { value: idx, label: option }
+                            })
+                        }
                     />
-                    {errors.album && <span>album is required</span>}
                 </div>
             </div>
+            {props.children}
         </div>
     )
 }

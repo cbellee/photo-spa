@@ -1,4 +1,4 @@
-import { loginRequest, tokenRequest } from '../config/msalConfig';
+import { loginRequest } from '../config/msalConfig';
 import { useState } from 'react';
 import { useIsAuthenticated } from '@azure/msal-react';
 import { useMsal } from '@azure/msal-react';
@@ -10,12 +10,11 @@ export default function SignInAndOut() {
     const isAuthenticated = useIsAuthenticated();
 
     async function handleSignIn() {
-        const loginResponse = await instance.loginPopup(loginRequest);/*  */
+        const loginResponse = await instance.loginPopup(loginRequest);
+        setInteractionInProgress(true);
         if (loginResponse.account) {
             instance.setActiveAccount(loginResponse.account);
         }
-        const tokenResponse = await instance.acquireTokenSilent(tokenRequest);
-        setToken(tokenResponse.accessToken);
         setInteractionInProgress(false);
     }
 
@@ -29,7 +28,6 @@ export default function SignInAndOut() {
             setInteractionInProgress(true);
             await instance.logoutPopup(logoutRequest);
             instance.handleRedirectPromise();
-            setToken(null);
             setInteractionInProgress(false);
         }
         else {
@@ -43,7 +41,6 @@ export default function SignInAndOut() {
                 isAuthenticated ? (
                     <div>
                         <button onClick={handleSignOut} className='uppercase'>Sign Out</button>
-                        {console.log(token)}
                     </div>
                 ) : (
                     <button onClick={handleSignIn} className='uppercase'>Sign In</button>
@@ -52,4 +49,3 @@ export default function SignInAndOut() {
         </div>
     )
 }
-

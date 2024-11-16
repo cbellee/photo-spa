@@ -1,13 +1,7 @@
 import React, { useState, Fragment } from 'react'
-import { useFormContext } from 'react-hook-form';
 import './multiradio.css';
 
 export default function MultiRadio(props) {
-
-    const {
-        register,
-    } = useFormContext();
-
     const def = {
         limit: 1,
         options: [
@@ -25,6 +19,10 @@ export default function MultiRadio(props) {
             checkState.options.filter(o => o.checked && o.label === e.target.id)
                 .length === def.limit
 
+        //props.handler(props.imageName);
+        let isChecked = checkState.options.map(o => o.checked && o.label === e.target.id)
+        console.log("image name: " + props.imageName)
+        console.log("checked: " + e.target.checked)
         props.handler(props.imageName);
 
         setCheckState({
@@ -54,9 +52,8 @@ export default function MultiRadio(props) {
                     <input
                         onClick={(e) => onChange(e)}
                         type="radio"
-                        className="h-3.5 mt-1"
+                        className="h-3.5 mt-1.5"
                         name={props.groupName}
-                        {...register(props.groupName)}
                     />
                 </div>
             </Fragment>

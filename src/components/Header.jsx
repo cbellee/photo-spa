@@ -2,10 +2,13 @@ import { useState } from "react";
 import SignInAndOut from "./SignInAndOut.jsx";
 import { IoMoon } from "react-icons/io5";
 import { IoSunny } from "react-icons/io5";
+import { useIsAuthenticated } from "@azure/msal-react";
 
 export default function Header() {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+
+  const isAuthenticated = useIsAuthenticated();
 
   const darkModeHandler = () => {
     setDarkMode(!darkMode);
@@ -15,20 +18,20 @@ export default function Header() {
   return (
     <>
       <div className="flex items-center justify-between bg-gray-200 text-black py-2">
-      <div className="dark:bg-blue-900 align-middle order-last pr-4">
-        <button onClick={() => darkModeHandler()}>
-          {
-            darkMode && <IoSunny />
-          }
-          {
-            !darkMode && <IoMoon />
-          }
-        </button>
-      </div>
+        <div className="dark:bg-blue-900 align-middle order-last pr-4">
+          <button onClick={() => darkModeHandler()}>
+            {
+              darkMode && <IoSunny />
+            }
+            {
+              !darkMode && <IoMoon />
+            }
+          </button>
+        </div>
         <a href="/">
           <img src="/app-icon.png" className="justify-start sm:px-4 max-w-24 max-h-24" alt="logo" />
         </a>
-        <h1 className="text-4xl uppercase tracking-widest">Gallery</h1>
+        <h2 className="text-4xl uppercase tracking-widest transform-none ">Gallery</h2>
         <nav>
           <section className="MOBILE-MENU flex lg:hidden">
             <div
@@ -59,11 +62,13 @@ export default function Header() {
                 </svg>
               </div>
               <ul className="flex flex-col items-center justify-between min-h-[250px]">
+                {isAuthenticated && (
+                  <li className="uppercase">
+                    <a href="/upload">Upload</a>
+                  </li>
+                )}
                 <li className="uppercase">
                   <a href="/">Collections</a>
-                </li>
-                <li className="uppercase">
-                  <a href="/upload">Upload</a>
                 </li>
                 <li className="uppercase">
                   <SignInAndOut />
@@ -73,11 +78,13 @@ export default function Header() {
           </section>
 
           <ul className="DESKTOP-MENU hidden space-x-8 lg:flex pr-5 uppercase">
+            {isAuthenticated && (
+              <li className="uppercase">
+                <a href="/upload">Upload</a>
+              </li>
+            )}
             <li>
               <a href="/">Collections</a>
-            </li>
-            <li>
-              <a href="/upload">Upload</a>
             </li>
             <li>
               <SignInAndOut />

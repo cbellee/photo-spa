@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client'
 import Collections from './components/Collections'
 import Albums from './components/AlbumCollections'
 import Photos from './components/Photos'
-import Upload from './components/Upload'
 import UploadImages from './components/UploadImages'
 import ErrorPage from "./components/ErrorPage"
 import { createBrowserRouter } from 'react-router-dom'

@@ -5,6 +5,7 @@ import { faMoon } from "@fortawesome/free-regular-svg-icons";
 import { IoMoon } from "react-icons/io5";
 import { IoSunny } from "react-icons/io5";
 import { IconContext } from "react-icons";
+import { StrictMode } from 'react';
 import './app.css'
 
 function App({ msalInstance, browserRouter }) {
