@@ -1,16 +1,16 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import Collections from './components/Collections'
-import Albums from './components/AlbumCollections'
-import Photos from './components/Photos'
-import UploadImages from './components/UploadImages'
-import ErrorPage from "./components/ErrorPage"
+import Collections from '../components/Collections.tsx'
+import Albums from '../components/AlbumCollections.tsx'
+import Photos from '../components/Photos.tsx'
+import UploadImages from '../components/UploadImages.tsx'
+import ErrorPage from "../components/ErrorPage.tsx"
 import { createBrowserRouter } from 'react-router-dom'
-import Layout from './components/Layout'
+import Layout from '../components/Layout.tsx'
 import './index.css'
 import "./styles/tailwind.output.css";
-import App from './App'
-import { msalConfig } from './config/msalConfig.js'
+import App from '../App.js'
+import { msalConfig } from '../config/msalConfig.js'
 import { PublicClientApplication, EventType } from '@azure/msal-browser'
 
 async function initializeMsal() {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { apiConfig } from '../config/apiConfig.js'
+import { apiConfig } from '../config/apiConfig.ts'
 import CreatableSelect from 'react-select/creatable';
 import axios from 'axios'
 

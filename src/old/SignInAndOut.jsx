@@ -31,7 +31,7 @@ export default function SignInAndOut() {
             setInteractionInProgress(false);
         }
         else {
-           // console.log("Interaction in progress, cannot logout");
+            // console.log("Interaction in progress, cannot logout");
         }
     }
 

@@ -21,14 +21,11 @@ export default function Photos(props) {
 
   let params = useParams();
 
-
-
   useEffect(() => {
     let url = `${apiConfig.photoApiEndpoint}/${params.collection}/${params.album}`;
     axios.get(url)
       .then(response => {
         setPhotos(response.data);
-        //console.log(response.data);
       })
       .catch(error => {
         console.error(error);
@@ -39,7 +36,6 @@ export default function Photos(props) {
     if (data) {
       return (
         Object.keys(data).forEach(function (key) {
-         // { console.log('Key : ' + key + ', Value : ' + data[key]) }
           <Fragment>
             <div>
               <div className='text-white'>{key}</div>
@@ -54,7 +50,7 @@ export default function Photos(props) {
 
   return (
     <div>
-      <Box sx={{ width: "90%" }} className="md-auto">
+      <Box sx={{ width: "90%" }} className="">
         <div className="text-left pt-4 pb-4">
           <Link to="/" className="text-blue-500 uppercase" relative="path"><span className='underline'>Collections</span></Link>
           <span className="text-blue-500 uppercase" relative="path"> &gt; <span className="">{params.collection}</span></span>

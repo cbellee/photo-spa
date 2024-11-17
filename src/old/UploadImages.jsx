@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
-import UploadService from "../services/FileUploadService";
-import TagSelect from "./TagSelect";
-import MultiRadio from "./MultiRadio";
+import FileUploadService from "../services/FileUploadService.tsx";
+import TagSelect from "../components/TagSelect.tsx";
+import MultiRadio from "../components/MultiRadio.tsx";
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import { useIsAuthenticated } from '@azure/msal-react';
 import { AuthenticatedTemplate, UnauthenticatedTemplate } from '@azure/msal-react';
 import { useMsal } from '@azure/msal-react';
-import { tokenRequest } from '../config/msalConfig';
+import { tokenRequest } from '../config/msalConfig.js';
 import axios from 'axios';
-import { apiConfig } from '../config/apiConfig';
+import { apiConfig } from '../config/apiConfig.js';
 
 const UploadImages = () => {
     const [selectedFiles, setSelectedFiles] = useState(undefined);
@@ -166,7 +166,7 @@ const UploadImages = () => {
             return _images;
         });
 
-        return await UploadService.upload(file, imagePreviews[idx], token, (event) => {
+        return await FileUploadService.upload(file, imagePreviews[idx], token, (event) => {
             //console.log(file.name + " progress: " + (100 * event.loaded) / event.total);
         })
             .then(() => {

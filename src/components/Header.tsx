@@ -1,5 +1,5 @@
-import { useState } from "react";
-import SignInAndOut from "./SignInAndOut.jsx";
+import React, { useState } from "react";
+import SignInAndOut from "./SignInAndOut.tsx";
 import { IoMoon } from "react-icons/io5";
 import { IoSunny } from "react-icons/io5";
 import { useIsAuthenticated } from "@azure/msal-react";
@@ -31,7 +31,7 @@ export default function Header() {
         <a href="/">
           <img src="/app-icon.png" className="justify-start sm:px-4 max-w-24 max-h-24" alt="logo" />
         </a>
-        <h2 className="text-4xl uppercase tracking-widest transform-none ">Gallery</h2>
+        <h2 className="text-4xl uppercase tracking-widest transform-none "></h2>
         <nav>
           <section className="MOBILE-MENU flex lg:hidden">
             <div
