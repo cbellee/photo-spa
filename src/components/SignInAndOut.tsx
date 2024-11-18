@@ -3,7 +3,7 @@ import { loginRequest } from '../config/msalConfig.ts';
 import { useState } from 'react';
 import { useIsAuthenticated, useMsal } from '@azure/msal-react';
 
-export default function SignInAndOut() {
+export default function SignInAndOut(props) {
     const [token, setToken] = useState(null);
     const [interactionInProgress, setInteractionInProgress] = useState(false);
     const { instance, inProgress } = useMsal();

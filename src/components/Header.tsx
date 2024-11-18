@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SignInAndOut from "./SignInAndOut.tsx";
 import { IoMoon } from "react-icons/io5";
 import { IoSunny } from "react-icons/io5";
-import { useIsAuthenticated } from "@azure/msal-react";
+import { useIsAuthenticated, useMsal, useAccount } from "@azure/msal-react";
 
 export default function Header() {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
-
+  const [userName, setUserName] = useState<String>("");
+  const { instance, inProgress } = useMsal();
+  const account = useAccount(instance.getActiveAccount() ?? undefined);
   const isAuthenticated = useIsAuthenticated();
 
   const darkModeHandler = () => {
@@ -17,81 +19,74 @@ export default function Header() {
 
   return (
     <>
-      <div className="flex items-center justify-between bg-gray-200 text-black py-2">
-        <div className="dark:bg-blue-900 align-middle order-last pr-4">
-          <button onClick={() => darkModeHandler()}>
-            {
-              darkMode && <IoSunny />
-            }
-            {
-              !darkMode && <IoMoon />
-            }
-          </button>
-        </div>
-        <a href="/">
-          <img src="/app-icon.png" className="justify-start sm:px-4 max-w-24 max-h-24" alt="logo" />
-        </a>
-        <h2 className="text-4xl uppercase tracking-widest transform-none "></h2>
-        <nav>
-          <section className="MOBILE-MENU flex lg:hidden">
-            <div
-              className="HAMBURGER-ICON space-y-2 pr-5"
-              onClick={() => setIsNavOpen((prev) => !prev)}
-            >
-              <span className="block h-0.5 w-8 animate-pulse bg-gray-600"></span>
-              <span className="block h-0.5 w-8 animate-pulse bg-gray-600"></span>
-              <span className="block h-0.5 w-8 animate-pulse bg-gray-600"></span>
-            </div>
-
-            <div className={isNavOpen ? "showMenuNav" : "hideMenuNav"}>
+      <div className="bg-gray-200 text-black py-2 items-center">
+        <div className="flex float-left items-center">
+          <a href="/">
+            <img src="/app-icon.png" className="justify-start sm:px-4 max-w-24 max-h-24" alt="logo" />
+          </a>
+          <h2 className="text-4xl uppercase tracking-widest transform-none "></h2>
+          <nav>
+            <section className="MOBILE-MENU flex lg:hidden">
               <div
-                className="absolute top-0 right-0 px-8 py-8"
-                onClick={() => setIsNavOpen(false)}
+                className="HAMBURGER-ICON space-y-2 pr-5"
+                onClick={() => setIsNavOpen((prev) => !prev)}
               >
-                <svg
-                  className="h-8 w-8 text-gray-600"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
+                <span className="block h-0.5 w-8 animate-pulse bg-gray-600"></span>
+                <span className="block h-0.5 w-8 animate-pulse bg-gray-600"></span>
+                <span className="block h-0.5 w-8 animate-pulse bg-gray-600"></span>
               </div>
-              <ul className="flex flex-col items-center justify-between min-h-[250px]">
+
+              <div className={isNavOpen ? "showMenuNav" : "hideMenuNav"}>
+                <div
+                  className="absolute top-0 right-0 px-8 py-8"
+                  onClick={() => setIsNavOpen(false)}
+                >
+                  <svg
+                    className="h-8 w-8 text-gray-600"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </div>
+                <ul className="flex flex-col items-center justify-between min-h-[250px]">
+                  {isAuthenticated && (
+                    <li className="uppercase">
+                      <a href="/upload">Upload</a>
+                    </li>
+                  )}
+                  <li className="uppercase">
+                    <a href="/">Collections</a>
+                  </li>
+                  <li className="uppercase">
+                    <SignInAndOut />
+                  </li>
+                </ul>
+              </div>
+            </section>
+
+            <div className="flex justify-items-end">
+              <ul className="DESKTOP-MENU hidden space-x-8 lg:flex pr-5 uppercase">
                 {isAuthenticated && (
                   <li className="uppercase">
                     <a href="/upload">Upload</a>
                   </li>
                 )}
-                <li className="uppercase">
+                <li>
                   <a href="/">Collections</a>
                 </li>
-                <li className="uppercase">
-                  <SignInAndOut />
+                <li>
+
                 </li>
               </ul>
             </div>
-          </section>
-
-          <ul className="DESKTOP-MENU hidden space-x-8 lg:flex pr-5 uppercase">
-            {isAuthenticated && (
-              <li className="uppercase">
-                <a href="/upload">Upload</a>
-              </li>
-            )}
-            <li>
-              <a href="/">Collections</a>
-            </li>
-            <li>
-              <SignInAndOut />
-            </li>
-          </ul>
-        </nav>
-        <style>{`
+          </nav>
+          <style>{`
       .hideMenuNav {
         display: none;
       }
@@ -110,6 +105,27 @@ export default function Header() {
         align-items: center;
       }
     `}</style>
+        </div>
+        <div className="flex float-right items-center justify-end justify-items-end mt-5">
+          <SignInAndOut />
+          {
+            (isAuthenticated && userName != null) && (
+              <div className="pl-4">
+                Welcome, {account?.name?.split(" ")[0]}!
+              </div>
+            )
+          }
+          <div className="dark:bg-blue-900 align-middle order-last pr-4 pl-4">
+            <button onClick={() => darkModeHandler()}>
+              {
+                darkMode && <IoSunny />
+              }
+              {
+                !darkMode && <IoMoon />
+              }
+            </button>
+          </div>
+        </div>
       </div>
     </>
   );

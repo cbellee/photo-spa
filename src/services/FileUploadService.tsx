@@ -3,32 +3,14 @@ import { apiConfig } from "../config/apiConfig.ts";
 
 let url = `${apiConfig.photoApiEndpoint}`;
 
-/* interface UploadData {
-    name: string;
-    type: string;
-    description: string;
-    size: number;
-    collection: string;
-    album: string;
-    collectionImage: string;
-    albumImage: string;
-    length: number;
-} */
-
 interface UploadData {
-    uploading: boolean;
-    uploadComplete: boolean;
-    uploadError?: boolean;
-    src: string;
-    width: number;
-    height: number;
     name: string;
     type: string;
     size: number;
     collection: string;
     album: string;
-    collectionImage: string;
-    albumImage: string;
+    collectionImage: boolean;
+    albumImage: boolean;
     description: string;
     length: number;
 }
@@ -56,7 +38,6 @@ async function upload(
     const config: AxiosRequestConfig = {
         headers: {
             "Content-Type": "multipart/form-data",
-            "Content-Length": data.length.toString(),
             "Authorization": `Bearer ${token}`
         },
         onUploadProgress,

@@ -175,8 +175,8 @@ const UploadImages = () => {
             let _images = [...prevImages];
             _images[idx].uploading = true;
             _images[idx].uploadComplete = false;
-            _images[idx].collection = 'travel';
-            _images[idx].album = 'karinjini';
+            _images[idx].collection = collection;
+            _images[idx].album = album;
             _images[idx].collectionImage = collectionImage === file.name ? true : false;
             _images[idx].albumImage = albumImage === file.name ? true : false;
             _images[idx].type = file.type;
@@ -203,7 +203,6 @@ const UploadImages = () => {
             })
             .catch((e) => {
                 console.log("Could not upload the image: " + file.name + "with error: " + e);
-
                 setImagePreviews((prevImages) => {
                     let _images = [...prevImages];
                     _images[idx].uploading = false;
