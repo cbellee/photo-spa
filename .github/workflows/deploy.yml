@@ -1,0 +1,88 @@
+name: compile-and-upload-spa
+on:
+  push:
+    paths:
+      - "src/**"
+  workflow_dispatch:
+
+env:
+  TENANT_ID: '655845bb-6fb9-4adf-bf80-5776ea887bc5'
+  CLIENT_ID: '689078c3-c0ad-4c10-a0d3-1c430c2e471d'
+  AUTHORITY: 'belleenetexternal.ciamlogin.com'
+  POST_LOGOUT_REDIRECT_URI: 'photos.bellee.net'
+  TOKEN_SCOPE: 'photo.all'
+  TOKEN_ROLE: 'photo.upload'
+  LOCATION: 'westeurope'
+  APP_NAME: 'photo-app'
+  CDN_PROFILE_NAME: photo-app-cdn-profile
+  CDN_ENDPOINT_NAME: photo-app-cdn-endpoint
+  STORAGE_ACCOUNT_SUFFIX: blob.core.windows.net
+  VERSION: 1.0.0
+
+jobs:
+  compile-and-upload-spa:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout-code
+        id: checkout-code
+        uses: actions/checkout@main
+
+      - name: gen-rg-name
+        id: gen-rg-name
+        run: |
+            echo "rgName: ${{ env.APP_NAME }}-${{ env.LOCATION }}-rg"
+            echo "rgName=${{ env.APP_NAME }}-${{ env.LOCATION }}-rg" >> "$GITHUB_ENV"
+
+      - name: login-azure
+        id: login-azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: deployment-outputs
+        id: deployment-outputs
+        uses: azure/CLI@v2
+        with:
+          azcliversion: 2.67.0
+          inlineScript: |
+            # get deployment output
+            echo "storageAccountName=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.storageAccountName.value -o tsv) >> "$GITHUB_ENV"
+            echo "photoApiEndpointUri=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.photoApiEndpoint.value -o tsv) >> "$GITHUB_ENV"
+            echo "cdnEndpointName=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnEndpointName.value -o tsv) >> "$GITHUB_ENV"
+            echo "cdnProfileName=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnProfileName.value -o tsv) >> "$GITHUB_ENV"
+      
+      - name: compile-and-upload
+        id: compile-and-upload
+        uses: azure/CLI@v1
+        env:
+          photoApiEndpointUri: ${{ steps.deployment-outputs.outputs.photoApiEndpointUri }}
+          storageAccountName: ${{ steps.deployment-outputs.outputs.storageAccountName }}
+          cdnEndpointName: ${{ steps.deployment-outputs.outputs.cdnEndpointName }}
+          cdnProfileName: ${{ steps.deployment-outputs.outputs.cdnProfileName }}
+        with:
+          azcliversion: 2.67.0
+          inlineScript: |
+            # replace tokens in apiConfig_template.js
+            sed "s/{{AZURE_TENANT_ID}}/${{ env.TENANT_ID }}/g ; \
+                s/{{STORAGE_ACCOUNT_NAME}}/${{ env.storageAccountName }}/g ; \
+                s/{{STORAGE_ACCOUNT_SUFFIX}}/${{ env.STORAGE_ACCOUNT_SUFFIX }}/g ; \
+                s/{{photoApiEndpointUri}}/${{ env.photoApiEndpointUri }}/g" \
+                ./src/config/apiConfig_template.js > ./src/config/apiConfig.js
+
+            # replace tokens in msalConfig_template.js
+            sed "s/{{CLIENT_ID}}/${{ env.CLIENT_ID }}/g ; \
+                s/{{AUTHORITY}}/${{ env.AUTHORITY }}/g ; \
+                s/{{POST_LOGOUT_REDIRECT_URI}}/${{ env.POST_LOGOUT_REDIRECT_URI }}/g ; \
+                s/{{TOKEN_SCOPE}}/${{ env.TOKEN_SCOPE }}/g" \
+                s/{{TOKEN_ROLE}}/${{ env.TOKEN_ROLE }}/g" \
+                ./src/config/msalConfig_template.js > ./src/config/msalConfig.js
+
+            # build javascript
+            npm run build
+
+            # upload to Azure Blob Storage
+            az storage azcopy blob upload --container '$web' --account-name ${{ env.storageAccountName }} --source './dist/*' --recursive
+
+            # purge the CDN cache 
+            az cdn endpoint purge --resource-group $rgName --name $cdnEndpointName --profile-name $cdnProfileName --content-paths "/*"
+
