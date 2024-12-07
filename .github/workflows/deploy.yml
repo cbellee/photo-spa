@@ -48,6 +48,11 @@ jobs:
             echo "photoApiEndpointUri=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.photoApiEndpoint.value -o tsv)" >> "$GITHUB_ENV"
             echo "cdnEndpointName=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnEndpointName.value -o tsv)" >> "$GITHUB_ENV"
             echo "cdnProfileName=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnProfileName.value -o tsv)" >> "$GITHUB_ENV"
+
+            echo "storageAccountName=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.storageAccountName.value -o tsv)" 
+            echo "photoApiEndpointUri=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.photoApiEndpoint.value -o tsv)"
+            echo "cdnEndpointName=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnEndpointName.value -o tsv)"
+            echo "cdnProfileName=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnProfileName.value -o tsv)"
       
       - name: compile-and-upload
         id: compile-and-upload
