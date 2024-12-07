@@ -44,44 +44,44 @@ jobs:
           azcliversion: 2.67.0
           inlineScript: |
             # get deployment output
-            echo "storageAccountName=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.storageAccountName.value -o tsv)" >> "$GITHUB_ENV"
-            echo "photoApiEndpointUri=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.photoApiEndpoint.value -o tsv)" >> "$GITHUB_ENV"
-            echo "cdnEndpointName=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnEndpointName.value -o tsv)" >> "$GITHUB_ENV"
-            echo "cdnProfileName=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnProfileName.value -o tsv)" >> "$GITHUB_ENV"
+            echo "STORAGE_ACCOUNT_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.storageAccountName.value -o tsv)" >> "$GITHUB_ENV"
+            echo "PHOTO_API_ENDPOINT_URI=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.photoApiEndpoint.value -o tsv)" >> "$GITHUB_ENV"
+            echo "CDN_ENDPOINT_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnEndpointName.value -o tsv)" >> "$GITHUB_ENV"
+            echo "CDN_PROFILE_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnProfileName.value -o tsv)" >> "$GITHUB_ENV"
 
-            echo "storageAccountName=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.storageAccountName.value -o tsv)" 
-            echo "photoApiEndpointUri=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.photoApiEndpoint.value -o tsv)"
-            echo "cdnEndpointName=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnEndpointName.value -o tsv)"
-            echo "cdnProfileName=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnProfileName.value -o tsv)"
+            echo "STORAGE_ACCOUNT_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.storageAccountName.value -o tsv)" 
+            echo "PHOTO_API_ENDPOINT_URI=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.photoApiEndpoint.value -o tsv)"
+            echo "CDN_ENDPOINT_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnEndpointName.value -o tsv)"
+            echo "CDN_PROFILE_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnProfileName.value -o tsv)"
       
-      - name: compile-and-upload
-        id: compile-and-upload
+      - name: compile-spa
+        id: compile-spa
         uses: azure/CLI@v2
         env:
-          photoApiEndpointUri: ${{ env.photoApiEndpointUri }}
-          storageAccountName: $storageAccountName
+          PHOTO_API_ENDPOINT_URI: ${{ env.PHOTO_API_ENDPOINT_URI }}
+          STORAGE_ACCOUNT_NAME: ${{ env.STORAGE_ACCOUNT_NAME }}
         with:
           azcliversion: 2.67.0
           inlineScript: |
-            echo "storageAccountName=$storageAccountName"
-            echo "photoApiEndpointUri=$photoApiEndpointUri"
+            echo "STORAGE_ACCOUNT_NAME=${{ env.STORAGE_ACCOUNT_NAME}}"
+            echo "PHOTO_API_ENDPOINT_URI=${{ env.PHOTO_API_ENDPOINT_URI }}"
             echo "TENANT_ID=${{ env.TENANT_ID }}"
             echo "STORAGE_ACCOUNT_SUFFIX=${{ env.STORAGE_ACCOUNT_SUFFIX }}"
-            echo "PHOTO_API_ENDPOINT_URI=$photoApiEndpointUri"
+            echo "PHOTO_API_ENDPOINT_URI=${{ env.PHOTO_API_ENDPOINT_URI }}"
             echo "CLIENT_ID=${{ env.CLIENT_ID }}"
             echo "AUTHORITY=${{ env.AUTHORITY }}"
             echo "POST_LOGOUT_REDIRECT_URI=${{ env.POST_LOGOUT_REDIRECT_URI }}"
             echo "TOKEN_SCOPE=${{ env.TOKEN_SCOPE }}"
             echo "TOKEN_ROLE=${{ env.TOKEN_ROLE }}"
 
-            # replace tokens in apiConfig_template.ts
+            echo "replacing tokens in apiConfig_template.ts..."
             sed "s|{{AZURE_TENANT_ID}}|${{ env.TENANT_ID }}|g ; \
-                s|{{STORAGE_ACCOUNT_NAME}}|$storageAccountName|g ; \
+                s|{{STORAGE_ACCOUNT_NAME}}|${{ env.STORAGE_ACCOUNT_NAME }}|g ; \
                 s|{{STORAGE_ACCOUNT_SUFFIX}}|${{ env.STORAGE_ACCOUNT_SUFFIX }}|g ; \
-                s|{{PHOTO_API_ENDPOINT_URI}}|$photoApiEndpointUri|g" \
+                s|{{PHOTO_API_ENDPOINT_URI}}|${{ env.PHOTO_API_ENDPOINT_URI }}|g" \
                 ./src/config/apiConfig_template.ts > ./src/config/apiConfig.ts
 
-            # replace tokens in msalConfig_template.ts
+            echo "replacing tokens in msalConfig_template.ts"
             sed "s|{{CLIENT_ID}}|${{ env.CLIENT_ID }}|g ; \
                 s|{{AUTHORITY}}|${{ env.AUTHORITY }}|g ; \
                 s|{{POST_LOGOUT_REDIRECT_URI}}|${{ env.POST_LOGOUT_REDIRECT_URI }}|g ; \
@@ -89,7 +89,7 @@ jobs:
                 s|{{TOKEN_ROLE}}|${{ env.TOKEN_ROLE }}|g" \
                 ./src/config/msalConfig_template.ts > ./src/config/msalConfig.ts
 
-            # display modified files
+            echo "modified files..."
             cat ./src/config/apiConfig.ts
             cat ./src/config/msalConfig.ts
       
@@ -105,14 +105,16 @@ jobs:
         id: upload-spa
         uses: azure/CLI@v2
         env:
-          storageAccountName: ${{ env.storageAccountName}}
-          cdnEndpointName: ${{ env.cdnEndpointName }}
-          cdnProfileName: ${{ env.cdnProfileName }}
+          STORAGE_ACCOUNT_NAME: ${{ env.STORAGE_ACCOUNT_NAME}}
+          CDN_ENDPOINT_NAME: ${{ env.CDN_ENDPOINT_NAME }}
+          CDN_PROFILE_NAME: ${{ env.CDN_PROFILE_NAME }}
         with:
           azcliversion: 2.67.0
           inlineScript: |
             # upload to Azure Blob Storage
-            az storage azcopy blob upload --container '$web' --account-name ${{ env.storageAccountName }} --source './dist/*' --recursive
+            echo "Uploading SPA to Azure Blob Storage..."
+            az storage azcopy blob upload --container '$web' --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --source './dist/*' --recursive
 
             # purge the CDN cache 
-            az cdn endpoint purge --resource-group $rgName --name ${{ env.cdnEndpointName }} --profile-name ${{ env.cdnProfileName }} --content-paths "/*"
+            echo "Purging the CDN cache..."
+            az cdn endpoint purge --resource-group $rgName --name ${{ env.CDN_ENDPOINT_NAME }} --profile-name ${{ env.CDN_PROFILE_NAME }} --content-paths "/*"
