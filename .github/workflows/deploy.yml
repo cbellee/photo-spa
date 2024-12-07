@@ -53,10 +53,8 @@ jobs:
         id: compile-and-upload
         uses: azure/CLI@v2
         env:
-          photoApiEndpointUri: ${{ steps.deployment-outputs.outputs.photoApiEndpointUri }}
-          storageAccountName: ${{ steps.deployment-outputs.outputs.storageAccountName }}
-          cdnEndpointName: ${{ steps.deployment-outputs.outputs.cdnEndpointName }}
-          cdnProfileName: ${{ steps.deployment-outputs.outputs.cdnProfileName }}
+          photoApiEndpointUri: ${{ env.photoApiEndpointUri }}
+          storageAccountName: ${{ env.storageAccountName }}
         with:
           azcliversion: 2.67.0
           inlineScript: |
@@ -91,9 +89,9 @@ jobs:
         id: upload-spa
         uses: azure/CLI@v2
         env:
-          storageAccountName: ${{ steps.deployment-outputs.outputs.storageAccountName}}
-          cdnEndpointName: ${{ steps.deployment-outputs.outputs.cdnEndpointName }}
-          cdnProfileName: ${{ steps.deployment-outputs.outputs.cdnProfileName }}
+          storageAccountName: ${{ env.storageAccountName}}
+          cdnEndpointName: ${{ env.cdnEndpointName }}
+          cdnProfileName: ${{ env.cdnProfileName }}
         with:
           azcliversion: 2.67.0
           inlineScript: |
