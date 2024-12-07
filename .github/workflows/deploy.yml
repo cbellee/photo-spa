@@ -14,7 +14,7 @@ env:
   TOKEN_ROLE: 'photo.upload'
   LOCATION: 'westeurope'
   APP_NAME: 'photo-app'
-  STORAGE_ACCOUNT_SUFFIX: blob.core.windows.net
+  STORAGE_ACCOUNT_SUFFIX: 'blob.core.windows.net'
   VERSION: 1.0.0
 
 jobs:
