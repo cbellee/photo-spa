@@ -14,8 +14,6 @@ env:
   TOKEN_ROLE: 'photo.upload'
   LOCATION: 'westeurope'
   APP_NAME: 'photo-app'
-  CDN_PROFILE_NAME: photo-app-cdn-profile
-  CDN_ENDPOINT_NAME: photo-app-cdn-endpoint
   STORAGE_ACCOUNT_SUFFIX: blob.core.windows.net
   VERSION: 1.0.0
 
@@ -73,7 +71,7 @@ jobs:
             sed "s/{{CLIENT_ID}}/${{ env.CLIENT_ID }}/g ; \
                 s/{{AUTHORITY}}/${{ env.AUTHORITY }}/g ; \
                 s/{{POST_LOGOUT_REDIRECT_URI}}/${{ env.POST_LOGOUT_REDIRECT_URI }}/g ; \
-                s/{{TOKEN_SCOPE}}/${{ env.TOKEN_SCOPE }}/g" \
+                s/{{TOKEN_SCOPE}}/${{ env.TOKEN_SCOPE }}/g ; \
                 s/{{TOKEN_ROLE}}/${{ env.TOKEN_ROLE }}/g" \
                 ./src/config/msalConfig_template.ts > ./src/config/msalConfig.ts
 
