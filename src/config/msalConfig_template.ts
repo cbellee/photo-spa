@@ -2,8 +2,8 @@ const msalConfig = {
     auth: {
         clientId: "{{CLIENT_ID}}",
         authority: "https://{{AUTHORITY}}",
-        redirectUri: "http://{{POST_LOGOUT_REDIRECT_URI}}",
-        postLogoutRedirectUri: "http://{{POST_LOGOUT_REDIRECT_URI}}",
+        redirectUri: "https://{{POST_LOGOUT_REDIRECT_URI}}",
+        postLogoutRedirectUri: "https://{{POST_LOGOUT_REDIRECT_URI}}",
     },
     cache: {
         cacheLocation: "sessionStorage",
