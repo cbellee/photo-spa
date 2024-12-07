@@ -54,7 +54,7 @@ jobs:
         uses: azure/CLI@v2
         env:
           photoApiEndpointUri: ${{ env.photoApiEndpointUri }}
-          storageAccountName: ${{ env.storageAccountName }}
+          storageAccountName: $storageAccountName
         with:
           azcliversion: 2.67.0
           inlineScript: |
