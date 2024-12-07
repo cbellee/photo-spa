@@ -67,7 +67,7 @@ jobs:
                 s/{{STORAGE_ACCOUNT_NAME}}/${{ env.storageAccountName }}/g ; \
                 s/{{STORAGE_ACCOUNT_SUFFIX}}/${{ env.STORAGE_ACCOUNT_SUFFIX }}/g ; \
                 s/{{photoApiEndpointUri}}/${{ env.photoApiEndpointUri }}/g" \
-                ./src/config/apiConfig_template.js > ./src/config/apiConfig.js
+                ./src/config/apiConfig_template.ts > ./src/config/apiConfig.ts
 
             # replace tokens in msalConfig_template.js
             sed "s/{{CLIENT_ID}}/${{ env.CLIENT_ID }}/g ; \
@@ -75,7 +75,7 @@ jobs:
                 s/{{POST_LOGOUT_REDIRECT_URI}}/${{ env.POST_LOGOUT_REDIRECT_URI }}/g ; \
                 s/{{TOKEN_SCOPE}}/${{ env.TOKEN_SCOPE }}/g" \
                 s/{{TOKEN_ROLE}}/${{ env.TOKEN_ROLE }}/g" \
-                ./src/config/msalConfig_template.js > ./src/config/msalConfig.js
+                ./src/config/msalConfig_template.ts > ./src/config/msalConfig.ts
 
             # build javascript
             npm run build
@@ -85,4 +85,3 @@ jobs:
 
             # purge the CDN cache 
             az cdn endpoint purge --resource-group $rgName --name $cdnEndpointName --profile-name $cdnProfileName --content-paths "/*"
-
