@@ -44,10 +44,10 @@ jobs:
           azcliversion: 2.67.0
           inlineScript: |
             # get deployment output
-            echo "storageAccountName=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.storageAccountName.value -o tsv) >> "$GITHUB_ENV"
-            echo "photoApiEndpointUri=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.photoApiEndpoint.value -o tsv) >> "$GITHUB_ENV"
-            echo "cdnEndpointName=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnEndpointName.value -o tsv) >> "$GITHUB_ENV"
-            echo "cdnProfileName=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnProfileName.value -o tsv) >> "$GITHUB_ENV"
+            echo "storageAccountName=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.storageAccountName.value -o tsv)" >> "$GITHUB_ENV"
+            echo "photoApiEndpointUri=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.photoApiEndpoint.value -o tsv)" >> "$GITHUB_ENV"
+            echo "cdnEndpointName=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnEndpointName.value -o tsv)" >> "$GITHUB_ENV"
+            echo "cdnProfileName=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnProfileName.value -o tsv)" >> "$GITHUB_ENV"
       
       - name: compile-and-upload
         id: compile-and-upload
