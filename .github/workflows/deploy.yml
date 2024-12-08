@@ -6,16 +6,15 @@ on:
   workflow_dispatch:
 
 env:
-  TENANT_ID: '655845bb-6fb9-4adf-bf80-5776ea887bc5'
-  CLIENT_ID: '689078c3-c0ad-4c10-a0d3-1c430c2e471d'
-  AUTHORITY: 'belleenetexternal.ciamlogin.com'
-  POST_LOGOUT_REDIRECT_URI: 'photos.bellee.net'
-  TOKEN_SCOPE: 'photo.all'
-  TOKEN_ROLE: 'photo.upload'
-  LOCATION: 'uksouth'
-  APP_NAME: 'photo-app'
-  STORAGE_ACCOUNT_SUFFIX: 'blob.core.windows.net'
-  VERSION: 1.0.0
+  #TENANT_ID: '655845bb-6fb9-4adf-bf80-5776ea887bc5'
+  #CLIENT_ID: '689078c3-c0ad-4c10-a0d3-1c430c2e471d'
+  #AUTHORITY: 'belleenetexternal.ciamlogin.com'
+  #POST_LOGOUT_REDIRECT_URI: 'photos.bellee.net'
+  #TOKEN_SCOPE: 'photo.all'
+  #TOKEN_ROLE: 'photo.upload'
+  #LOCATION: 'uksouth'
+  #APP_NAME: 'photo-app'
+  #STORAGE_ACCOUNT_SUFFIX: 'blob.core.windows.net'
 
 jobs:
   compile-and-upload-spa:
@@ -28,8 +27,8 @@ jobs:
       - name: gen-rg-name
         id: gen-rg-name
         run: |
-            echo "rgName: ${{ env.APP_NAME }}-${{ env.LOCATION }}-rg"
-            echo "rgName=${{ env.APP_NAME }}-${{ env.LOCATION }}-rg" >> "$GITHUB_ENV"
+            echo "rgName: ${{ vars.APP_NAME }}-${{ vars.LOCATION }}-rg"
+            echo "rgName=${{ vars.APP_NAME }}-${{ vars.LOCATION }}-rg" >> "$GITHUB_ENV"
 
       - name: login-azure
         id: login-azure
@@ -64,18 +63,18 @@ jobs:
           azcliversion: 2.67.0
           inlineScript: |
             echo "replacing tokens in apiConfig_template.ts..."
-            sed "s|{{AZURE_TENANT_ID}}|${{ env.TENANT_ID }}|g ; \
+            sed "s|{{AZURE_TENANT_ID}}|${{ vars.TENANT_ID }}|g ; \
                 s|{{STORAGE_ACCOUNT_NAME}}|${{ env.STORAGE_ACCOUNT_NAME }}|g ; \
-                s|{{STORAGE_ACCOUNT_SUFFIX}}|${{ env.STORAGE_ACCOUNT_SUFFIX }}|g ; \
+                s|{{STORAGE_ACCOUNT_SUFFIX}}|${{ vars.STORAGE_ACCOUNT_SUFFIX }}|g ; \
                 s|{{PHOTO_API_ENDPOINT_URI}}|${{ env.PHOTO_API_ENDPOINT_URI }}|g" \
                 ./src/config/apiConfig_template.ts > ./src/config/apiConfig.ts
 
             echo "replacing tokens in msalConfig_template.ts"
-            sed "s|{{CLIENT_ID}}|${{ env.CLIENT_ID }}|g ; \
-                s|{{AUTHORITY}}|${{ env.AUTHORITY }}|g ; \
-                s|{{POST_LOGOUT_REDIRECT_URI}}|${{ env.POST_LOGOUT_REDIRECT_URI }}|g ; \
-                s|{{TOKEN_SCOPE}}|${{ env.TOKEN_SCOPE }}|g ; \
-                s|{{TOKEN_ROLE}}|${{ env.TOKEN_ROLE }}|g" \
+            sed "s|{{CLIENT_ID}}|${{ vars.CLIENT_ID }}|g ; \
+                s|{{AUTHORITY}}|${{ vars.AUTHORITY }}|g ; \
+                s|{{POST_LOGOUT_REDIRECT_URI}}|${{ vars.POST_LOGOUT_REDIRECT_URI }}|g ; \
+                s|{{TOKEN_SCOPE}}|${{ vars.TOKEN_SCOPE }}|g ; \
+                s|{{TOKEN_ROLE}}|${{ vars.TOKEN_ROLE }}|g" \
                 ./src/config/msalConfig_template.ts > ./src/config/msalConfig.ts
 
             echo "modified files..."
