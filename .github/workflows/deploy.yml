@@ -5,7 +5,7 @@ on:
       - "src/**"
   workflow_dispatch:
 
-env:
+#env:
   #TENANT_ID: '655845bb-6fb9-4adf-bf80-5776ea887bc5'
   #CLIENT_ID: '689078c3-c0ad-4c10-a0d3-1c430c2e471d'
   #AUTHORITY: 'belleenetexternal.ciamlogin.com'
