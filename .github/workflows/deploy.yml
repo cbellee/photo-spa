@@ -12,7 +12,7 @@ env:
   POST_LOGOUT_REDIRECT_URI: 'photos.bellee.net'
   TOKEN_SCOPE: 'photo.all'
   TOKEN_ROLE: 'photo.upload'
-  LOCATION: 'westeurope'
+  LOCATION: 'uksouth'
   APP_NAME: 'photo-app'
   STORAGE_ACCOUNT_SUFFIX: 'blob.core.windows.net'
   VERSION: 1.0.0

@@ -51,7 +51,7 @@ export default function TagSelectEdit(props) {
         ...Array.from(albumCollectionMap.entries()).map(([key, value]) => ({ key, value }))
       ])
 
-      console.log("albumCollectionMap: " + albumCollectionMap.entries().next().value)
+      //console.log("albumCollectionMap: " + albumCollectionMap.entries().next().value)
     }
 
     getTags();
