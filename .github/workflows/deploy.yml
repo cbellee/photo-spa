@@ -63,17 +63,6 @@ jobs:
         with:
           azcliversion: 2.67.0
           inlineScript: |
-            echo "STORAGE_ACCOUNT_NAME=${{ env.STORAGE_ACCOUNT_NAME}}"
-            echo "PHOTO_API_ENDPOINT_URI=${{ env.PHOTO_API_ENDPOINT_URI }}"
-            echo "TENANT_ID=${{ env.TENANT_ID }}"
-            echo "STORAGE_ACCOUNT_SUFFIX=${{ env.STORAGE_ACCOUNT_SUFFIX }}"
-            echo "PHOTO_API_ENDPOINT_URI=${{ env.PHOTO_API_ENDPOINT_URI }}"
-            echo "CLIENT_ID=${{ env.CLIENT_ID }}"
-            echo "AUTHORITY=${{ env.AUTHORITY }}"
-            echo "POST_LOGOUT_REDIRECT_URI=${{ env.POST_LOGOUT_REDIRECT_URI }}"
-            echo "TOKEN_SCOPE=${{ env.TOKEN_SCOPE }}"
-            echo "TOKEN_ROLE=${{ env.TOKEN_ROLE }}"
-
             echo "replacing tokens in apiConfig_template.ts..."
             sed "s|{{AZURE_TENANT_ID}}|${{ env.TENANT_ID }}|g ; \
                 s|{{STORAGE_ACCOUNT_NAME}}|${{ env.STORAGE_ACCOUNT_NAME }}|g ; \
