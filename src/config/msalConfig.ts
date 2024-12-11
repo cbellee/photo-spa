@@ -1,10 +1,8 @@
 const msalConfig = {
     auth: {
         clientId: "689078c3-c0ad-4c10-a0d3-1c430c2e471d",
-        //clientId: "e6e67d46-9db8-479f-a35f-e357aa1a7ed6",
         authority: "https://belleenetexternal.ciamlogin.com",
         redirectUri: "/",
-        //postLogoutRedirectUri: "https://gallery.bellee.net",
         postLogoutRedirectUri: "http://localhost:5173",
     },
     cache: {

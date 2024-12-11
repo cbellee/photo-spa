@@ -13,6 +13,7 @@ import axios from 'axios';
 import { apiConfig } from '../config/apiConfig.ts';
 import { getAccessToken } from '../utils/utils.ts';
 import { useNavigate } from "react-router-dom";
+import { useTheme } from '../context/ThemeContext';
 
 const UploadImages = () => {
     const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
@@ -32,6 +33,7 @@ const UploadImages = () => {
     const [validationMessage, setValidationMessage] = useState("");
     const [progressMessage, setProgressMessage] = useState({ progess: 0, total: selectedFiles?.length });
     const navigate = useNavigate();
+    const { theme, toggleTheme } = useTheme();
 
     useEffect(() => {
         getAccessToken(instance, accounts, tokenRequest, setToken);
@@ -40,29 +42,29 @@ const UploadImages = () => {
     async function isFormValid() {
         //console.log("collection: " + collection + "/n collectionImage: " + collectionImage + "/n collectionExists: " + collectionExists)
         if ((collection === "" || (collectionImage === "")) && !collectionExists) {
-            let msg = "collection is not set";
+            let msg = "Collection is not set";
             setIsValid(false);
             setValidationMessage(msg);
         } else if (album === "") {
-            let msg = "album is not set";
+            let msg = "Album is not set";
             setIsValid(false);
             setValidationMessage(msg);
         } else if (albumImage === "" && selectedFiles) {
-            let msg = "album image thumbnail is not set";
+            let msg = "Album image thumbnail is not set";
             setIsValid(false);
             setValidationMessage(msg);
         } else if (collectionImage === "" && !collectionExists) {
-            let msg = "collection image thumbnail is not set";
+            let msg = "Collection image thumbnail is not set";
             setIsValid(false);
             setValidationMessage(msg);
         }
         else if (!selectedFiles && !uploadCompleted) {
-            let msg = "no files selected";
+            let msg = "No files selected";
             setIsValid(false);
             setValidationMessage(msg);
         }
         else if (uploadCompleted) {
-            let msg = "upload completed";
+            let msg = "Upload completed";
             setIsValid(false);
             setValidationMessage(msg);
         } else {
@@ -255,7 +257,7 @@ const UploadImages = () => {
     }, [collection, album, collectionImage, albumImage, selectedFiles]);
 
     return (
-        <div className="flex-cols font-thin text-white">
+        <div className={`flex-cols font-thin text-white`}>
             <AuthenticatedTemplate>
                 <TagSelect selectedAlbum={onChangeAlbum} selectedCollection={onChangeCollection} isFormValid={isFormValid}>
                     <label className="text-white pl-6">
@@ -267,27 +269,26 @@ const UploadImages = () => {
                             onChange={selectFiles}
                             className="
                                 block w-full
-                                text-md 
-                                text-slate-400 
+                                text-md
                                 active:animate-pop
                                 file:mr-4 file:py-2 file:px-4
                                 file:rounded-full file:border-0
                                 file:text-md file:font-semibold
-                                file:bg-slate-300 file:text-slate-900
-                                hover:file:bg-slate-100 hover:shadow-xl"
+                                file:bg-gray-300 file:text-gray-600
+                                hover:file:bg-gray-100"
                         />
                     </label>
                     <button
-                        className={`text-slate-900 block bg-slate-300 p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-full hover:bg-slate-100 active:animate-pop hover:shadow-xl`}
+                        className={`text-gray-700 block bg-gray-300 p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-full hover:bg-gray-100 active:animate-pop`}
                         disabled={!isValid || uploading}
                         onClick={uploadImages}
                     >
                         Upload
                     </button>
-                    <div className={`mt-2 pl-4 ${numSelectedImages > 0 ? "visible" : ""} `}>
+                    <div className={`mt-2 pl-4 ${numSelectedImages > 0 ? "visible" : "hidden"} `}>
                         Uploading: {progressMessage.progess}/{numSelectedImages}
                     </div>
-                    <div className="mt-2 pl-4 text-red-400">
+                    <div className={`mt-2 pl-4 ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`}>
                         {validationMessage}
                     </div>
                 </TagSelect>

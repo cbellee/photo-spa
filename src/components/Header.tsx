@@ -3,23 +3,19 @@ import SignInAndOut from "./SignInAndOut.tsx";
 import { IoMoon } from "react-icons/io5";
 import { IoSunny } from "react-icons/io5";
 import { useIsAuthenticated, useMsal, useAccount } from "@azure/msal-react";
+import { useTheme } from "../context/ThemeContext.tsx";
 
 export default function Header() {
   const [isNavOpen, setIsNavOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
   const [userName, setUserName] = useState<String>("");
   const { instance, inProgress } = useMsal();
   const account = useAccount(instance.getActiveAccount() ?? undefined);
   const isAuthenticated = useIsAuthenticated();
-
-  const darkModeHandler = () => {
-    setDarkMode(!darkMode);
-    document.body.classList.toggle('dark-mode');
-  }
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <>
-      <div className="bg-gray-100 text-black py-2 items-center">
+      <div className={`${theme === 'dark' ? 'text-white bg-gray-600' : 'bg-gray-100'} py-2 items-center`}>
         <div className="flex float-left items-center">
           <a href="/">
             <img src="/app-icon.png" className="justify-start sm:px-4 max-w-24 max-h-24" alt="logo" />
@@ -114,14 +110,14 @@ export default function Header() {
               </div>
             )
           }
-           <SignInAndOut />
-          <div className="dark:bg-blue-900 align-middle order-last pr-4 pl-4">
-            <button onClick={() => darkModeHandler()}>
+          <SignInAndOut />
+          <div className="align-middle order-last pr-4 pl-4">
+            <button onClick={toggleTheme}>
               {
-                darkMode && <IoSunny />
+                theme === "dark" && <IoSunny />
               }
               {
-                !darkMode && <IoMoon />
+                theme === "light" && <IoMoon />
               }
             </button>
           </div>

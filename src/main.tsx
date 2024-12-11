@@ -12,6 +12,7 @@ import "./styles/tailwind.output.css";
 import App from './App.tsx';
 import { msalConfig } from './config/msalConfig.ts';
 import { PublicClientApplication, EventType, AccountInfo, EventMessage } from '@azure/msal-browser';
+import { ThemeProvider } from './context/ThemeContext.tsx';
 
 const pca = new PublicClientApplication(msalConfig);
 
@@ -34,7 +35,7 @@ pca.addEventCallback((event: EventMessage) => {
         pca.setActiveAccount(account);
     }
 });
-
+/* 
 const router = createBrowserRouter([
     {
         element: <Layout />,
@@ -62,10 +63,10 @@ const router = createBrowserRouter([
             }
         ]
     },
-]);
+]); */
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
-        <App msalInstance={pca} browserRouter={router} />
+            <App msalInstance={pca} /> 
     </React.StrictMode>
 );

@@ -71,7 +71,7 @@ export default function TagSelectEdit(props) {
           id={props.id}
           name='collection'
           isClearable={true}
-          className="font-semibold text-slate-700"
+          className="font-semibold text-gray-700"
           defaultValue={
             props.collection.length > 0 ? {
               value: props.collection, label: props.collection
@@ -91,7 +91,7 @@ export default function TagSelectEdit(props) {
           name='album'
           id={props.id}
           ref={albumDropDownRef}
-          className="font-semibold rounded-sm text-slate-700"
+          className="font-semibold rounded-sm text-gray-700"
           isClearable={true}
           defaultValue={
             props.album.length > 0 ? {

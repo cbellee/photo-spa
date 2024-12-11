@@ -1,5 +1,5 @@
 import React from 'react';
-import { loginRequest, tokenRequest } from '../config/msalConfig.ts';
+import { loginRequest, msalConfig, tokenRequest } from '../config/msalConfig.ts';
 import { useState } from 'react';
 import { useIsAuthenticated, useMsal } from '@azure/msal-react';
 
@@ -19,7 +19,6 @@ export default function SignInAndOut() {
                 account: loginResponse.account
             }).then((response) => {
                 setToken(response.accessToken);
-                console.log("access token in sign in: " + JSON.stringify(response.accessToken));
             }).catch(async (error) => {
                 const response = await instance.acquireTokenPopup(loginRequest);
                 setToken(response.accessToken);
@@ -32,8 +31,8 @@ export default function SignInAndOut() {
         if (!interactionInProgress) {
             const logoutRequest = {
                 account: instance.getActiveAccount(),
-                mainWindowRedirectUri: "https://gallery.bellee.net",
-                postLogoutRedirectUri: "https://gallery.bellee.net",
+                mainWindowRedirectUri: msalConfig.auth.redirectUri,
+                postLogoutRedirectUri: msalConfig.auth.postLogoutRedirectUri
             }
             setInteractionInProgress(true);
             await instance.logoutPopup(logoutRequest);
@@ -41,7 +40,7 @@ export default function SignInAndOut() {
             setInteractionInProgress(false);
         }
         else {
-            // console.log("Interaction in progress, cannot logout");
+            console.log("Interaction in progress, cannot logout...");
         }
     }
 

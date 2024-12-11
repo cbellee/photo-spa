@@ -5,6 +5,7 @@ export default function PhotoExifData({ data }) {
         return (
             <Fragment>
                 <hr className="mt-2 pt-2" />
+                <span className='font-semibold mb-2'>Exif</span>
                 {
                     Object.entries(JSON.parse(data)).map(([key, value]) => (
                         <div className='text-left text-sm' key={key}>

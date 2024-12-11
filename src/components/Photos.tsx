@@ -132,17 +132,17 @@ const Photos: React.FC<PhotoProps> = (props) => {
     }
 
     const onChangeCollection = (collection, id) => {
-        console.log("collection: " + collection)
-        console.log("id: " + id)
+        //console.log("collection: " + collection)
+        //console.log("id: " + id)
         checkCollectionExists(collection);
         setCollection(collection);
-        console.log("collection: " + collection)
+        //console.log("collection: " + collection)
     }
 
     const onChangeAlbum = (album, id) => {
         setAlbum(album);
-        console.log("album " + album)
-        console.log("id: " + id)
+        //console.log("album " + album)
+        //console.log("id: " + id)
     }
 
     useEffect(() => {
@@ -228,20 +228,20 @@ const Photos: React.FC<PhotoProps> = (props) => {
         <div className=''>
             <Box sx={{ width: "90%", mx: "auto" }}>
                 <div className="text-left pt-4 pb-4">
-                    <Link to="/" className="text-blue-500 uppercase" relative="path"><span className='underline'>Collections</span></Link>
-                    <span className="text-blue-500 uppercase "> &gt; <Link to={`/${params.collection}`}><span className="underline">{params.collection}</span></Link></span>
-                    <span className="text-blue-500 uppercase"> &gt; <span className="">{params.album}</span></span>
+                    <Link to="/" className="text-blue-700 dark:text-blue-500 uppercase" relative="path"><span className='underline'>Collections</span></Link>
+                    <span className="text-blue-700 dark:text-blue-500 uppercase "> &gt; <Link to={`/${params.collection}`}><span className="text-blue-700 dark:text-blue-500 underline">{params.collection}</span></Link></span>
+                    <span className="text-blue-700 dark:text-blue-500 uppercase"> &gt; <span className="text-blue-700 dark:text-blue-500">{params.album}</span></span>
                     {
                         (isAuthenticated && isAdmin) && (
-                            <span className='flex flex-row justify-end'>
+                            <span className='inline justify-end float-right pr-2'>
                                 {
-                                    isEditMode && (<button className={`text-slate-900 mr-2 bg-slate-300 p-0 w-32 h-8 font-semibold text-md rounded-full hover:bg-slate-100 active:animate-pop hover:shadow-xl`} onClick={() => saveEditedData(photos)}>
+                                    isEditMode && (<button className={`mr-2 text-white bg-gray-500 hover:bg-gray-600 p-0 w-32 h-8 font-semibold text-md rounded-full active:animate-pop`} onClick={() => saveEditedData(photos)}>
                                         {
                                             "Save"
                                         }
                                     </button>)
                                 }
-                                <button className={`text-slate-900 bg-slate-300 w-32 p-0 font-semibold h-8 text-md rounded-full hover:bg-slate-100 active:animate-pop hover:shadow-xl`} onClick={setEditMode}>
+                                <button className={`text-white bg-gray-500 w-32 p-0 font-semibold h-8 text-md rounded-full hover:bg-gray-600 active:animate-pop`} onClick={setEditMode}>
                                     {
                                         isEditMode ? "Cancel" : "Edit"
                                     }
@@ -269,7 +269,7 @@ const Photos: React.FC<PhotoProps> = (props) => {
                             <div className="grid [grid-template-columns:1fr] pl-2 pr-2 pb-4 group justify-center mb-auto \">
                                 <img alt={photo.description} src={photo.src} key={`img-${index}`} className={`flex justify-center [grid-column:1] [grid-row:1] rounded-sm overflow-hidden ${photo.orientation.toString().split("-")[0] === '-'} ? -rotate-${photo.orientation - 180} : rotate-${photo.orientation}`} onClick={onClick} />
                                 {(isAdmin && isEditMode && isAuthenticated) && (
-                                    <div id={photo.name} className={`[grid-column:1] z-0 [grid-row:1] place-self-start text-white bg-slate-500 m-1 p-1 rounded-md overflow-hidden`}>
+                                    <div id={photo.name} className={`[grid-column:1] z-0 [grid-row:1] place-self-start text-white bg-gray-500 m-1 p-1 rounded-md overflow-hidden`}>
                                         <FaArrowRotateRight id={photo.name} onClick={(e) => handleImageOrientation(e)} />
                                     </div>
                                 )
@@ -342,6 +342,11 @@ const Photos: React.FC<PhotoProps> = (props) => {
                 index={index}
                 close={() => setIndex(-1)}
                 plugins={[Fullscreen, Slideshow, Thumbnails]}
+                styles={{
+                    container: {
+                        background: "bg-gray-800",
+                    },
+                }}
             />
         </div>
     )

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { apiConfig } from '../config/apiConfig.ts'
 import CreatableSelect from 'react-select/creatable';
+import { useTheme } from '../context/ThemeContext';
 import axios from 'axios'
 
 export default function TagSelect(props) {
@@ -8,6 +9,7 @@ export default function TagSelect(props) {
   const [options, setOptions] = useState<{ key: string; value: string }[]>([]);
   const [albumData, setAlbumData] = useState([]);
   const [collectionAlbumData, setCollectionAlbumData] = useState(new Map());
+  const { theme, toggleTheme } = useTheme();
 
   const albumDropDownRef = useRef<any>(null);
 
@@ -64,18 +66,14 @@ export default function TagSelect(props) {
   }
 
   return (
-    <div className="bg-gray-800 flex p-2 m-0">
+    <div className={`flex p-2 m-0 text-white ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-400'}`}>
       <div className="flex flex-row pl-4">
-        <label className="text-slate-400 pt-1.5 pr-2">Collection</label>
+        <label className={` pt-1.5 pr-2`}>Collection</label>
         <CreatableSelect
           onChange={(event) => handleCollection(event)}
           name='collection'
           isClearable={true}
-          className="min-w-40 max-w-50 pr-2 font-semibold text-slate-700"
-          /* defaultValue={
-            props.collection.length > 0 ? { 
-              value: props.collection, label: props.collection } : null
-          } */
+          className="min-w-40 max-w-50 pr-2 font-semibold text-gray-700 "
           options={
             Array.from(collectionAlbumData.keys()).map((option, idx) => {
               return { value: option, label: option }
@@ -84,18 +82,14 @@ export default function TagSelect(props) {
         />
       </div>
       <div className="flex flex-row pl-4">
-        <label className="text-slate-400 pt-1.5 pr-2">Album</label>
+        <label className="pt-1.5 pr-2">Album</label>
         <div>
           <CreatableSelect
             onChange={(event) => handleAlbum(event)}
             name='album'
             ref={albumDropDownRef}
-            className="min-w-40 max-w-50 font-semibold text-slate-700"
+            className="min-w-40 max-w-50 font-semibold text-gray-700 "
             isClearable={true}
-           /*  defaultValue={
-              props.collection.length > 0 ? { 
-                value: props.album, label: props.album } : null
-            } */
             options={
               albumData.map((option, idx) => {
                 return { value: idx, label: option }

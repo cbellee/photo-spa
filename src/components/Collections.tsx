@@ -4,6 +4,7 @@ import Box from "@mui/material/Box";
 import { apiConfig } from '../config/apiConfig.ts';
 import axios from 'axios';
 import { RowsPhotoAlbum } from 'react-photo-album';
+import { useTheme } from '../context/ThemeContext';
 
 import "react-photo-album/rows.css";
 import "yet-another-react-lightbox/styles.css";
@@ -31,6 +32,7 @@ interface CollectionsProps {
 const Collections: React.FC<CollectionsProps> = (props) => {
     const [photos, setPhotos] = useState<Photo[]>([]);
     const [index, setIndex] = useState<number>(-1);
+    const { theme } = useTheme();
 
     let params = useParams<Params>();
 
@@ -38,7 +40,7 @@ const Collections: React.FC<CollectionsProps> = (props) => {
         let url = `${apiConfig.photoApiEndpoint}`;
         axios.get(url)
             .then(response => {
-                console.log(response.data);
+               // console.log(response.data);
                 setPhotos(response.data);
             })
             .catch(error => {
@@ -50,11 +52,11 @@ const Collections: React.FC<CollectionsProps> = (props) => {
         <div>
             <Box sx={{ width: "90%", mx: "auto" }}>
                 <div className="text-left pt-4 pb-4">
-                    <Link to=".." className="uppercase text-blue-500 underline" relative="path">Collections</Link>
+                    <Link to=".." className={`uppercase ${theme === 'dark' ? 'text-blue-500' : 'text-blue-700' } underline`} relative="path">Collections</Link>
                 </div>
                 {
                     photos.length === 0 &&
-                    <div className='text-white uppercase'>No Collections found</div>
+                    <div className={`uppercase ${theme === 'dark' ? 'text-white' : 'text-gray-'}`}>No Collections found</div>
                 }
                 <RowsPhotoAlbum
                     photos={photos}
@@ -68,7 +70,7 @@ const Collections: React.FC<CollectionsProps> = (props) => {
                                 <Link to={photo.collection}>
                                     <img src={photo.src} key={index} className="rounded-sm hover:opacity-85 h-48" />
                                 </Link>
-                                <Link to={photo.collection} className="uppercase text-sm underline text-blue-400">{photo.collection}</Link>
+                                <Link to={photo.collection} className={`uppercase text-sm underline ${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'}`}>{photo.collection}</Link>
                             </div>
                         ),
                     }}

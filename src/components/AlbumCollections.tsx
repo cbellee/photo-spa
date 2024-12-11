@@ -4,6 +4,7 @@ import Box from "@mui/material/Box";
 import { apiConfig } from '../config/apiConfig.ts';
 import axios from 'axios';
 import { RowsPhotoAlbum } from 'react-photo-album';
+import { useTheme } from '../context/ThemeContext';
 
 import "react-photo-album/rows.css";
 import "yet-another-react-lightbox/styles.css";
@@ -31,6 +32,7 @@ interface AlbumsProps {
 const Albums: React.FC<AlbumsProps> = (props) => {
     const [photos, setPhotos] = useState<Photo[]>([]);
     const [index, setIndex] = useState<number>(-1);
+    const { theme } = useTheme();
 
     let params = useParams<Params>();
 
@@ -49,10 +51,10 @@ const Albums: React.FC<AlbumsProps> = (props) => {
 
     return (
         <div>
-            <Box sx={{ width: "90%", mx: "auto" }}>
+            <Box sx={{ width: "90%", mx: "auto" }} className="">
                 <div className="text-left pt-4 pb-4">
-                    <Link to="/" className="text-blue-500 uppercase" relative="path"><span className='underline'>Collections</span></Link>
-                    <span className="text-blue-500 uppercase"> &gt; <span className="">{params.collection}</span></span>
+                    <Link to="/" relative="path"><span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} uppercase underline`}>Collections</span></Link>
+                    <span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} uppercase`}> &gt; <span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} uppercase`}>{params.collection}</span></span>
                 </div>
                 <RowsPhotoAlbum
                     photos={photos}
@@ -65,7 +67,7 @@ const Albums: React.FC<AlbumsProps> = (props) => {
                                 <Link to={photo.album}>
                                     <img src={photo.src} key={index} className="rounded-sm hover:opacity-85 h-48" />
                                 </Link>
-                                <Link to={photo.album} className="uppercase text-sm underline text-blue-400">{photo.album}</Link>
+                                <Link to={photo.album} className={`uppercase text-sm underline ${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'}`}>{photo.album}</Link>
                             </div>
                         ),
                     }}
