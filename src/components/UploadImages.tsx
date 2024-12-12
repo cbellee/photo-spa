@@ -229,7 +229,7 @@ const UploadImages = () => {
         uploadPromises.forEach((p) => {
             p.then(() => {
                 progress += 1;
-                console.log("progress: " + progress);
+                //console.log("progress: " + progress);
                 setProgressMessage({ progess: progress, total: selectedFiles.length });
             }).catch((e) => {
 

@@ -54,7 +54,6 @@ export default function MultiRadio(props) {
                         type="radio"
                         className="h-3.5 mt-1.5"
                         name={props.groupName}
-                        //checked={props.checked}
                         defaultChecked={props.checked}
                     />
                 </div>

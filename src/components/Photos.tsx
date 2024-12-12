@@ -79,9 +79,16 @@ const Photos: React.FC<PhotoProps> = (props) => {
         setAlbumImage(imageName);
 
         let photo = photos.filter((photo => photo.name.includes(imageName)));
+        
         setPhotos((prevState) => {
             return prevState.map((photo) => photo.name === imageName ? {
                 ...photo, albumImage: true
+            } : photo)
+        });
+
+        setPhotos((prevState) => {
+            return prevState.map((photo) => photo.name != imageName ? {
+                ...photo, albumImage: false
             } : photo)
         });
     }
@@ -93,6 +100,12 @@ const Photos: React.FC<PhotoProps> = (props) => {
         setPhotos((prevState) => {
             return prevState.map((photo) => photo.name === imageName ? {
                 ...photo, collectionImage: true
+            } : photo)
+        });
+
+        setPhotos((prevState) => {
+            return prevState.map((photo) => photo.name != imageName ? {
+                ...photo, collectionImage: false
             } : photo)
         });
     }
@@ -304,6 +317,7 @@ const Photos: React.FC<PhotoProps> = (props) => {
                                                     checked={photo.isDeleted}
                                                     id={photo.name}
                                                     onChange={(event) => onChangeIsDeleted(event)}
+                                                    disabled={photo.collectionImage || photo.albumImage}
                                                 />
                                             </div>
                                             <div className="col-span-2">
@@ -322,7 +336,7 @@ const Photos: React.FC<PhotoProps> = (props) => {
                                                     groupName="Album"
                                                     imageName={`${photo.name}`}
                                                     handler={handleAlbumThumbnail}
-                                                    checked={photo.albumImage}
+                                                    checked={photo.albumImage}                                                 
                                                 />
                                             </div>
                                             <PhotoExifData data={photo.exifData} />
