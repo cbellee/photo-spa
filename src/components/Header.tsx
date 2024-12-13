@@ -15,7 +15,7 @@ export default function Header() {
 
   return (
     <>
-      <div className={`${theme === 'dark' ? 'text-white bg-gray-600' : 'bg-gray-100'} py-2 items-center`}>
+      <div className={`${theme === 'dark' ? 'text-white bg-gray-600' : 'bg-gray-100'} py-2 items-center !h-auto`}>
         <div className="flex float-left items-center">
           <a href="/">
             <img src="/app-icon.png" className="justify-start sm:px-4 max-w-24 max-h-24" alt="logo" />

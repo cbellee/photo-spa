@@ -235,6 +235,8 @@ const Photos: React.FC<PhotoProps> = (props) => {
                     console.error("error updating photo data: " + error);
                 });
         }
+
+        setIsEditMode(false);
     }
 
     return (

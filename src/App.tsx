@@ -5,7 +5,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import Collections from './components/Collections.tsx';
 import Albums from './components/AlbumCollections.tsx';
 import Photos from './components/Photos.tsx';
-import UploadImages from './components/UploadImages.tsx';
+import UploadImages from './components/Upload.tsx';
 import ErrorPage from "./components/ErrorPage.tsx";
 import { createBrowserRouter } from 'react-router-dom';
 import Layout from './components/Layout';

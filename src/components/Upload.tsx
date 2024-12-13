@@ -13,7 +13,7 @@ import axios from 'axios';
 import { apiConfig } from '../config/apiConfig.ts';
 import { getAccessToken } from '../utils/utils.ts';
 import { useNavigate } from "react-router-dom";
-import { useTheme } from '../context/ThemeContext';
+import { useTheme } from '../context/ThemeContext.tsx';
 
 const UploadImages = () => {
     const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
@@ -271,15 +271,15 @@ const UploadImages = () => {
                                 block w-full
                                 text-md
                                 active:animate-pop
-                                file:mr-4 file:py-2 file:px-4
-                                file:rounded-full file:border-0
-                                file:text-md file:font-semibold
+                                file:mr-4 file:w-32 mt-1 p-0
+                                file:rounded-md file:border-0
+                                file:text-md file:font-semibold file:h-8
                                 file:bg-gray-300 file:text-gray-600
                                 hover:file:bg-gray-100"
                         />
                     </label>
                     <button
-                        className={`text-gray-700 block bg-gray-300 p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-full hover:bg-gray-100 active:animate-pop`}
+                        className={`text-white h-8 text-md mt-1 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-600 bg-gray-500'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-md`}
                         disabled={!isValid || uploading}
                         onClick={uploadImages}
                     >
@@ -294,14 +294,17 @@ const UploadImages = () => {
                 </TagSelect>
 
                 {imagePreviews && (
-                    <div className="flex flex-col justify-items-center">
-                        <div className="grid grid-cols-6">
+                    <div className="justify-items-center">
+                        <div className="grid 2xl:grid-cols-7 xl:grid-cols-5 lg:grid-cols-4 sm:grid-cols-2">
                             {imagePreviews.map((img, i) => {
                                 return (
-                                    <Card className="m-1.5 p-0 text-left border-gray-800 border-2 flex min-w-44">
-                                        <CardContent className="bg-gray-900 text-white">
-                                            <div className="flex items-center justify-center">
-                                                <CardMedia component="img" className={`aspect-square ${img.uploading ? "animate-pulse" : ""}`} image={img.src} alt={"image-" + i} key={i} />
+                                    <Card className={`m-1.5 p-0 text-left ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}  border-2`}>
+                                        <CardContent className={`h-full flex flex-col justify-center ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-gray-100'}`}>
+                                            <div className="flex justify-items-end justify-end">
+                                                <div className="justify-end justify-items-end">
+                                                <CardMedia component="img" className={`justify-items-start justify-start rounded-sm ${img.uploading ? "animate-pulse" : ""}`} image={img.src} alt={"image-" + i} key={i} 
+                                                />
+                                                </div>
                                                 <span
                                                     className={`absolute h-10 w-10 animate-spin rounded-full ${!img.uploading ? "invisible" : ""} border-4 border-solid border-current border-r-transparent  motion-reduce:animate-[spin_1.5s_linear_infinite]`}
                                                 ></span>
@@ -318,14 +321,16 @@ const UploadImages = () => {
                                                     }
                                                 </span>
                                             </div>
-                                            <div className="p-0 m-0 pt-2">
+                                            <div className="h-full"></div>
+                                            <div className="flex flex-col">
+                                            <div className="p-0 m-0 pt-2 justify-end flex flex-col">
                                                 <label className="font-semibold">Name</label>
                                                 <div className="">{imagePreviews[i].name}</div>
                                                 <label className="font-semibold">Description</label>
                                                 <input type="text"
                                                     value={imagePreviews[i].description}
                                                     defaultValue={imagePreviews[i].description}
-                                                    className="bg-gray-700 rounded-sm pl-1 block"
+                                                    className={`bg-gray-700 rounded-sm pl-1 block ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'} w-full`}
                                                     onChange={(e) => { setImagePreviews((prevImages) => { let _images = [...prevImages]; _images[i].description = e.target.value; return _images; }) }}
                                                 >
                                                 </input>
@@ -346,6 +351,7 @@ const UploadImages = () => {
                                                         handler={handleAlbumThumbnail}
                                                     />
                                                 </div>
+                                            </div>
                                             </div>
                                         </CardContent>
                                     </Card>
