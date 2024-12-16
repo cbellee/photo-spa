@@ -72,7 +72,7 @@ jobs:
             echo "replacing tokens in msalConfig_template.ts"
             sed "s|{{CLIENT_ID}}|${{ vars.CLIENT_ID }}|g ; \
                 s|{{AUTHORITY}}|${{ vars.AUTHORITY }}|g ; \
-                s|{{REDIRECT_URI}}|${{ vars.CNAME }}-${{ vars.LOCATION }}.${{ vars.DOMAIN_NAME }}|g ; \
+                s|{{REDIRECT_URI}}|${{ vars.CNAME }}.${{ vars.DOMAIN_NAME }}|g ; \
                 s|{{TOKEN_SCOPE}}|${{ vars.TOKEN_SCOPE }}|g ; \
                 s|{{TOKEN_ROLE}}|${{ vars.TOKEN_ROLE }}|g" \
                 ./src/config/msalConfig_template.ts > ./src/config/msalConfig.ts
@@ -94,15 +94,9 @@ jobs:
         uses: azure/CLI@v2
         env:
           STORAGE_ACCOUNT_NAME: ${{ env.STORAGE_ACCOUNT_NAME}}
-          CDN_ENDPOINT_NAME: ${{ env.CDN_ENDPOINT_NAME }}
-          CDN_PROFILE_NAME: ${{ env.CDN_PROFILE_NAME }}
         with:
           azcliversion: 2.67.0
           inlineScript: |
             # upload to Azure Blob Storage
             echo "Uploading SPA to Azure Blob Storage..."
             az storage azcopy blob upload --container '$web' --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --source './dist/*' --recursive
-
-            # purge the CDN cache 
-            # echo "Purging the CDN cache..."
-            # az cdn endpoint purge --resource-group $rgName --name ${{ env.CDN_ENDPOINT_NAME }} --profile-name ${{ env.CDN_PROFILE_NAME }} --content-paths "/*"
