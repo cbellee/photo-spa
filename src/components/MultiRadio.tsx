@@ -47,7 +47,7 @@ export default function MultiRadio(props) {
         return data.options.map(o => (
             <Fragment key={props.imageName}>
                 <div className="">
-                    <label htmlFor={props.imageName} className="flex font-semibold">{o.label} thumb</label>
+                    <label htmlFor={props.imageName} className="flex">{o.label} thumb</label>
                     <input
                         onClick={(e) => onChange(e)}
                         onChange={(e) => onChange(e)}

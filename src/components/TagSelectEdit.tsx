@@ -64,14 +64,14 @@ export default function TagSelectEdit(props) {
   return (
     <div className="grid grid-cols-1">
       <div>
-        <label className="text-white pt-1.5 pr-2">Collection</label>
+        <label className="pt-1.5 pr-2">Collection</label>
         <CreatableSelect
           onChange={(event) => handleCollection(event, props.id)}
           onFocus={(event) => handleCollection(event, props.id)}
           id={props.id}
           name='collection'
           isClearable={true}
-          className="font-semibold text-gray-700"
+          className="text-gray-800 rounded-sm"
           defaultValue={
             props.collection.length > 0 ? {
               value: props.collection, label: props.collection
@@ -85,13 +85,13 @@ export default function TagSelectEdit(props) {
         />
       </div>
       <div>
-        <label className="text-white pt-1.5 pr-2 flex">Album</label>
+        <label className="pt-1.5 pr-2 flex">Album</label>
         <CreatableSelect
           onChange={(event) => handleAlbum(event, props.id)}
           name='album'
           id={props.id}
           ref={albumDropDownRef}
-          className="font-semibold rounded-sm text-gray-700"
+          className="text-gray-800 rounded-sm"
           isClearable={true}
           defaultValue={
             props.album.length > 0 ? {

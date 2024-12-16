@@ -40,7 +40,6 @@ const UploadImages = () => {
     }, [isAuthenticated]);
 
     async function isFormValid() {
-        //console.log("collection: " + collection + "/n collectionImage: " + collectionImage + "/n collectionExists: " + collectionExists)
         if ((collection === "" || (collectionImage === "")) && !collectionExists) {
             let msg = "Collection is not set";
             setIsValid(false);
@@ -70,6 +69,7 @@ const UploadImages = () => {
         } else {
             setIsValid(true);
             setValidationMessage("");
+            // console.log("Form is valid");
         }
     }
 
@@ -223,9 +223,9 @@ const UploadImages = () => {
 
         const files = Array.from(selectedFiles);
         setUploading(true);
-        const uploadPromises = files.map((file, i) => upload(i, file));
         let progress = 0;
 
+        const uploadPromises = files.map((file, i) => upload(i, file));
         uploadPromises.forEach((p) => {
             p.then(() => {
                 progress += 1;
@@ -279,7 +279,7 @@ const UploadImages = () => {
                         />
                     </label>
                     <button
-                        className={`text-white h-8 text-md mt-1 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-600 bg-gray-500'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-md`}
+                        className={`text-white h-8 text-md mt-1 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-100 bg-gray-300 text-gray-600'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-md`}
                         disabled={!isValid || uploading}
                         onClick={uploadImages}
                     >
@@ -295,63 +295,63 @@ const UploadImages = () => {
 
                 {imagePreviews && (
                     <div className="justify-items-center">
-                        <div className="grid 2xl:grid-cols-7 xl:grid-cols-5 lg:grid-cols-4 sm:grid-cols-2">
+                        <div className={`grid 2xl:grid-cols-7 xl:grid-cols-5 lg:grid-cols-4 sm:grid-cols-2 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-400'}`}>
                             {imagePreviews.map((img, i) => {
                                 return (
-                                    <Card className={`m-1.5 p-0 text-left ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}  border-2`}>
-                                        <CardContent className={`h-full flex flex-col justify-center ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-gray-100'}`}>
+                                    <Card className={`m-1.5 p-0 text-left ${theme === 'dark' ? 'border-gray-600' : 'border-gray-200'}  border-2`}>
+                                        <CardContent className={`h-full flex flex-col justify-center ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-gray-300'}`}>
                                             <div className="flex justify-items-end justify-end">
-                                                <div className="justify-end justify-items-end">
-                                                <CardMedia component="img" className={`justify-items-start justify-start rounded-sm ${img.uploading ? "animate-pulse" : ""}`} image={img.src} alt={"image-" + i} key={i} 
-                                                />
+                                                <div className="justify-end justify-items-end relative">
+                                                    <CardMedia component="img" className={`justify-items-start justify-start rounded-sm ${img.uploading ? "animate-pulse" : ""}`} image={img.src} alt={"image-" + i} key={i}
+                                                    />
                                                 </div>
                                                 <span
-                                                    className={`absolute h-10 w-10 animate-spin rounded-full ${!img.uploading ? "invisible" : ""} border-4 border-solid border-current border-r-transparent  motion-reduce:animate-[spin_1.5s_linear_infinite]`}
+                                                    className={`absolute md-auto mt-[3.5em] mr-[4.4em] place-items-left h-10 w-10 animate-spin rounded-full ${!img.uploading ? "invisible" : ""} border-4 border-solid border-current border-r-transparent  motion-reduce:animate-[spin_1.5s_linear_infinite]`}
                                                 ></span>
-                                                <span className={`absolute text-sm ${!img.uploading ? "invisible" : ""}`}>
+                                                <span className={`absolute mt-[4em] mr-[4.7em] text-sm pt-2.5 pr-2.5 ${!img.uploading ? "invisible" : ""}`}>
                                                     {
                                                         img.uploadProgress + "%"
                                                     }
                                                 </span>
-                                                <span className={`absolute text-md font-semibold ${!img.uploadComplete || !img.uploadError ? "invisible" : ""}`}>
-                                                    {
-                                                        img.uploadError ?
-                                                            "Upload Error" :
-                                                            "Upload Complete"
-                                                    }
-                                                </span>
                                             </div>
+                                            <span className={`absolute text-md font-semibold ${!img.uploadComplete || !img.uploadError ? "invisible" : ""}`}>
+                                                {
+                                                    img.uploadError ?
+                                                        "Upload Error" :
+                                                        "Upload Complete"
+                                                }
+                                            </span>
                                             <div className="h-full"></div>
                                             <div className="flex flex-col">
-                                            <div className="p-0 m-0 pt-2 justify-end flex flex-col">
-                                                <label className="font-semibold">Name</label>
-                                                <div className="">{imagePreviews[i].name}</div>
-                                                <label className="font-semibold">Description</label>
-                                                <input type="text"
-                                                    value={imagePreviews[i].description}
-                                                    defaultValue={imagePreviews[i].description}
-                                                    className={`bg-gray-700 rounded-sm pl-1 block ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'} w-full`}
-                                                    onChange={(e) => { setImagePreviews((prevImages) => { let _images = [...prevImages]; _images[i].description = e.target.value; return _images; }) }}
-                                                >
-                                                </input>
-                                                <div className="col-span-2">
-                                                    {
-                                                        collectionExists ?
-                                                            <></>
-                                                            :
-                                                            <MultiRadio
-                                                                groupName="Collection"
-                                                                imageName={`${img.name}`}
-                                                                handler={handleCollectionThumbnail}
-                                                            />
-                                                    }
-                                                    <MultiRadio
-                                                        groupName="Album"
-                                                        imageName={`${img.name}`}
-                                                        handler={handleAlbumThumbnail}
-                                                    />
+                                                <div className="p-0 m-0 pt-2 justify-end flex flex-col">
+                                                    <label className="font-semibold">Name</label>
+                                                    <div className="">{imagePreviews[i].name}</div>
+                                                    <label className="font-semibold">Description</label>
+                                                    <input type="text"
+                                                        value={imagePreviews[i].description}
+                                                        defaultValue={imagePreviews[i].description}
+                                                        className={`rounded-sm pl-1 block ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'} w-full`}
+                                                        onChange={(e) => { setImagePreviews((prevImages) => { let _images = [...prevImages]; _images[i].description = e.target.value; return _images; }) }}
+                                                    >
+                                                    </input>
+                                                    <div className="col-span-2">
+                                                        {
+                                                            collectionExists ?
+                                                                <></>
+                                                                :
+                                                                <MultiRadio
+                                                                    groupName="Collection"
+                                                                    imageName={`${img.name}`}
+                                                                    handler={handleCollectionThumbnail}
+                                                                />
+                                                        }
+                                                        <MultiRadio
+                                                            groupName="Album"
+                                                            imageName={`${img.name}`}
+                                                            handler={handleAlbumThumbnail}
+                                                        />
+                                                    </div>
                                                 </div>
-                                            </div>
                                             </div>
                                         </CardContent>
                                     </Card>

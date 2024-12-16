@@ -17,11 +17,12 @@ import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import { tokenRequest } from '../config/msalConfig.ts';
 import TagSelectEdit from './TagSelectEdit.tsx';
-import { FaArrowRotateRight } from "react-icons/fa6";
+import { FaArrowRotateRight, FaArrowRotateLeft } from "react-icons/fa6";
 import PhotoExifData from './PhotoExifData.tsx';
 import MultiRadio from './MultiRadio.tsx';
 import FileUploadService from '../services/FileUploadService';
 import { getAccessToken } from '../utils/utils.ts';
+import { useTheme } from '../context/ThemeContext.tsx';
 
 interface Photo {
     name: string;
@@ -65,6 +66,7 @@ const Photos: React.FC<PhotoProps> = (props) => {
     const [validationMessage, setValidationMessage] = useState('');
     const [token, setToken] = useState("");
     const [albumImage, setAlbumImage] = useState('');
+    const { theme } = useTheme();
 
     let params = useParams<Params>();
     let instance = msalContext.instance;
@@ -79,7 +81,7 @@ const Photos: React.FC<PhotoProps> = (props) => {
         setAlbumImage(imageName);
 
         let photo = photos.filter((photo => photo.name.includes(imageName)));
-        
+
         setPhotos((prevState) => {
             return prevState.map((photo) => photo.name === imageName ? {
                 ...photo, albumImage: true
@@ -195,17 +197,22 @@ const Photos: React.FC<PhotoProps> = (props) => {
         });
     }
 
-    const handleImageOrientation = (event) => {
+    const handleImageOrientation = (event, direction) => {
         console.log("id: " + JSON.stringify(event.target.id))
 
         const lower_limit = 0;
         const upper_limit = 360;
         const step = 90;
-        const rotate = [0, 90, 180, -90]
+        const rotate = [0, 90, 180, 270];
 
         let photo = photos.filter((photo => photo.name.includes(event.target.id)));
         let orientation = photo[0].orientation;
-        orientation = (orientation + step) % upper_limit;
+        //orientation = (orientation + step) % upper_limit;
+        let pos = rotate.indexOf(orientation);
+        console.log("pos: " + pos)
+
+
+        orientation = rotate[++pos % 4];
 
         console.log("orientation: " + orientation)
         console.log("width: " + photo[0].width)
@@ -250,18 +257,18 @@ const Photos: React.FC<PhotoProps> = (props) => {
                         (isAuthenticated && isAdmin) && (
                             <span className='inline justify-end float-right pr-2'>
                                 {
-                                    isEditMode && (<button className={`mr-2 text-white bg-gray-500 hover:bg-gray-600 p-0 w-32 h-8 font-semibold text-md rounded-full active:animate-pop`} onClick={() => saveEditedData(photos)}>
+                                    isEditMode && (<button className={`text-white h-8 text-md mt-1 mr-2 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-100 bg-gray-300 text-gray-600'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-md`} onClick={() => saveEditedData(photos)}>
                                         {
                                             "Save"
                                         }
                                     </button>)
                                 }
-                                <button className={`text-white bg-gray-500 w-32 p-0 font-semibold h-8 text-md rounded-full hover:bg-gray-600 active:animate-pop`} onClick={setEditMode}>
+                                <button className={`text-white h-8 text-md mt-1 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-100 bg-gray-300 text-gray-600'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-md`} onClick={setEditMode}>
                                     {
                                         isEditMode ? "Cancel" : "Edit"
                                     }
                                 </button>
-                                
+
                             </span>
                         )
                     }
@@ -275,29 +282,35 @@ const Photos: React.FC<PhotoProps> = (props) => {
                         ],
                     }}
                     photos={photos}
+                    key="rows_album"
                     padding={0}
                     spacing={0}
-                    //targetRowHeight={250}
                     onClick={({ index }) => setIndex(index)} // open in LightBox
                     render={{
                         photo: ({ onClick }, { photo }) => (
-                            <div className="grid [grid-template-columns:1fr] pl-2 pr-2 pb-4 group justify-center mb-auto \">
-                                <img alt={photo.description} src={photo.src} key={`img-${index}`} className={`flex justify-center [grid-column:1] [grid-row:1] rounded-sm overflow-hidden ${photo.orientation.toString().split("-")[0] === '-'} ? -rotate-${photo.orientation - 180} : rotate-${photo.orientation}`} onClick={onClick} />
+                            <div className="grid [grid-template-columns:1fr] pl-2 pr-2 pb-3 group justify-center pt-1" key={photo.id}>
+                                <img
+                                    alt={photo.description}
+                                    src={photo.src}
+                                    key={`img-${index}`}
+                                    className={`[grid-column:1] [grid-row:1] object-fill inline-block rounded-sm ${photo.orientation === 270 ? '-rotate-90' : `rotate-[${photo.orientation}deg]`}`}
+                                    onClick={onClick}
+                                />
                                 {(isAdmin && isEditMode && isAuthenticated) && (
                                     <div id={photo.name} className={`[grid-column:1] z-0 [grid-row:1] place-self-start text-white bg-gray-500 m-1 p-1 rounded-md overflow-hidden`}>
-                                        <FaArrowRotateRight id={photo.name} onClick={(e) => handleImageOrientation(e)} />
+                                        <FaArrowRotateRight id={photo.name} onClick={(e) => handleImageOrientation(e, 'cw')} />
                                     </div>
                                 )
                                 }
                                 <div className={`[grid-column:1] [grid-row:1] place-self-end block bg-gray-600 ${isAuthenticated} ? : group-hover:opacity-75 opacity-0 text-gray-300 overflow-hidden w-full`}>{photo.description}</div>
                                 {
                                     (isEditMode && isAdmin && isAuthenticated) && (
-                                        <div className={`rounded-b-sm flex text-white flex-col text-left pr-2 pl-2 pb-2 pt-2 bg-gray-800 border-l-2 border-r-2 border-b-2 border-b-gray-700 border-l-gray-700 border-r-gray-700`}>
+                                        <div className={`h-auto rounded-b-sm flex ${theme === 'dark' ? 'bg-gray-700 text-white border-b-gray-600 border-l-gray-600 border-r-gray-600' : 'bg-gray-300 text-gray-700 border-gray-200 border-b-gray-200 border-l-gray-200 border-r-gray-200'} flex-col text-left pr-2 pl-2 pb-2 pt-2  border-l-2 border-r-2 border-b-2 `}>
                                             <label>Description</label>
                                             <input
                                                 type="text"
                                                 name='description'
-                                                className='pl-2 rounded-sm h-8 text-gray-800'
+                                                className='pl-2 rounded-sm h-8'
                                                 value={photo.description}
                                                 id={photo.name}
                                                 onChange={(event) => onChangeDescription(event)}
@@ -338,7 +351,7 @@ const Photos: React.FC<PhotoProps> = (props) => {
                                                     groupName="Album"
                                                     imageName={`${photo.name}`}
                                                     handler={handleAlbumThumbnail}
-                                                    checked={photo.albumImage}                                                 
+                                                    checked={photo.albumImage}
                                                 />
                                             </div>
                                             <PhotoExifData data={photo.exifData} />

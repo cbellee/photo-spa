@@ -45,13 +45,13 @@ jobs:
             # get deployment output
             echo "STORAGE_ACCOUNT_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.storageAccountName.value -o tsv)" >> "$GITHUB_ENV"
             echo "PHOTO_API_ENDPOINT_URI=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.photoApiEndpoint.value -o tsv)" >> "$GITHUB_ENV"
-            echo "CDN_ENDPOINT_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnEndpointName.value -o tsv)" >> "$GITHUB_ENV"
-            echo "CDN_PROFILE_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnProfileName.value -o tsv)" >> "$GITHUB_ENV"
+            # echo "CDN_ENDPOINT_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnEndpointName.value -o tsv)" >> "$GITHUB_ENV"
+            # echo "CDN_PROFILE_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnProfileName.value -o tsv)" >> "$GITHUB_ENV"
 
             echo "STORAGE_ACCOUNT_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.storageAccountName.value -o tsv)" 
             echo "PHOTO_API_ENDPOINT_URI=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.photoApiEndpoint.value -o tsv)"
-            echo "CDN_ENDPOINT_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnEndpointName.value -o tsv)"
-            echo "CDN_PROFILE_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnProfileName.value -o tsv)"
+            # echo "CDN_ENDPOINT_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnEndpointName.value -o tsv)"
+            # echo "CDN_PROFILE_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnProfileName.value -o tsv)"
       
       - name: compile-spa
         id: compile-spa
@@ -104,5 +104,5 @@ jobs:
             az storage azcopy blob upload --container '$web' --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --source './dist/*' --recursive
 
             # purge the CDN cache 
-            echo "Purging the CDN cache..."
-            az cdn endpoint purge --resource-group $rgName --name ${{ env.CDN_ENDPOINT_NAME }} --profile-name ${{ env.CDN_PROFILE_NAME }} --content-paths "/*"
+            # echo "Purging the CDN cache..."
+            # az cdn endpoint purge --resource-group $rgName --name ${{ env.CDN_ENDPOINT_NAME }} --profile-name ${{ env.CDN_PROFILE_NAME }} --content-paths "/*"
