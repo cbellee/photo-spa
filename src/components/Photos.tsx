@@ -250,9 +250,9 @@ const Photos: React.FC<PhotoProps> = (props) => {
         <div className=''>
             <Box sx={{ width: "90%", mx: "auto" }}>
                 <div className="text-left pt-4 pb-4">
-                    <Link to="/" className="text-blue-700 dark:text-blue-500 uppercase" relative="path"><span className='underline'>Collections</span></Link>
-                    <span className="text-blue-700 dark:text-blue-500 uppercase "> &gt; <Link to={`/${params.collection}`}><span className="text-blue-700 dark:text-blue-500 underline">{params.collection}</span></Link></span>
-                    <span className="text-blue-700 dark:text-blue-500 uppercase"> &gt; <span className="text-blue-700 dark:text-blue-500">{params.album}</span></span>
+                    <Link to="/" className={`dark:text-blue-500 uppercase ${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'}`} relative="path"><span className='underline'>Collections</span></Link>
+                    <span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} uppercase`}> &gt; <Link to={`/${params.collection}`}><span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} underline`}>{params.collection}</span></Link></span>
+                    <span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} uppercase`}> &gt; <span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} uppercase`}>{params.album}</span></span>
                     {
                         (isAuthenticated && isAdmin) && (
                             <span className='inline justify-end float-right pr-2'>
@@ -268,7 +268,6 @@ const Photos: React.FC<PhotoProps> = (props) => {
                                         isEditMode ? "Cancel" : "Edit"
                                     }
                                 </button>
-
                             </span>
                         )
                     }
@@ -373,13 +372,12 @@ const Photos: React.FC<PhotoProps> = (props) => {
                 plugins={[Fullscreen, Slideshow, Thumbnails]}
                 styles={{
                     container: {
-                        background: "bg-gray-800",
+                        background: "bg-gray-950",
                     },
                 }}
             />
         </div>
     )
 };
-
 
 export default Photos;

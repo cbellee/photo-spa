@@ -295,7 +295,7 @@ const UploadImages = () => {
 
                 {imagePreviews && (
                     <div className="justify-items-center">
-                        <div className={`grid 2xl:grid-cols-7 xl:grid-cols-5 lg:grid-cols-4 sm:grid-cols-2 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-400'}`}>
+                        <div className={`grid 2xl:grid-cols-7 xl:grid-cols-5 lg:grid-cols-4 sm:grid-cols-2 ${theme === 'dark' ? 'bg-gray-950' : 'bg-gray-300'}`}>
                             {imagePreviews.map((img, i) => {
                                 return (
                                     <Card className={`m-1.5 p-0 text-left ${theme === 'dark' ? 'border-gray-600' : 'border-gray-200'}  border-2`}>

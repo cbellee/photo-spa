@@ -15,12 +15,12 @@ export default function Header() {
 
   return (
     <>
-      <div className={`${theme === 'dark' ? 'text-white bg-gray-600' : 'bg-gray-100'} py-2 items-center !h-auto`}>
+      <div className={`${theme === 'dark' ? 'text-white bg-gray-800' : 'bg-gray-100'} py-2 items-center !h-auto`}>
         <div className="flex float-left items-center">
           <a href="/">
-            <img src="/app-icon.png" className="justify-start sm:px-4 max-w-24 max-h-24" alt="logo" />
+            <img src="/app-icon.png" className="justify-start sm:px-4 max-w-20" alt="logo" />
           </a>
-          <h2 className="text-4xl uppercase tracking-widest transform-none "></h2>
+          <h2 className="text-4xl uppercase tracking-widest transform-none"></h2>
           <nav>
             <section className="MOBILE-MENU flex lg:hidden">
               <div
@@ -38,7 +38,7 @@ export default function Header() {
                   onClick={() => setIsNavOpen(false)}
                 >
                   <svg
-                    className="h-8 w-8 text-gray-600"
+                    className="h-8 w-8 text-gray-500"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -93,7 +93,8 @@ export default function Header() {
         height: 100vh;
         top: 0;
         left: 0;
-        background: white;
+        background: ${theme === 'dark' ? 'rgb(33, 41, 54)' : 'white'};
+        color: ${theme === 'dark' ? 'white' : 'gray'};
         z-index: 10;
         display: flex;
         flex-direction: column;

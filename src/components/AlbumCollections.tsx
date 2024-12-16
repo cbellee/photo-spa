@@ -63,9 +63,11 @@ const Albums: React.FC<AlbumsProps> = (props) => {
                     targetRowHeight={250}
                     render={{
                         photo: ({ onClick }, { photo, index }) => (
-                            <div className="pl-3 pr-3 relative">
+                            <div className="pl-3 pr-3 w-full h-full" onClick={onClick}>
                                 <Link to={photo.album}>
-                                    <img src={photo.src} key={index} className="rounded-sm hover:opacity-85 h-48" />
+                                <div className='w-full h-full'>
+                                    <img src={photo.src} key={index} className="rounded-sm object-scale-down hover:opacity-85 w-48 h-full" />
+                                </div>
                                 </Link>
                                 <Link to={photo.album} className={`uppercase text-sm underline ${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'}`}>{photo.album}</Link>
                             </div>
