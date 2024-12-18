@@ -51,7 +51,7 @@ const Collections: React.FC<CollectionsProps> = (props) => {
     return (
         <div>
             <Box sx={{ width: "90%", mx: "auto" }}>
-                <div className="text-left pt-4 pb-4">
+                <div className="text-left pt-4 pb-4 text-md">
                     <Link to=".." className={`uppercase ${theme === 'dark' ? 'text-blue-500' : 'text-blue-700' } underline`} relative="path">Collections</Link>
                 </div>
                 {
@@ -63,12 +63,12 @@ const Collections: React.FC<CollectionsProps> = (props) => {
                     padding={0}
                     spacing={0}
                     key={`album-${index}`}
-                    targetRowHeight={250}
+                    targetRowHeight={200}
                     render={{
                         photo: ({ onClick }, { photo, index }) => (
                             <div className="pl-3 pr-3">
                                 <Link to={photo.collection}>
-                                    <img src={photo.src} key={index} className="rounded-sm hover:opacity-85" />
+                                    <img src={photo.src} key={index} className="rounded-sm hover:opacity-85 max-h-56" />
                                 </Link>
                                 <Link to={photo.collection} className={`uppercase text-sm underline ${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'}`}>{photo.collection}</Link>
                             </div>

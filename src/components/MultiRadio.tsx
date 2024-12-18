@@ -1,5 +1,5 @@
 import React, { useState, Fragment } from 'react'
-import './multiradio.css';
+import '../styles/multiradio.css';
 
 export default function MultiRadio(props) {
     const def = {

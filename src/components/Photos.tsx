@@ -249,7 +249,7 @@ const Photos: React.FC<PhotoProps> = (props) => {
     return (
         <div className=''>
             <Box sx={{ width: "90%", mx: "auto" }}>
-                <div className="text-left pt-4 pb-4">
+                <div className="text-left pt-4 pb-4 text-md">
                     <Link to="/" className={`dark:text-blue-500 uppercase ${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'}`} relative="path"><span className='underline'>Collections</span></Link>
                     <span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} uppercase`}> &gt; <Link to={`/${params.collection}`}><span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} underline`}>{params.collection}</span></Link></span>
                     <span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} uppercase`}> &gt; <span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} uppercase`}>{params.album}</span></span>
@@ -301,7 +301,7 @@ const Photos: React.FC<PhotoProps> = (props) => {
                                     </div>
                                 )
                                 }
-                                <div className={`[grid-column:1] [grid-row:1] place-self-end block bg-gray-600 ${isAuthenticated} ? : group-hover:opacity-75 opacity-0 text-gray-300 overflow-hidden w-full`}>{photo.description}</div>
+                                <div className={`[grid-column:1] [grid-row:1] place-self-end block ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-500'}  ${isAuthenticated} ? : group-hover:opacity-60 opacity-0 text-white overflow-hidden w-full`}>{photo.description}</div>
                                 {
                                     (isEditMode && isAdmin && isAuthenticated) && (
                                         <div className={`h-auto rounded-b-sm flex ${theme === 'dark' ? 'bg-gray-700 text-white border-b-gray-600 border-l-gray-600 border-r-gray-600' : 'bg-gray-300 text-gray-700 border-gray-200 border-b-gray-200 border-l-gray-200 border-r-gray-200'} flex-col text-left pr-2 pl-2 pb-2 pt-2  border-l-2 border-r-2 border-b-2 `}>
@@ -360,7 +360,8 @@ const Photos: React.FC<PhotoProps> = (props) => {
                             </div>
                         ),
                     }}
-                    rowConstraints={{ singleRowMaxHeight: 250 }}
+                    rowConstraints={{ singleRowMaxHeight: 200, minPhotos: 4, maxPhotos: 6}}
+                    targetRowHeight={200}
                 />
                 <Outlet />
             </Box>

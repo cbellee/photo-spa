@@ -52,7 +52,7 @@ const Albums: React.FC<AlbumsProps> = (props) => {
     return (
         <div>
             <Box sx={{ width: "90%", mx: "auto" }} className="">
-                <div className="text-left pt-4 pb-4">
+                <div className="text-left pt-4 pb-4 text-md">
                     <Link to="/" relative="path"><span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} uppercase underline`}>Collections</span></Link>
                     <span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} uppercase`}> &gt; <span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} uppercase`}>{params.collection}</span></span>
                 </div>
@@ -66,7 +66,7 @@ const Albums: React.FC<AlbumsProps> = (props) => {
                             <div className="pl-3 pr-3 w-full h-full" onClick={onClick}>
                                 <Link to={photo.album}>
                                 <div className='w-full h-full'>
-                                    <img src={photo.src} key={index} className="rounded-sm object-scale-down hover:opacity-85 w-48 h-full" />
+                                    <img src={photo.src} key={index} className="rounded-sm object-scale-down hover:opacity-85 max-h-56" />
                                 </div>
                                 </Link>
                                 <Link to={photo.album} className={`uppercase text-sm underline ${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'}`}>{photo.album}</Link>

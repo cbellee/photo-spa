@@ -15,7 +15,7 @@ export default function Header() {
 
   return (
     <>
-      <div className={`${theme === 'dark' ? 'text-white bg-gray-800' : 'bg-gray-100'} py-2 items-center !h-auto`}>
+      <div className={`${theme === 'dark' ? 'text-white bg-gray-800' : 'bg-gray-100'} text-lg py-2 items-center !h-auto`}>
         <div className="flex float-left items-center">
           <a href="/">
             <img src="/app-icon.png" className="justify-start sm:px-4 max-w-20" alt="logo" />
@@ -66,18 +66,23 @@ export default function Header() {
               </div>
             </section>
 
-            <div className="flex justify-items-end">
+            <div className="flex justify-items-end text-gray-300 ml-6">
               <ul className="DESKTOP-MENU hidden space-x-8 lg:flex pr-6 uppercase">
                 {isAuthenticated && (
                   <li className="uppercase">
                     <a href="/upload">Upload</a>
                   </li>
                 )}
+       
                 <li>
-                  <a href="/">Collections</a>
+                  <a href="/" className={`${theme === 'dark' ? 'hover:text-white text-gray-300' : 'hover:text-gray-800 text-gray-500'}`}>Collections</a>
                 </li>
+                <span className={`align-top flex ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`}>I</span>
                 <li>
-
+                <a href="/" className={`${theme === 'dark' ? 'hover:text-white text-gray-300' : 'hover:text-gray-800 text-gray-500'}`}>About</a>
+                </li>
+                <span className={`align-top flex ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`}>I</span>
+                <li>
                 </li>
               </ul>
             </div>
@@ -93,7 +98,7 @@ export default function Header() {
         height: 100vh;
         top: 0;
         left: 0;
-        background: ${theme === 'dark' ? 'rgb(33, 41, 54)' : 'white'};
+        background: ${theme === 'dark' ? 'rgb()' : 'white'};
         color: ${theme === 'dark' ? 'white' : 'gray'};
         z-index: 10;
         display: flex;
@@ -103,7 +108,8 @@ export default function Header() {
       }
     `}</style>
         </div>
-        <div className="flex float-right items-center justify-end justify-items-end mt-5">
+        <div className="flex justify-end mt-3">
+        <span className={`align-top flex mr-7 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`}>I</span>
           {
             (isAuthenticated && userName != null) && (
               <div className="pr-4">
@@ -112,7 +118,8 @@ export default function Header() {
             )
           }
           <SignInAndOut />
-          <div className="align-middle order-last pr-4 pl-4">
+          <span className={`align-top flex ml-7 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`}>I</span>
+          <div className="align-middle order-last pr-4 pl-7 pt-0.5">
             <button onClick={toggleTheme}>
               {
                 theme === "dark" && <IoSunny />
