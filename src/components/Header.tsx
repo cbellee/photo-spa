@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import SignInAndOut from "./SignInAndOut.tsx";
 import { IoMoon } from "react-icons/io5";
 import { IoSunny } from "react-icons/io5";
@@ -66,20 +66,25 @@ export default function Header() {
               </div>
             </section>
 
-            <div className="flex justify-items-end text-gray-300 ml-6">
+            <div className="flex justify-end justify-items-end text-gray-300 ml-6">
               <ul className="DESKTOP-MENU hidden space-x-8 lg:flex pr-6 uppercase">
-                {isAuthenticated && (
-                  <li className="uppercase">
-                    <a href="/upload">Upload</a>
-                  </li>
-                )}
-       
+                {
+                  isAuthenticated && (
+                    <Fragment>
+                      <li className={`${theme === 'dark' ? 'hover:text-white text-gray-300' : 'hover:text-gray-800 text-gray-500'}`}>
+                        <a href="/upload">Upload</a>
+                      </li>
+                      <span className={`${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`}>I</span>
+                    </Fragment>
+                  )
+                }
+
                 <li>
                   <a href="/" className={`${theme === 'dark' ? 'hover:text-white text-gray-300' : 'hover:text-gray-800 text-gray-500'}`}>Collections</a>
                 </li>
                 <span className={`align-top flex ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`}>I</span>
                 <li>
-                <a href="/" className={`${theme === 'dark' ? 'hover:text-white text-gray-300' : 'hover:text-gray-800 text-gray-500'}`}>About</a>
+                  <a href="/" className={`${theme === 'dark' ? 'hover:text-white text-gray-300' : 'hover:text-gray-800 text-gray-500'}`}>About</a>
                 </li>
                 <span className={`align-top flex ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`}>I</span>
                 <li>
@@ -108,12 +113,12 @@ export default function Header() {
       }
     `}</style>
         </div>
-        <div className="flex justify-end mt-3">
-        <span className={`align-top flex mr-7 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`}>I</span>
+        <div className="flex justify-end mt-3 justify-items-end">
+          <span className={`align-top flex mr-7 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`}>I</span>
           {
             (isAuthenticated && userName != null) && (
-              <div className="pr-4">
-                Welcome, {account?.name?.split(" ")[0]}!
+              <div className="pr-7 uppercase text-sm text-gray-300 align-bottom flex justify-evenly pb-1 flex-col">
+                <span className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-400'}`}>Welcome, <span className="text-orange-300">&nbsp;{account?.name?.split(" ")[0]}</span></span>
               </div>
             )
           }

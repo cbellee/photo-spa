@@ -46,13 +46,13 @@ export default function MultiRadio(props) {
     const render = (data) => {
         return data.options.map(o => (
             <Fragment key={props.imageName}>
-                <div className="">
-                    <label htmlFor={props.imageName} className="flex">{o.label} thumb</label>
+                <div className="flex flex-row justify-start items-center">
+                    <label htmlFor={props.imageName} className="font-semibold">{o.label} thumb</label>
                     <input
                         onClick={(e) => onChange(e)}
                         onChange={(e) => onChange(e)}
                         type="radio"
-                        className="h-3.5 mt-1.5"
+                        className="h-3.5 justify-end ml-2 align-middle"
                         name={props.groupName}
                         defaultChecked={props.checked}
                     />

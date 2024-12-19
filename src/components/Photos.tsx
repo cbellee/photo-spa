@@ -67,6 +67,7 @@ const Photos: React.FC<PhotoProps> = (props) => {
     const [token, setToken] = useState("");
     const [albumImage, setAlbumImage] = useState('');
     const { theme } = useTheme();
+    const [showExif, setShowExif] = useState(false);
 
     let params = useParams<Params>();
     let instance = msalContext.instance;
@@ -76,6 +77,10 @@ const Photos: React.FC<PhotoProps> = (props) => {
         getAccessToken(instance, accounts, tokenRequest, setToken);
         setIsAdmin(true);
     }, [isAuthenticated]);
+
+    const handleShowExif = (event) => {
+        setShowExif(event.target.checked);
+    }
 
     const handleAlbumThumbnail = (imageName) => {
         setAlbumImage(imageName);
@@ -257,17 +262,28 @@ const Photos: React.FC<PhotoProps> = (props) => {
                         (isAuthenticated && isAdmin) && (
                             <span className='inline justify-end float-right pr-2'>
                                 {
-                                    isEditMode && (<button className={`text-white h-8 text-md mt-1 mr-2 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-100 bg-gray-300 text-gray-600'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-md`} onClick={() => saveEditedData(photos)}>
+                                    isEditMode && (<button className={`text-white h-8 text-md mt-1 mr-2 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-400 bg-gray-500 text-gray-100'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-md`} onClick={() => saveEditedData(photos)}>
                                         {
                                             "Save"
                                         }
                                     </button>)
                                 }
-                                <button className={`text-white h-8 text-md mt-1 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-100 bg-gray-300 text-gray-600'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-md`} onClick={setEditMode}>
+                                <button className={`text-white h-8 text-md mt-1 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-400 bg-gray-500 text-gray-100'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-md`} onClick={setEditMode}>
                                     {
                                         isEditMode ? "Cancel" : "Edit"
                                     }
                                 </button>
+                                {
+                                    isEditMode && (
+                                        <>
+                                            <label className={`ml-2 mr-2  ${theme === 'dark' ? 'text-gray-200' : ''}`}>Show Exif</label>
+                                            <input type="checkbox"
+                                                onChange={(event) => { handleShowExif(event) }}
+                                            >
+                                            </input>
+                                        </>
+                                    )
+                                }
                             </span>
                         )
                     }
@@ -303,8 +319,8 @@ const Photos: React.FC<PhotoProps> = (props) => {
                                 }
                                 <div className={`[grid-column:1] [grid-row:1] place-self-end block ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-500'}  ${isAuthenticated} ? : group-hover:opacity-60 opacity-0 text-white overflow-hidden w-full`}>{photo.description}</div>
                                 {
-                                    (isEditMode && isAdmin && isAuthenticated) && (
-                                        <div className={`h-auto rounded-b-sm flex ${theme === 'dark' ? 'bg-gray-700 text-white border-b-gray-600 border-l-gray-600 border-r-gray-600' : 'bg-gray-300 text-gray-700 border-gray-200 border-b-gray-200 border-l-gray-200 border-r-gray-200'} flex-col text-left pr-2 pl-2 pb-2 pt-2  border-l-2 border-r-2 border-b-2 `}>
+                                    (isEditMode && isAdmin) && (
+                                        <div className={` flex ${theme === 'dark' ? 'bg-gray-700 text-white border-b-gray-600 border-l-gray-600 border-r-gray-600' : 'bg-gray-200 text-gray-700 border-b-gray-100 border-l-gray-100 border-r-gray-100'} flex-col text-left pr-2 pl-2 pb-2 pt-2  border-l-2 border-r-2 border-b-2 rounded-b-lg`}>
                                             <label>Description</label>
                                             <input
                                                 type="text"
@@ -353,14 +369,17 @@ const Photos: React.FC<PhotoProps> = (props) => {
                                                     checked={photo.albumImage}
                                                 />
                                             </div>
-                                            <PhotoExifData data={photo.exifData} />
+                                            {
+                                                showExif &&
+                                                <PhotoExifData data={photo.exifData} />
+                                            }
                                         </div>
                                     )
                                 }
                             </div>
                         ),
                     }}
-                    rowConstraints={{ singleRowMaxHeight: 200, minPhotos: 4, maxPhotos: 6}}
+                    rowConstraints={{ singleRowMaxHeight: 200, minPhotos: 4, maxPhotos: 6 }}
                     targetRowHeight={200}
                 />
                 <Outlet />

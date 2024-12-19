@@ -66,7 +66,7 @@ export default function TagSelect(props) {
   }
 
   return (
-    <div className={`flex p-2 m-0 pt-4 text-white ${theme === 'dark' ? 'bg-gray-950' : ''}`}>
+    <div className={`flex p-2 m-0 pt-2 text-white ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-400'}`}>
       <div className="flex flex-row pl-4">
         <label className={` pt-1.5 pr-2`}>Collection</label>
         <CreatableSelect
