@@ -9,6 +9,7 @@ import UploadImages from './components/Upload.tsx';
 import ErrorPage from "./components/ErrorPage.tsx";
 import { createBrowserRouter } from 'react-router-dom';
 import Layout from './components/Layout';
+import About from './components/About.tsx';
 import './app.css'
 
 function App({ msalInstance}) {
@@ -37,7 +38,12 @@ function App({ msalInstance}) {
                 path: "/upload",
                 element: <UploadImages />,
                 errorElement: <ErrorPage />,
-            }
+            },
+            {
+              path: "/about",
+              element: <About />,
+              errorElement: <ErrorPage />,
+          }
         ]
     },
 ]);

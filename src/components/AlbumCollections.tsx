@@ -66,7 +66,7 @@ const Albums: React.FC<AlbumsProps> = (props) => {
                             <div className="pl-3 pr-3 w-full h-full" onClick={onClick}>
                                 <Link to={photo.album}>
                                 <div className='w-full h-full'>
-                                    <img src={photo.src} key={index} className="rounded-sm object-scale-down hover:opacity-85 max-h-56" />
+                                    <img src={photo.src} key={index} className="rounded-md object-scale-down hover:opacity-85 max-h-56" />
                                 </div>
                                 </Link>
                                 <Link to={photo.album} className={`uppercase text-sm underline ${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'}`}>{photo.album}</Link>

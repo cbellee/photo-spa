@@ -4,6 +4,7 @@ import { IoMoon } from "react-icons/io5";
 import { IoSunny } from "react-icons/io5";
 import { useIsAuthenticated, useMsal, useAccount } from "@azure/msal-react";
 import { useTheme } from "../context/ThemeContext.tsx";
+import { NavLink } from "react-router-dom";
 
 export default function Header() {
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -71,8 +72,14 @@ export default function Header() {
                 {
                   isAuthenticated && (
                     <Fragment>
-                      <li className={`${theme === 'dark' ? 'hover:text-white text-gray-300' : 'hover:text-gray-800 text-gray-500'}`}>
-                        <a href="/upload">Upload</a>
+                      <li>
+                        <NavLink
+                          to="/upload"
+                          className={({ isActive }) =>
+                            isActive ? `${theme === 'dark' ? 'hover:text-orange-200 text-orange-300' : 'hover:text-orange-300 text-orange-500'} active` : `${theme === 'dark' ? 'hover:text-white text-gray-300' : 'hover:text-gray-800 text-gray-500'}`
+                          }
+                        >Upload
+                        </NavLink>
                       </li>
                       <span className={`${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`}>I</span>
                     </Fragment>
@@ -80,11 +87,19 @@ export default function Header() {
                 }
 
                 <li>
-                  <a href="/" className={`${theme === 'dark' ? 'hover:text-white text-gray-300' : 'hover:text-gray-800 text-gray-500'}`}>Collections</a>
+                  <NavLink to="/"
+                    className={({ isActive }) =>
+                      isActive ? `${theme === 'dark' ? 'hover:text-orange-200 text-orange-300' : 'hover:text-orange-300 text-orange-500'} active` : `${theme === 'dark' ? 'hover:text-white text-gray-300' : 'hover:text-gray-800 text-gray-500'}`
+                    }
+                  >Collections</NavLink>
                 </li>
                 <span className={`align-top flex ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`}>I</span>
                 <li>
-                  <a href="/" className={`${theme === 'dark' ? 'hover:text-white text-gray-300' : 'hover:text-gray-800 text-gray-500'}`}>About</a>
+                  <NavLink to="/About"
+                    className={({ isActive }) =>
+                      isActive ? `${theme === 'dark' ? 'hover:text-orange-200 text-orange-300' : 'hover:text-orange-300 text-orange-500'} active` : `${theme === 'dark' ? 'hover:text-white text-gray-300' : 'hover:text-gray-800 text-gray-500'}`
+                    }
+                  >About</NavLink>
                 </li>
                 <span className={`align-top flex ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`}>I</span>
                 <li>

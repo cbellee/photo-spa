@@ -8,9 +8,9 @@ export default function Layout() {
     const { theme } = useTheme();
 
     return (
-        <div className={`flex flex-col h-screen border-0 justify-between ${theme === 'dark' ? 'bg-gray-950' : 'bg-gray-300'}`}>
+        <div className={`flex flex-col h-screen border-0 justify-between ${theme === 'dark' ? 'bg-gray-950' : 'bg-gray-200'}`}>
             <Header />
-            <main className={`mb-auto pb-12 ${theme === 'dark' ? 'bg-gray-950' : 'bg-gray-300'}`}>
+            <main className={`mb-auto pb-12 ${theme === 'dark' ? 'bg-gray-950' : 'bg-gray-200'}`}>
                 <Outlet /> {/* Nested routes render here */}
             </main>
             <footer>

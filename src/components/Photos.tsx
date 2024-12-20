@@ -169,7 +169,7 @@ const Photos: React.FC<PhotoProps> = (props) => {
         let url = `${apiConfig.photoApiEndpoint}/${params.collection}/${params.album}`;
         axios.get(url)
             .then(response => {
-                //console.log("response: " + JSON.stringify(response.data));
+                console.log("response: " + JSON.stringify(response.data));
                 setPhotos(response.data);
             })
             .catch(error => {
@@ -268,7 +268,7 @@ const Photos: React.FC<PhotoProps> = (props) => {
                                         }
                                     </button>)
                                 }
-                                <button className={`text-white h-8 text-md mt-1 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-400 bg-gray-500 text-gray-100'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-md`} onClick={setEditMode}>
+                                <button className={`text-white h-8 text-md mt-0 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-400 bg-gray-500 text-gray-100'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-md`} onClick={setEditMode}>
                                     {
                                         isEditMode ? "Cancel" : "Edit"
                                     }
@@ -276,7 +276,7 @@ const Photos: React.FC<PhotoProps> = (props) => {
                                 {
                                     isEditMode && (
                                         <>
-                                            <label className={`ml-2 mr-2  ${theme === 'dark' ? 'text-gray-200' : ''}`}>Show Exif</label>
+                                            <label className={`uppercase text-sm ml-2 mr-2 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-500'} uppercase`}>Show Exif</label>
                                             <input type="checkbox"
                                                 onChange={(event) => { handleShowExif(event) }}
                                             >
@@ -308,7 +308,7 @@ const Photos: React.FC<PhotoProps> = (props) => {
                                     alt={photo.description}
                                     src={photo.src}
                                     key={`img-${index}`}
-                                    className={`[grid-column:1] [grid-row:1] object-fill inline-block rounded-sm ${photo.orientation === 270 ? '-rotate-90' : `rotate-[${photo.orientation}deg]`}`}
+                                    className={`[grid-column:1] [grid-row:1] object-fill inline-block rounded-md ${photo.orientation === 270 ? '-rotate-90' : `rotate-[${photo.orientation}deg]`}`}
                                     onClick={onClick}
                                 />
                                 {(isAdmin && isEditMode && isAuthenticated) && (
@@ -320,12 +320,12 @@ const Photos: React.FC<PhotoProps> = (props) => {
                                 <div className={`[grid-column:1] [grid-row:1] place-self-end block ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-500'}  ${isAuthenticated} ? : group-hover:opacity-60 opacity-0 text-white overflow-hidden w-full`}>{photo.description}</div>
                                 {
                                     (isEditMode && isAdmin) && (
-                                        <div className={` flex ${theme === 'dark' ? 'bg-gray-700 text-white border-b-gray-600 border-l-gray-600 border-r-gray-600' : 'bg-gray-200 text-gray-700 border-b-gray-100 border-l-gray-100 border-r-gray-100'} flex-col text-left pr-2 pl-2 pb-2 pt-2  border-l-2 border-r-2 border-b-2 rounded-b-lg`}>
+                                        <div className={` flex ${theme === 'dark' ? 'bg-gray-700 text-white border-b-gray-600 border-l-gray-600 border-r-gray-600' : 'bg-gray-100 text-gray-700 border-b-gray-300 border-l-gray-300 border-r-gray-300'} flex-col text-left pr-2 pl-2 pb-2 pt-2  border-l-2 border-r-2 border-b-2 rounded-b-lg`}>
                                             <label>Description</label>
                                             <input
                                                 type="text"
                                                 name='description'
-                                                className='pl-2 rounded-sm h-8'
+                                                className={`pl-2 rounded-md h-8 ${theme === 'dark' ? 'bg-gray-600 text-white' : 'bg-gray-300 text-gray-700'} `}
                                                 value={photo.description}
                                                 id={photo.name}
                                                 onChange={(event) => onChangeDescription(event)}
@@ -379,7 +379,7 @@ const Photos: React.FC<PhotoProps> = (props) => {
                             </div>
                         ),
                     }}
-                    rowConstraints={{ singleRowMaxHeight: 200, minPhotos: 4, maxPhotos: 6 }}
+                    rowConstraints={{ singleRowMaxHeight: 200, minPhotos: 1, maxPhotos: 6 }}
                     targetRowHeight={200}
                 />
                 <Outlet />

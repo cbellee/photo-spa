@@ -68,7 +68,7 @@ const Collections: React.FC<CollectionsProps> = (props) => {
                         photo: ({ onClick }, { photo, index }) => (
                             <div className="pl-3 pr-3">
                                 <Link to={photo.collection}>
-                                    <img src={photo.src} key={index} className="rounded-sm hover:opacity-85 max-h-56" />
+                                    <img src={photo.src} key={index} className="rounded-md hover:opacity-85 max-h-56" />
                                 </Link>
                                 <Link to={photo.collection} className={`uppercase text-sm underline ${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'}`}>{photo.collection}</Link>
                             </div>
