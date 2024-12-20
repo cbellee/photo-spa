@@ -52,11 +52,17 @@ export default function SignInAndOut() {
                 isAuthenticated ? (
                     <div>
                         <span className={`mr-7  ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`}>I</span>
-                        <button onClick={handleSignOut} className={`uppercase ${theme === 'dark' ? 'hover:text-white text-gray-300' : 'hover:text-gray-800 text-gray-500'}`}>Sign Out</button>
+                        <button
+                            onClick={handleSignOut}
+                            className={`uppercase ${theme === 'dark' ? 'hover:text-white text-gray-300' : 'hover:text-gray-800 text-gray-500'}`}
+                        >Sign Out</button>
                     </div>
                 ) : (
                     <div>
-                        <button onClick={handleSignIn} className={`uppercase ${theme === 'dark' ? 'hover:text-white text-gray-300' : 'hover:text-gray-800 text-gray-500'}`}>Sign In</button>
+                        <button
+                            onClick={handleSignIn}
+                            className={`uppercase ${theme === 'dark' ? 'hover:text-white text-gray-300' : 'hover:text-gray-800 text-gray-500'}`}
+                        >Sign In</button>
                     </div>
                 )
             }
