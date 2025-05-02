@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { apiConfig } from '../config/apiConfig.ts'
-import CreatableSelect from 'react-select/creatable';
-import { useTheme } from '../context/ThemeContext';
-import axios from 'axios'
+import React, { useState, useEffect, useRef } from "react"
+import { apiConfig } from "../config/apiConfig.ts"
+import CreatableSelect from "react-select/creatable";
+import { useTheme } from "../context/ThemeContext";
+import axios from "axios"
+import { useForm, useFormContext, Controller } from "react-hook-form";
 
 export default function TagSelect(props) {
 
@@ -10,10 +11,15 @@ export default function TagSelect(props) {
   const [albumData, setAlbumData] = useState([]);
   const [collectionAlbumData, setCollectionAlbumData] = useState(new Map());
   const { theme, toggleTheme } = useTheme();
-
+  const { register, control, formState, reset } = useFormContext();
   const albumDropDownRef = useRef<any>(null);
 
   const handleCollection = (event) => {
+    if (!event) {
+      clearSelectedAlbum();
+      setAlbumData([]);
+      return;
+    }
     let albums = collectionAlbumData.get(event.value);
     // console.log("albums: " + albums);
 
@@ -28,7 +34,7 @@ export default function TagSelect(props) {
       props.selectedCollection(event.value)
       //console.log("current collection: " + event.value)
     }
-    props.isFormValid();
+    //props.isFormValid();
   }
 
   const handleAlbum = (event) => {
@@ -36,7 +42,7 @@ export default function TagSelect(props) {
       props.selectedAlbum(event.label)
       //console.log("current album: " + event.label)
     }
-    props.isFormValid();
+    //props.isFormValid();
   }
 
   useEffect(() => {
@@ -53,7 +59,7 @@ export default function TagSelect(props) {
       }
 
       setOptions([
-        { key: 'Select a collection', value: '' },
+        { key: "Select a collection", value: "" },
         ...Array.from(albumCollectionMap.entries()).map(([key, value]) => ({ key, value }))
       ])
     }
@@ -66,36 +72,76 @@ export default function TagSelect(props) {
   }
 
   return (
-    <div className={`flex p-2 m-0 pt-2 text-white ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-400'}`}>
+    <div className={`flex p-2 m-0 pt-2 text-white ${theme === "dark" ? "bg-gray-700" : "bg-gray-400"}`}>
       <div className="flex flex-row pl-4">
         <label className={` pt-1.5 pr-2`}>Collection</label>
-        <CreatableSelect
-          onChange={(event) => handleCollection(event)}
-          name='collection'
-          isClearable={true}
-          className="min-w-40 max-w-50 pr-2 font-semibold text-gray-700 "
-          options={
-            Array.from(collectionAlbumData.keys()).map((option, idx) => {
-              return { value: option, label: option }
-            })
-          }
+
+        <Controller
+          name="collection"
+          control={control}
+          rules={{
+            required: false
+          }}
+          render={({ field, fieldState, formState }) => (
+            <CreatableSelect
+              {...field}
+              onChange={(event) => handleCollection(event)}
+              isClearable={true}
+              //id="collection"
+              className="min-w-40 max-w-50 pr-2 font-semibold text-gray-700"
+              options={
+                Array.from(collectionAlbumData.keys()).map((option, idx) => {
+                  return { value: option, label: option }
+                })
+              }
+            />
+          )}
         />
+        
+
       </div>
       <div className="flex flex-row pl-4">
         <label className="pt-1.5 pr-2">Album</label>
         <div>
-          <CreatableSelect
+
+          <Controller
+            name="album"
+            control={control}
+            rules={{
+              required: false
+            }}
+            render={({ field, fieldState, formState }) => (
+              <CreatableSelect
+                {...field}
+                onChange={(event) => handleAlbum(event)}
+                ref={albumDropDownRef}
+                //id="album"
+                className="min-w-40 max-w-50 font-semibold text-gray-700"
+                isClearable={true}
+                //error={error?.message}
+                options={
+                  albumData.map((option, idx) => {
+                    return { value: idx, label: option }
+                  })
+                }
+              />
+            )}
+          />
+
+          {/* <CreatableSelect
+            {...register("album")}
             onChange={(event) => handleAlbum(event)}
-            name='album'
+            name="album"
             ref={albumDropDownRef}
-            className="min-w-40 max-w-50 font-semibold text-gray-700 "
+            className="min-w-40 max-w-50 font-semibold text-gray-700"
             isClearable={true}
             options={
               albumData.map((option, idx) => {
                 return { value: idx, label: option }
               })
             }
-          />
+          /> */}
+
         </div>
       </div>
       {props.children}

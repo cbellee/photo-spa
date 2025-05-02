@@ -169,7 +169,7 @@ const Photos: React.FC<PhotoProps> = (props) => {
         let url = `${apiConfig.photoApiEndpoint}/${params.collection}/${params.album}`;
         axios.get(url)
             .then(response => {
-                console.log("response: " + JSON.stringify(response.data));
+                //console.log("response: " + JSON.stringify(response.data));
                 setPhotos(response.data);
             })
             .catch(error => {
@@ -237,12 +237,12 @@ const Photos: React.FC<PhotoProps> = (props) => {
             return;
         }
 
-        console.log(JSON.stringify(data))
+        //console.log(JSON.stringify(data))
 
         for (let i = 0; i < data.length; i++) {
             FileUploadService.update(data[i], token)
                 .then((response) => {
-                    console.log("response: " + JSON.stringify(response));
+                    //console.log("response: " + JSON.stringify(response));
                 }).catch((error) => {
                     console.error("error updating photo data: " + error);
                 });

@@ -60,7 +60,7 @@ async function update(
     }
 
     console.log("update photo data: ", JSON.stringify(update));
-    console.log('token: ', token);
+    //console.log('token: ', token);
 
     let headers = {
         "Content-Type": "application/json",

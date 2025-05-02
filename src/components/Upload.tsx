@@ -14,18 +14,26 @@ import { apiConfig } from '../config/apiConfig.ts';
 import { getAccessToken } from '../utils/utils.ts';
 import { useNavigate } from "react-router-dom";
 import { useTheme } from '../context/ThemeContext.tsx';
+import { useForm, SubmitHandler, FormProvider, set } from 'react-hook-form';
 
 const UploadImages = () => {
+    const formMethods = useForm({ mode: "onChange", reValidateMode: "onChange" });
     const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
     const [numSelectedImages, setNumSelectedImages] = useState(0);
     const [imagePreviews, setImagePreviews] = useState<ImagePreview[]>([]);
+
     const [uploading, setUploading] = useState(false);
     const [uploadCompleted, setUploadCompleted] = useState(false);
-    const [collection, setCollection] = useState('');
-    const [album, setAlbum] = useState('');
-    const [collectionImage, setCollectionImage] = useState('');
+
+    const [collection, setCollection] = useState("");
+    const [album, setAlbum] = useState("");
+
+    const [collectionImage, setCollectionImage] = useState(null);
+    const [albumImage, setAlbumImage] = useState(null);
+
     const [collectionExists, setCollectionExists] = useState(false);
-    const [albumImage, setAlbumImage] = useState('');
+    const [albumExists, setAlbumExists] = useState(false);
+
     const [isValid, setIsValid] = useState(false);
     const isAuthenticated = useIsAuthenticated();
     const { instance, accounts } = useMsal();
@@ -34,6 +42,11 @@ const UploadImages = () => {
     const [progressMessage, setProgressMessage] = useState({ progess: 0, total: selectedFiles?.length });
     const navigate = useNavigate();
     const { theme, toggleTheme } = useTheme();
+
+    const onSubmit = (data) => {
+        console.log("onSubmit: " + data);
+        uploadImages();
+    }
 
     useEffect(() => {
         getAccessToken(instance, accounts, tokenRequest, setToken);
@@ -44,11 +57,11 @@ const UploadImages = () => {
             let msg = "Collection is not set";
             setIsValid(false);
             setValidationMessage(msg);
-        } else if (album === "") {
+        } else if ((album === "" || (albumImage === "")) && !albumExists) {
             let msg = "Album is not set";
             setIsValid(false);
             setValidationMessage(msg);
-        } else if (albumImage === "" && selectedFiles) {
+        } else if (albumImage === "" && !albumExists) {
             let msg = "Album image thumbnail is not set";
             setIsValid(false);
             setValidationMessage(msg);
@@ -69,19 +82,50 @@ const UploadImages = () => {
         } else {
             setIsValid(true);
             setValidationMessage("");
-            // console.log("Form is valid");
+            console.log("Form is valid");
         }
     }
 
     async function checkCollectionExists(collection) {
-        const data = await axios.get(`${apiConfig.photoApiEndpoint}/tags`)
+        const response = await axios.get(`${apiConfig.photoApiEndpoint}/tags`)
+        var collectionExists = false;
 
-        for (const [c, a] of Object.entries(data.data)) {
-            if (c === collection) {
-                // collection already exists, so we don't require the collectionImage
-                setCollectionExists(true);
+        for (const [c, a] of Object.entries(response.data)) {
+            if (c == collection) {
+                collectionExists = true;
             }
         }
+
+        console.log("collection '" + collection + "' exists: " + collectionExists);
+        setCollectionExists(collectionExists);
+    }
+
+    async function checkAlbumExists(album) {
+        const response = await axios.get(`${apiConfig.photoApiEndpoint}/tags`)
+        var albumExists = false;
+
+        Object.keys(response.data).map((d) => {
+            let v = response.data[d];
+            if (v.includes(album)) {
+                albumExists = true;
+                return;
+            }
+        })
+
+        console.log("album '" + album + "' exists: " + albumExists);
+        setAlbumExists(albumExists);
+    }
+
+    const setCollectionAsync = (collection) => {
+        setTimeout(() => {
+            setCollection(collection);
+        }, 0);
+    }
+
+    const setAlbumAsync = (album) => {
+        setTimeout(() => {
+            setAlbum(album);
+        }, 0);
     }
 
     const handleAlbumThumbnail = (imageName) => {
@@ -94,11 +138,12 @@ const UploadImages = () => {
 
     const onChangeCollection = (collection) => {
         checkCollectionExists(collection);
-        setCollection(collection);
+        setCollectionAsync(collection);
     }
 
     const onChangeAlbum = (album) => {
-        setAlbum(album);
+        checkAlbumExists(album);
+        setAlbumAsync(album);
     }
 
     interface ImagePreview {
@@ -214,6 +259,7 @@ const UploadImages = () => {
         setUploading(true)
 
         if (!isValid) {
+            console.log("Form is not valid");
             return;
         }
 
@@ -257,17 +303,19 @@ const UploadImages = () => {
     }, [collection, album, collectionImage, albumImage, selectedFiles]);
 
     return (
-        <div className={`flex-cols font-thin text-white`}>
-            <AuthenticatedTemplate>
-                <TagSelect selectedAlbum={onChangeAlbum} selectedCollection={onChangeCollection} isFormValid={isFormValid}>
-                    <label className="text-white pl-6">
-                        <input
-                            type="file"
-                            multiple
-                            disabled={uploading}
-                            accept="image/jpg, image/jpeg, image/png"
-                            onChange={selectFiles}
-                            className="
+        <FormProvider {...formMethods}>
+            <form onSubmit={formMethods.handleSubmit(onSubmit)}>
+                <div className={`flex-cols font-thin text-white`}>
+                    <AuthenticatedTemplate>
+                        <TagSelect selectedAlbum={onChangeAlbum} selectedCollection={onChangeCollection}>
+                            <label className="text-white pl-6">
+                                <input
+                                    type="file"
+                                    multiple
+                                    disabled={uploading}
+                                    accept="image/jpg, image/jpeg, image/png"
+                                    onChange={selectFiles}
+                                    className="
                                 block w-full
                                 text-md
                                 active:animate-pop
@@ -276,98 +324,107 @@ const UploadImages = () => {
                                 file:text-md file:font-semibold file:h-8
                                 file:bg-gray-300 file:text-gray-600
                                 hover:file:bg-gray-100"
-                        />
-                    </label>
-                    <button
-                        className={`text-white h-8 text-md mt-1 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-100 bg-gray-300 text-gray-600'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-md`}
-                        disabled={!isValid || uploading}
-                        onClick={uploadImages}
-                    >
-                        Upload
-                    </button>
-                    <div className={`mt-2 pl-4 ${numSelectedImages > 0 ? "visible" : "hidden"} `}>
-                        Uploading: {progressMessage.progess}/{numSelectedImages}
-                    </div>
-                    <div className={`mt-2 pl-4 ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`}>
-                        {validationMessage}
-                    </div>
-                </TagSelect>
+                                />
+                            </label>
+                            <input type="submit" hidden={true} />
+                            <button
+                                className={`text-white h-8 text-md mt-1 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-100 bg-gray-300 text-gray-600'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-md`}
+                                disabled={!isValid || uploading}
+                                onClick={uploadImages}
+                            >
+                                Upload
+                            </button>
+                            <div className={`mt-2 pl-4 ${numSelectedImages > 0 ? "visible" : "hidden"} `}>
+                                Uploading: {progressMessage.progess}/{numSelectedImages}
+                            </div>
+                            <div className={`mt-2 pl-4 ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`}>
+                                {validationMessage}
+                            </div>
+                        </TagSelect>
 
-                {imagePreviews && (
-                    <div className="justify-items-center">
-                        <div className={`grid 2xl:grid-cols-7 xl:grid-cols-5 lg:grid-cols-4 sm:grid-cols-2 ${theme === 'dark' ? 'bg-gray-950' : 'bg-gray-300'}`}>
-                            {imagePreviews.map((img, i) => {
-                                return (
-                                    <Card className={`m-1.5 p-0 text-left ${theme === 'dark' ? 'border-gray-600' : 'border-gray-200'}  border-2`}>
-                                        <CardContent className={`h-full flex flex-col justify-center ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-gray-300'}`}>
-                                            <div className="flex justify-items-end justify-end">
-                                                <div className="justify-end justify-items-end relative">
-                                                    <CardMedia component="img" className={`justify-items-start justify-start rounded-sm ${img.uploading ? "animate-pulse" : ""}`} image={img.src} alt={"image-" + i} key={i}
-                                                    />
-                                                </div>
-                                                <span
-                                                    className={`absolute md-auto mt-[3.5em] mr-[4.4em] place-items-left h-10 w-10 animate-spin rounded-full ${!img.uploading ? "invisible" : ""} border-4 border-solid border-current border-r-transparent  motion-reduce:animate-[spin_1.5s_linear_infinite]`}
-                                                ></span>
-                                                <span className={`absolute mt-[4em] mr-[4.7em] text-sm pt-2.5 pr-2.5 ${!img.uploading ? "invisible" : ""}`}>
-                                                    {
-                                                        img.uploadProgress + "%"
-                                                    }
-                                                </span>
-                                            </div>
-                                            <span className={`absolute text-md font-semibold ${!img.uploadComplete || !img.uploadError ? "invisible" : ""}`}>
-                                                {
-                                                    img.uploadError ?
-                                                        "Upload Error" :
-                                                        "Upload Complete"
-                                                }
-                                            </span>
-                                            <div className="h-full"></div>
-                                            <div className="flex flex-col">
-                                                <div className="p-0 m-0 pt-2 justify-end flex flex-col">
-                                                    <label className="font-semibold">Name</label>
-                                                    <div className="">{imagePreviews[i].name}</div>
-                                                    <label className="font-semibold">Description</label>
-                                                    <input type="text"
-                                                        value={imagePreviews[i].description}
-                                                        defaultValue={imagePreviews[i].description}
-                                                        className={`rounded-sm pl-1 block ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'} w-full`}
-                                                        onChange={(e) => { setImagePreviews((prevImages) => { let _images = [...prevImages]; _images[i].description = e.target.value; return _images; }) }}
-                                                    >
-                                                    </input>
-                                                    <div className="col-span-2">
-                                                        {
-                                                            collectionExists ?
-                                                                <></>
-                                                                :
-                                                                <MultiRadio
-                                                                    groupName="Collection"
-                                                                    imageName={`${img.name}`}
-                                                                    handler={handleCollectionThumbnail}
-                                                                />
-                                                        }
-                                                        <MultiRadio
-                                                            groupName="Album"
-                                                            imageName={`${img.name}`}
-                                                            handler={handleAlbumThumbnail}
-                                                        />
+                        {imagePreviews && (
+                            <div className="justify-items-center">
+                                <div className={`grid 2xl:grid-cols-7 xl:grid-cols-5 lg:grid-cols-4 sm:grid-cols-2 ${theme === 'dark' ? 'bg-gray-950' : 'bg-gray-300'}`}>
+                                    {imagePreviews.map((img, i) => {
+                                        return (
+                                            <Card className={`m-1.5 p-0 text-left ${theme === 'dark' ? 'border-gray-600' : 'border-gray-200'}  border-2`}>
+                                                <CardContent className={`h-full flex flex-col justify-center ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-gray-300'}`}>
+                                                    <div className="flex justify-items-end justify-end">
+                                                        <div className="justify-end justify-items-end relative">
+                                                            <CardMedia component="img" className={`justify-items-start justify-start rounded-sm ${img.uploading ? "animate-pulse" : ""}`} image={img.src} alt={"image-" + i} key={i}
+                                                            />
+                                                        </div>
+                                                        <span
+                                                            className={`absolute md-auto mt-[3.5em] mr-[4.4em] place-items-left h-10 w-10 animate-spin rounded-full ${!img.uploading ? "invisible" : ""} border-4 border-solid border-current border-r-transparent  motion-reduce:animate-[spin_1.5s_linear_infinite]`}
+                                                        ></span>
+                                                        <span className={`absolute mt-[4em] mr-[4.7em] text-sm pt-2.5 pr-2.5 ${!img.uploading ? "invisible" : ""}`}>
+                                                            {
+                                                                img.uploadProgress + "%"
+                                                            }
+                                                        </span>
                                                     </div>
-                                                </div>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                );
-                            })}
+                                                    <span className={`absolute text-md font-semibold ${!img.uploadComplete || !img.uploadError ? "invisible" : ""}`}>
+                                                        {
+                                                            img.uploadError ?
+                                                                "Upload Error" :
+                                                                "Upload Complete"
+                                                        }
+                                                    </span>
+                                                    <div className="h-full"></div>
+                                                    <div className="flex flex-col">
+                                                        <div className="p-0 m-0 pt-2 justify-end flex flex-col">
+                                                            <label className="font-semibold">Name</label>
+                                                            <div className="">{imagePreviews[i].name}</div>
+                                                            <label className="font-semibold">Description</label>
+                                                            <input type="text"
+                                                                value={imagePreviews[i].description}
+                                                                defaultValue={imagePreviews[i].description}
+                                                                className={`rounded-sm pl-1 block ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'} w-full`}
+                                                                onChange={(e) => { setImagePreviews((prevImages) => { let _images = [...prevImages]; _images[i].description = e.target.value; return _images; }) }}
+                                                            >
+                                                            </input>
+                                                            <div className="col-span-2">
+                                                                {
+                                                                    collectionExists ?
+                                                                        <></>
+                                                                        :
+                                                                        <MultiRadio
+                                                                            groupName="Collection"
+                                                                            imageName={`${img.name}`}
+                                                                            handler={handleCollectionThumbnail}
+                                                                        />
+                                                                }
+                                                                {
+                                                                    albumExists ?
+                                                                        <></>
+                                                                        :
+                                                                        <MultiRadio
+                                                                            groupName="Album"
+                                                                            imageName={`${img.name}`}
+                                                                            handler={handleAlbumThumbnail}
+                                                                        />
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </CardContent>
+                                            </Card>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                        )}
+                    </AuthenticatedTemplate>
+                    <UnauthenticatedTemplate>
+                        <div className="justify-items-center">
+                            <h2 className="text-white text-center mt-20 items-center justify-items-center visible flex transform-none relative rotate-0">
+                                You must be signed in and granted access to upload photos</h2>
                         </div>
-                    </div>
-                )}
-            </AuthenticatedTemplate>
-            <UnauthenticatedTemplate>
-                <div className="justify-items-center">
-                    <h2 className="text-white text-center mt-20 items-center justify-items-center visible flex transform-none relative rotate-0">
-                        You must be signed in and granted access to upload photos</h2>
+                    </UnauthenticatedTemplate>
                 </div>
-            </UnauthenticatedTemplate>
-        </div>
+            </form>
+        </FormProvider>
     );
 };
 
