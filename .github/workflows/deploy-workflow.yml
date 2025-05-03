@@ -50,6 +50,10 @@ jobs:
       id-token: write
       contents: read
     steps:
+      - name: checkout-code
+        id: checkout-code
+        uses: actions/checkout@main
+        
       - name: gen-rg-name
         id: gen-rg-name
         run: |
