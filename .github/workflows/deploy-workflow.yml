@@ -1,0 +1,131 @@
+name: compile-and-upload-spa
+on:
+    workflow_call:
+      inputs:
+        tenant-id:
+          required: true
+          type: string
+        client-id:
+          required: true
+          type: string
+        environment:
+          required: true
+          type: string
+        location:
+          required: true
+          type: string
+        app-name:
+          required: true
+          type: string
+        authority:
+          required: true
+          type: string
+        cname:
+          required: true
+          type: string
+        domain-name:
+          required: true
+          type: string
+        token-scope:
+          required: true
+          type: string
+        token-role:
+          required: true
+          type: string
+        storage-account-suffix:
+          required: true
+          type: string
+        post-logout-redirect-uri:
+          required: true
+          type: string
+
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  compile-and-upload-spa:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: gen-rg-name
+        id: gen-rg-name
+        run: |
+            echo "rgName: ${{ inputs.app-name }}-${{ inputs.location }}-rg"
+            echo "rgName=${{ inputs.app-name }}-${{ inputs.location }}-rg" >> "$GITHUB_ENV"
+
+      - name: login-azure
+        id: login-azure
+        uses: azure/login@v2
+        with:
+          with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: deployment-outputs
+        id: deployment-outputs
+        uses: azure/CLI@v2
+        with:
+          azcliversion: 2.67.0
+          inlineScript: |
+            # get deployment output
+            echo "STORAGE_ACCOUNT_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.storageAccountName.value -o tsv)" >> "$GITHUB_ENV"
+            echo "PHOTO_API_ENDPOINT_URI=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.photoApiEndpoint.value -o tsv)" >> "$GITHUB_ENV"
+            # echo "CDN_ENDPOINT_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnEndpointName.value -o tsv)" >> "$GITHUB_ENV"
+            # echo "CDN_PROFILE_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnProfileName.value -o tsv)" >> "$GITHUB_ENV"
+
+            echo "STORAGE_ACCOUNT_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.storageAccountName.value -o tsv)" 
+            echo "PHOTO_API_ENDPOINT_URI=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.photoApiEndpoint.value -o tsv)"
+            # echo "CDN_ENDPOINT_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnEndpointName.value -o tsv)"
+            # echo "CDN_PROFILE_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnProfileName.value -o tsv)"
+      
+      - name: compile-spa
+        id: compile-spa
+        uses: azure/CLI@v2
+        env:
+          PHOTO_API_ENDPOINT_URI: ${{ env.PHOTO_API_ENDPOINT_URI }}
+          STORAGE_ACCOUNT_NAME: ${{ env.STORAGE_ACCOUNT_NAME }}
+        with:
+          azcliversion: 2.67.0
+          inlineScript: |
+            echo "replacing tokens in apiConfig_template.ts..."
+            sed "s|{{AZURE_TENANT_ID}}|${{ inputs.tenant-id }}|g ; \
+                s|{{STORAGE_ACCOUNT_NAME}}|${{ env.STORAGE_ACCOUNT_NAME }}|g ; \
+                s|{{STORAGE_ACCOUNT_SUFFIX}}|${{ inputs.storage-account-suffix }}|g ; \
+                s|{{PHOTO_API_ENDPOINT_URI}}|${{ env.PHOTO_API_ENDPOINT_URI }}|g" \
+                ./src/config/apiConfig_template.ts > ./src/config/apiConfig.ts
+
+            echo "replacing tokens in msalConfig_template.ts"
+            sed "s|{{CLIENT_ID}}|${{ inputs.client-id }}|g ; \
+                s|{{AUTHORITY}}|${{ inputs.authority }}|g ; \
+                s|{{REDIRECT_URI}}|${{ inputs.cname }}.${{ inputs.domain-name }}|g ; \
+                s|{{TOKEN_SCOPE}}|${{ inputs.token-scope }}|g ; \
+                s|{{TOKEN_ROLE}}|${{ inputs.token-role }}|g" \
+                ./src/config/msalConfig_template.ts > ./src/config/msalConfig.ts
+
+            echo "modified files..."
+            cat ./src/config/apiConfig.ts
+            cat ./src/config/msalConfig.ts
+      
+      - uses: actions/setup-node@v4
+        id: setup-node
+        with:
+          node-version: 18
+      - run: | 
+            npm install
+            npm run build
+
+      - name: upload-spa
+        id: upload-spa
+        uses: azure/CLI@v2
+        env:
+          STORAGE_ACCOUNT_NAME: ${{ env.STORAGE_ACCOUNT_NAME}}
+        with:
+          azcliversion: 2.67.0
+          inlineScript: |
+            # upload to Azure Blob Storage
+            echo "Uploading SPA to Azure Blob Storage..."
+            az storage azcopy blob upload --container '$web' --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --source './dist/*' --recursive

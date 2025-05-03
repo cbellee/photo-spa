@@ -7,16 +7,15 @@ on:
       - "src/**"
   workflow_dispatch:
 
-#env:
-  #TENANT_ID: '655845bb-6fb9-4adf-bf80-5776ea887bc5'
-  #CLIENT_ID: '689078c3-c0ad-4c10-a0d3-1c430c2e471d'
-  #AUTHORITY: 'belleenetexternal.ciamlogin.com'
-  #POST_LOGOUT_REDIRECT_URI: 'photos.bellee.net'
-  #TOKEN_SCOPE: 'photo.all'
-  #TOKEN_ROLE: 'photo.upload'
-  #LOCATION: 'uksouth'
-  #APP_NAME: 'photo-app'
-  #STORAGE_ACCOUNT_SUFFIX: 'blob.core.windows.net'
+env:
+  TENANT_ID: '655845bb-6fb9-4adf-bf80-5776ea887bc5'
+  CLIENT_ID: '689078c3-c0ad-4c10-a0d3-1c430c2e471d'
+  AUTHORITY: 'belleenetexternal.ciamlogin.com'
+  POST_LOGOUT_REDIRECT_URI: 'photos.bellee.net'
+  TOKEN_SCOPE: 'photo.all'
+  TOKEN_ROLE: 'photo.upload'
+  APP_NAME: 'photo-app'
+  STORAGE_ACCOUNT_SUFFIX: 'blob.core.windows.net'
 
 permissions:
   id-token: write
@@ -29,82 +28,54 @@ jobs:
         id: checkout-code
         uses: actions/checkout@main
 
-      - name: gen-rg-name
-        id: gen-rg-name
+      - name: create-tag
         run: |
-            echo "rgName: ${{ vars.APP_NAME }}-${{ vars.LOCATION }}-rg"
-            echo "rgName=${{ vars.APP_NAME }}-${{ vars.LOCATION }}-rg" >> "$GITHUB_ENV"
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag -a "v${{ github.run_number }}" -m "Release v${{ github.run_number }}"
+          git push origin "v${{ github.run_number }}"
+          
+  deploy-to-staging:
+    uses: cbellee/photo-spa/.github/workflows/deploy-workflow.yml@main
+    secrets: inherit
+    needs: [ compile-and-upload-spa ]
+    concurrency: 
+      group: staging-deploy
+      cancel-in-progress: true
+    if: github.ref == 'refs/heads/main' 
+    with:
+      environment: staging
+      location: australiaeast
+      app-name: ${{ vars.APP_NAME }}
+      tenant-id: ${{ vars.TENANT_ID }}
+      client-id: ${{ vars.CLIENT_ID }}
+      authority: ${{ vars.AUTHORITY }}
+      cname: photo-dev
+      domain-name: ${{ vars.DOMAIN_NAME }}
+      token-scope: ${{ vars.TOKEN_SCOPE }}    
+      token-role: ${{ vars.TOKEN_ROLE }}
+      storage-account-suffix: ${{ vars.STORAGE_ACCOUNT_SUFFIX }}
+      post-logout-redirect-uri: ${{ vars.POST_LOGOUT_REDIRECT_URI }}
 
-      - name: login-azure
-        id: login-azure
-        uses: azure/login@v2
-        with:
-          with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
-      - name: deployment-outputs
-        id: deployment-outputs
-        uses: azure/CLI@v2
-        with:
-          azcliversion: 2.67.0
-          inlineScript: |
-            # get deployment output
-            echo "STORAGE_ACCOUNT_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.storageAccountName.value -o tsv)" >> "$GITHUB_ENV"
-            echo "PHOTO_API_ENDPOINT_URI=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.photoApiEndpoint.value -o tsv)" >> "$GITHUB_ENV"
-            # echo "CDN_ENDPOINT_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnEndpointName.value -o tsv)" >> "$GITHUB_ENV"
-            # echo "CDN_PROFILE_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnProfileName.value -o tsv)" >> "$GITHUB_ENV"
-
-            echo "STORAGE_ACCOUNT_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.storageAccountName.value -o tsv)" 
-            echo "PHOTO_API_ENDPOINT_URI=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.photoApiEndpoint.value -o tsv)"
-            # echo "CDN_ENDPOINT_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnEndpointName.value -o tsv)"
-            # echo "CDN_PROFILE_NAME=$(az deployment group show --name deploy-infra --resource-group $rgName --query properties.outputs.cdnProfileName.value -o tsv)"
-      
-      - name: compile-spa
-        id: compile-spa
-        uses: azure/CLI@v2
-        env:
-          PHOTO_API_ENDPOINT_URI: ${{ env.PHOTO_API_ENDPOINT_URI }}
-          STORAGE_ACCOUNT_NAME: ${{ env.STORAGE_ACCOUNT_NAME }}
-        with:
-          azcliversion: 2.67.0
-          inlineScript: |
-            echo "replacing tokens in apiConfig_template.ts..."
-            sed "s|{{AZURE_TENANT_ID}}|${{ vars.TENANT_ID }}|g ; \
-                s|{{STORAGE_ACCOUNT_NAME}}|${{ env.STORAGE_ACCOUNT_NAME }}|g ; \
-                s|{{STORAGE_ACCOUNT_SUFFIX}}|${{ vars.STORAGE_ACCOUNT_SUFFIX }}|g ; \
-                s|{{PHOTO_API_ENDPOINT_URI}}|${{ env.PHOTO_API_ENDPOINT_URI }}|g" \
-                ./src/config/apiConfig_template.ts > ./src/config/apiConfig.ts
-
-            echo "replacing tokens in msalConfig_template.ts"
-            sed "s|{{CLIENT_ID}}|${{ vars.CLIENT_ID }}|g ; \
-                s|{{AUTHORITY}}|${{ vars.AUTHORITY }}|g ; \
-                s|{{REDIRECT_URI}}|${{ vars.CNAME }}.${{ vars.DOMAIN_NAME }}|g ; \
-                s|{{TOKEN_SCOPE}}|${{ vars.TOKEN_SCOPE }}|g ; \
-                s|{{TOKEN_ROLE}}|${{ vars.TOKEN_ROLE }}|g" \
-                ./src/config/msalConfig_template.ts > ./src/config/msalConfig.ts
-
-            echo "modified files..."
-            cat ./src/config/apiConfig.ts
-            cat ./src/config/msalConfig.ts
-      
-      - uses: actions/setup-node@v4
-        id: setup-node
-        with:
-          node-version: 18
-      - run: | 
-            npm install
-            npm run build
-
-      - name: upload-spa
-        id: upload-spa
-        uses: azure/CLI@v2
-        env:
-          STORAGE_ACCOUNT_NAME: ${{ env.STORAGE_ACCOUNT_NAME}}
-        with:
-          azcliversion: 2.67.0
-          inlineScript: |
-            # upload to Azure Blob Storage
-            echo "Uploading SPA to Azure Blob Storage..."
-            az storage azcopy blob upload --container '$web' --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --source './dist/*' --recursive
+  deploy-to-production:
+    uses: cbellee/photo-spa/.github/workflows/deploy-workflow.yml@main
+    secrets: inherit
+    needs: [ deploy-to-staging, compile-and-upload-spa ]
+    concurrency: 
+      group: production-deploy
+      cancel-in-progress: true
+    if: github.ref == 'refs/heads/main'
+    with:
+      environment: production
+      location: uksouth
+      app-name: ${{ vars.APP_NAME }}
+      tenant-id: ${{ vars.TENANT_ID }}
+      client-id: ${{ vars.CLIENT_ID }}
+      authority: ${{ vars.AUTHORITY }}
+      cname: photo
+      domain-name: ${{ vars.DOMAIN_NAME }}
+      token-scope: ${{ vars.TOKEN_SCOPE }}    
+      token-role: ${{ vars.TOKEN_ROLE }}
+      storage-account-suffix: ${{ vars.STORAGE_ACCOUNT_SUFFIX }}
+      post-logout-redirect-uri: ${{ vars.POST_LOGOUT_REDIRECT_URI }}
+    
