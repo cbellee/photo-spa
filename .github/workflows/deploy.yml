@@ -19,7 +19,7 @@ env:
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
 jobs:
   compile-and-upload-spa:
     runs-on: ubuntu-latest
