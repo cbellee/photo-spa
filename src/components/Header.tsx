@@ -129,7 +129,6 @@ export default function Header() {
     `}</style>
         </div>
         <div className="flex justify-end mt-3 justify-items-end">
-         {/*  <span className={`align-top flex mr-7 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`}>I</span> */}
           {
             (isAuthenticated && userName != null) && (
               <div className="pr-7 uppercase text-sm text-gray-300 align-bottom flex justify-evenly pb-1 flex-col">

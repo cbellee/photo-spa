@@ -28,8 +28,8 @@ const UploadImages = () => {
     const [collection, setCollection] = useState("");
     const [album, setAlbum] = useState("");
 
-    const [collectionImage, setCollectionImage] = useState(null);
-    const [albumImage, setAlbumImage] = useState(null);
+    const [collectionImage, setCollectionImage] = useState("");
+    const [albumImage, setAlbumImage] = useState("");
 
     const [collectionExists, setCollectionExists] = useState(false);
     const [albumExists, setAlbumExists] = useState(false);
@@ -38,7 +38,7 @@ const UploadImages = () => {
     const isAuthenticated = useIsAuthenticated();
     const { instance, accounts } = useMsal();
     const [token, setToken] = useState<string | null>(null);
-    const [validationMessage, setValidationMessage] = useState("");
+    const [validationMessage, setValidationMessage] = useState("totes");
     const [progressMessage, setProgressMessage] = useState({ progess: 0, total: selectedFiles?.length });
     const navigate = useNavigate();
     const { theme, toggleTheme } = useTheme();
@@ -53,29 +53,35 @@ const UploadImages = () => {
     }, [isAuthenticated]);
 
     async function isFormValid() {
-        if ((collection === "" || (collectionImage === "")) && !collectionExists) {
+/*         console.log("collection: " + collection);
+        console.log("album: " + album);
+        console.log("collectionImage: " + collectionImage);
+        console.log("albumImage: " + albumImage);
+        console.log("selectedFiles: " + selectedFiles);
+        console.log("albumExists: " + albumExists);
+        console.log("collectionExists: " + collectionExists); */
+
+        if (collection === "" && !collectionExists) {
             let msg = "Collection is not set";
             setIsValid(false);
             setValidationMessage(msg);
-        } else if ((album === "" || (albumImage === "")) && !albumExists) {
+        } else if (album === "" && !albumExists) {
             let msg = "Album is not set";
             setIsValid(false);
             setValidationMessage(msg);
-        } else if (albumImage === "" && !albumExists) {
-            let msg = "Album image thumbnail is not set";
+        } else if (!selectedFiles && !uploadCompleted) {
+            let msg = "No files selected";
             setIsValid(false);
             setValidationMessage(msg);
         } else if (collectionImage === "" && !collectionExists) {
             let msg = "Collection image thumbnail is not set";
             setIsValid(false);
             setValidationMessage(msg);
-        }
-        else if (!selectedFiles && !uploadCompleted) {
-            let msg = "No files selected";
+        } else if (albumImage === "" && !albumExists) {
+            let msg = "Album image thumbnail is not set";
             setIsValid(false);
             setValidationMessage(msg);
-        }
-        else if (uploadCompleted) {
+        } else if (uploadCompleted) {
             let msg = "Upload completed";
             setIsValid(false);
             setValidationMessage(msg);
