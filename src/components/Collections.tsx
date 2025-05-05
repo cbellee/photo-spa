@@ -32,6 +32,7 @@ interface CollectionsProps {
 const Collections: React.FC<CollectionsProps> = (props) => {
     const [photos, setPhotos] = useState<Photo[]>([]);
     const [index, setIndex] = useState<number>(-1);
+    const [isLoading, setisLoading] = useState(true);
     const { theme } = useTheme();
 
     let params = useParams<Params>();
@@ -40,8 +41,8 @@ const Collections: React.FC<CollectionsProps> = (props) => {
         let url = `${apiConfig.photoApiEndpoint}`;
         axios.get(url)
             .then(response => {
-               // console.log(response.data);
                 setPhotos(response.data);
+                setisLoading(false);
             })
             .catch(error => {
                 console.error(error);
@@ -52,11 +53,17 @@ const Collections: React.FC<CollectionsProps> = (props) => {
         <div>
             <Box sx={{ width: "90%", mx: "auto" }}>
                 <div className="text-left pt-4 pb-4 text-md">
-                    <Link to=".." className={`uppercase ${theme === 'dark' ? 'text-blue-500' : 'text-blue-700' } underline`} relative="path">Collections</Link>
+                    <Link to=".." className={`uppercase ${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} underline`} relative="path">Collections</Link>
                 </div>
                 {
-                    photos.length === 0 &&
-                    <div className={`uppercase ${theme === 'dark' ? 'text-white' : 'text-gray-'}`}>No Collections found</div>
+                    isLoading &&
+                    <div className={`flex justify-center md-auto text-white ${!isLoading ? "invisible" : ""}`}>
+                        <span
+                            className={`justify-center md-auto mt-[3.5em] mr-[4.4em] h-28 w-28 animate-spin rounded-full border-[9px] border-solid border-white border-current border-r-transparent `}
+                        >
+                        </span>
+                        <span className='relative top-[100px] right-[167px] uppercase'>Loading...</span>
+                    </div>
                 }
                 <RowsPhotoAlbum
                     photos={photos}

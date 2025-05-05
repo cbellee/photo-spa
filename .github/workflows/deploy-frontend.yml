@@ -1,4 +1,5 @@
-name: compile-and-upload-spa
+name: deploy-frontend
+# This workflow deploys the frontend application to Azure Storage staic website
 on:
   push:
     branches: 
@@ -36,7 +37,7 @@ jobs:
           git push origin "v${{ github.run_number }}"
           
   deploy-to-staging:
-    uses: cbellee/photo-spa/.github/workflows/deploy-workflow.yml@main
+    uses: cbellee/photo-spa/.github/workflows/deploy-frontend-template.yml@main
     secrets: inherit
     needs: [ compile-and-upload-spa ]
     concurrency: 
@@ -58,7 +59,7 @@ jobs:
       post-logout-redirect-uri: ${{ vars.POST_LOGOUT_REDIRECT_URI }}
 
   deploy-to-production:
-    uses: cbellee/photo-spa/.github/workflows/deploy-workflow.yml@main
+    uses: cbellee/photo-spa/.github/workflows/deploy-frontend-template.yml@main
     secrets: inherit
     needs: [ deploy-to-staging, compile-and-upload-spa ]
     concurrency: 

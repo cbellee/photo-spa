@@ -33,6 +33,7 @@ const Albums: React.FC<AlbumsProps> = (props) => {
     const [photos, setPhotos] = useState<Photo[]>([]);
     const [index, setIndex] = useState<number>(-1);
     const { theme } = useTheme();
+    const [isLoading, setisLoading] = useState(true);
 
     let params = useParams<Params>();
 
@@ -43,6 +44,7 @@ const Albums: React.FC<AlbumsProps> = (props) => {
         axios.get(url)
             .then(response => {
                 setPhotos(response.data);
+                setisLoading(false);
             })
             .catch(error => {
                 console.error(error);
@@ -56,6 +58,16 @@ const Albums: React.FC<AlbumsProps> = (props) => {
                     <Link to="/" relative="path"><span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} uppercase underline`}>Collections</span></Link>
                     <span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} uppercase`}> &gt; <span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} uppercase`}>{params.collection}</span></span>
                 </div>
+                {
+                    isLoading &&
+                    <div className={`flex justify-center md-auto text-white ${!isLoading ? "invisible" : ""}`}>
+                        <span
+                            className={`justify-center md-auto mt-[3.5em] mr-[4.4em] h-28 w-28 animate-spin rounded-full border-[9px] border-solid border-white border-current border-r-transparent `}
+                        >
+                        </span>
+                        <span className='relative top-[100px] right-[167px] uppercase'>Loading...</span>
+                    </div>
+                }
                 <RowsPhotoAlbum
                     photos={photos}
                     padding={0}

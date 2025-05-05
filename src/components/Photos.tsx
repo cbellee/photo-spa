@@ -68,6 +68,7 @@ const Photos: React.FC<PhotoProps> = (props) => {
     const [albumImage, setAlbumImage] = useState('');
     const { theme } = useTheme();
     const [showExif, setShowExif] = useState(false);
+    const [isLoading, setisLoading] = useState(true);
 
     let params = useParams<Params>();
     let instance = msalContext.instance;
@@ -171,6 +172,7 @@ const Photos: React.FC<PhotoProps> = (props) => {
             .then(response => {
                 //console.log("response: " + JSON.stringify(response.data));
                 setPhotos(response.data);
+                setisLoading(false);
             })
             .catch(error => {
                 console.error(error);
@@ -288,6 +290,16 @@ const Photos: React.FC<PhotoProps> = (props) => {
                         )
                     }
                 </div>
+                {
+                    isLoading &&
+                    <div className={`flex justify-center md-auto text-white ${!isLoading ? "invisible" : ""}`}>
+                        <span
+                            className={`justify-center md-auto mt-[3.5em] mr-[4.4em] h-28 w-28 animate-spin rounded-full border-[9px] border-solid border-white border-current border-r-transparent `}
+                        >
+                        </span>
+                        <span className='relative top-[100px] right-[167px] uppercase'>Loading...</span>
+                    </div>
+                }
                 <RowsPhotoAlbum
                     sizes={{
                         size: "992px",
