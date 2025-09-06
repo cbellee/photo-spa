@@ -29,5 +29,5 @@ pca.addEventCallback((event: EventMessage) => {
 });
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-    <App msalInstance={pca} />
+    <App msalInstance={pca}/>
 );

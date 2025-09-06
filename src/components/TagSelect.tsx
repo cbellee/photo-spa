@@ -72,10 +72,9 @@ export default function TagSelect(props) {
   }
 
   return (
-    <div className={`flex p-2 m-0 pt-2 text-white ${theme === "dark" ? "bg-gray-700" : "bg-gray-400"}`}>
-      <div className="flex flex-row pl-4">
-        <label className={` pt-1.5 pr-2`}>Collection</label>
-
+    <div className={`text-white flex gap-4 p-2 items-center ${theme === "dark" ? "bg-gray-700" : "bg-gray-400"}`}>
+      <div className="gap-4 flex items-center">
+        <label className="">Collection:</label>
         <Controller
           name="collection"
           control={control}
@@ -88,7 +87,7 @@ export default function TagSelect(props) {
               onChange={(event) => handleCollection(event)}
               isClearable={true}
               //id="collection"
-              className="min-w-40 max-w-50 pr-2 font-semibold text-gray-700"
+              className=" text-gray-700 lowercase min-w-36"
               options={
                 Array.from(collectionAlbumData.keys()).map((option, idx) => {
                   return { value: option, label: option }
@@ -97,13 +96,11 @@ export default function TagSelect(props) {
             />
           )}
         />
-        
 
       </div>
-      <div className="flex flex-row pl-4">
-        <label className="pt-1.5 pr-2">Album</label>
+      <div className="gap-4 flex items-center">
+        <label className="">Album:</label>
         <div>
-
           <Controller
             name="album"
             control={control}
@@ -116,7 +113,7 @@ export default function TagSelect(props) {
                 onChange={(event) => handleAlbum(event)}
                 ref={albumDropDownRef}
                 //id="album"
-                className="min-w-40 max-w-50 font-semibold text-gray-700"
+                className=" text-gray-700 lowercase w-36"
                 isClearable={true}
                 //error={error?.message}
                 options={

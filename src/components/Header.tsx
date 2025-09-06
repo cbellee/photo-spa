@@ -16,12 +16,12 @@ export default function Header() {
 
   return (
     <>
-      <div className={`${theme === 'dark' ? 'text-white bg-gray-800' : 'bg-gray-100'} text-lg py-2 items-center !h-auto`}>
-        <div className="flex float-left items-center">
+      <div className={` text-lg ${theme === 'dark' ? 'text-white bg-gray-950' : 'bg-gray-100'}`}>
+        <div className="flex items-center">
           <a href="/">
-            <img src="/app-icon.png" className="justify-start sm:px-4 max-w-20" alt="logo" />
+            <img src="/app-icon.png" className="justify-start min-w-16 w-16 h-14 p-2" alt="logo" />
           </a>
-          <h2 className="text-4xl uppercase tracking-widest transform-none"></h2>
+          <h2 className="text-2xl uppercase tracking-widest transform-none font-extralight"></h2>
           <nav>
             <section className="MOBILE-MENU flex lg:hidden">
               <div
@@ -67,7 +67,7 @@ export default function Header() {
               </div>
             </section>
 
-            <div className="flex justify-end justify-items-end text-gray-300 ml-6">
+            <div className=" text-gray-300 ml-6">
               <ul className="DESKTOP-MENU hidden space-x-8 lg:flex pr-6 uppercase">
                 {
                   isAuthenticated && (
@@ -127,27 +127,29 @@ export default function Header() {
         align-items: center;
       }
     `}</style>
-        </div>
-        <div className="flex justify-end mt-3 justify-items-end">
-          {
-            (isAuthenticated && userName != null) && (
-              <div className="pr-7 uppercase text-sm text-gray-300 align-bottom flex justify-evenly pb-1 flex-col">
-                <span className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-400'}`}>Welcome, <span className="text-orange-300">&nbsp;{account?.name?.split(" ")[0]}</span></span>
-              </div>
-            )
-          }
-          <SignInAndOut />
-          <span className={`align-top flex ml-7 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`}>I</span>
-          <div className="align-middle order-last pr-4 pl-7 pt-0.5">
-            <button onClick={toggleTheme}>
-              {
-                theme === "dark" && <IoSunny />
-              }
-              {
-                theme === "light" && <IoMoon />
-              }
-            </button>
+    <div className="flex-grow"></div>
+          <div className="flex items-center min-w-max text-sm">
+            {
+              (isAuthenticated && userName != null) && (
+                <div className="pr-7 uppercase text-gray-300 align-bottom flex justify-evenly">
+                  <span className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-400'}`}>Welcome, <span className="text-orange-300">&nbsp;{account?.name?.split(" ")[0]}</span></span>
+                </div>
+              )
+            }
+            <SignInAndOut />
+            <span className={`align-top flex ml-7 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`}>I</span>
+            <div className="align-middle order-last pr-4 pl-7 pt-0.5">
+              <button onClick={toggleTheme}>
+                {
+                  theme === "dark" && <IoSunny />
+                }
+                {
+                  theme === "light" && <IoMoon />
+                }
+              </button>
+            </div>
           </div>
+
         </div>
       </div>
     </>

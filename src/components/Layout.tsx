@@ -8,9 +8,9 @@ export default function Layout() {
     const { theme } = useTheme();
 
     return (
-        <div className={`flex flex-col h-screen border-0 justify-between `}>
+        <div className={`flex flex-col h-screen text-center ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-300' }`}>
             <Header />
-            <main className={`mb-auto pb-12 `}>
+            <main className={`mb-auto`}>
                 <Outlet /> {/* Nested routes render here */}
             </main>
             <footer>

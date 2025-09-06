@@ -53,13 +53,13 @@ const UploadImages = () => {
     }, [isAuthenticated]);
 
     async function isFormValid() {
-/*         console.log("collection: " + collection);
-        console.log("album: " + album);
-        console.log("collectionImage: " + collectionImage);
-        console.log("albumImage: " + albumImage);
-        console.log("selectedFiles: " + selectedFiles);
-        console.log("albumExists: " + albumExists);
-        console.log("collectionExists: " + collectionExists); */
+        /*         console.log("collection: " + collection);
+                console.log("album: " + album);
+                console.log("collectionImage: " + collectionImage);
+                console.log("albumImage: " + albumImage);
+                console.log("selectedFiles: " + selectedFiles);
+                console.log("albumExists: " + albumExists);
+                console.log("collectionExists: " + collectionExists); */
 
         if (collection === "" && !collectionExists) {
             let msg = "Collection is not set";
@@ -310,41 +310,43 @@ const UploadImages = () => {
 
     return (
         <FormProvider {...formMethods}>
-            <form onSubmit={formMethods.handleSubmit(onSubmit)}>
-                <div className={`flex-cols font-thin text-white`}>
+            <form onSubmit={formMethods.handleSubmit(onSubmit)} className="">
+                <div className={`font-thin text-white  text-sm`}>
                     <AuthenticatedTemplate>
                         <TagSelect selectedAlbum={onChangeAlbum} selectedCollection={onChangeCollection}>
-                            <label className="text-white pl-6">
                                 <input
                                     type="file"
                                     multiple
                                     disabled={uploading}
                                     accept="image/jpg, image/jpeg, image/png"
                                     onChange={selectFiles}
-                                    className="
-                                block w-full
-                                text-md
+                                    className={`
+                                ${theme === 'dark' ? 'text-red-500' : 'text-red-700'}   
                                 active:animate-pop
-                                file:mr-4 file:w-32 mt-1 p-0
-                                file:rounded-md file:border-0
-                                file:text-md file:font-semibold file:h-8
+                                lowercase
+                                text-red-600
+                                file:rounded-2xl file:border-0
+                                file:text-md  file:h-8
+                                p-0
+                                m-0
                                 file:bg-gray-300 file:text-gray-600
-                                hover:file:bg-gray-100"
+                                file:min-w-24
+                                w-48
+                                hover:file:bg-gray-100`}
                                 />
-                            </label>
                             <input type="submit" hidden={true} />
                             <button
-                                className={`text-white h-8 text-md mt-1 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-100 bg-gray-300 text-gray-600'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-md`}
+                                className={`text-white active:animate-pop h-8 text-md w-24 min-w-24 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-100 bg-gray-300 text-gray-600'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 rounded-2xl`}
                                 disabled={!isValid || uploading}
                                 onClick={uploadImages}
                             >
                                 Upload
                             </button>
-                            <div className={`mt-2 pl-4 ${numSelectedImages > 0 ? "visible" : "hidden"} `}>
+                            <div className={` items-center w-28 ${numSelectedImages > 0 ? "visible" : "hidden"} `}>
                                 Uploading: {progressMessage.progess}/{numSelectedImages}
                             </div>
-                            <div className={`mt-2 pl-4 ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`}>
-                                {validationMessage}
+                            <div className={`lowercase w-22 min-w-22 ${theme === 'dark' ? 'text-red-500' : 'text-red-700'}`}>
+                                {validationMessage} 
                             </div>
                         </TagSelect>
 
