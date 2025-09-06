@@ -127,7 +127,7 @@ jobs:
         env:
           STORAGE_ACCOUNT_NAME: ${{ env.STORAGE_ACCOUNT_NAME}}
         with:
-          azcliversion: 2.67.0
+          azcliversion: latest
           inlineScript: |
             # upload to Azure Blob Storage
             echo "Uploading SPA to Azure Blob Storage..."
