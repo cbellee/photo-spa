@@ -261,7 +261,7 @@ const Photos: React.FC<PhotoProps> = (props) => {
                     <span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} uppercase`}> &gt; <Link to={`/${params.collection}`}><span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} underline`}>{params.collection}</span></Link></span>
                     <span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} uppercase`}> &gt; <span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} uppercase`}>{params.album}</span></span>
                     {
-                        (isAuthenticated && isAdmin) && (
+                        (isAuthenticated && isAdmin && !isLoading) && (
                             <span className='inline justify-end float-right pr-2'>
                                 {
                                     isEditMode && (<button className={`text-white h-8 text-md mt-1 mr-2 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-400 bg-gray-500 text-gray-100'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-md`} onClick={() => saveEditedData(photos)}>

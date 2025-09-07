@@ -87,7 +87,7 @@ export default function TagSelect(props) {
               onChange={(event) => handleCollection(event)}
               isClearable={true}
               //id="collection"
-              className=" text-gray-700 lowercase min-w-36"
+              className=" text-gray-700 font-semibold lowercase min-w-36"
               options={
                 Array.from(collectionAlbumData.keys()).map((option, idx) => {
                   return { value: option, label: option }
@@ -113,7 +113,7 @@ export default function TagSelect(props) {
                 onChange={(event) => handleAlbum(event)}
                 ref={albumDropDownRef}
                 //id="album"
-                className=" text-gray-700 lowercase w-36"
+                className=" text-gray-700 font-semibold lowercase w-36"
                 isClearable={true}
                 //error={error?.message}
                 options={

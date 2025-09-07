@@ -321,11 +321,12 @@ const UploadImages = () => {
                                     accept="image/jpg, image/jpeg, image/png"
                                     onChange={selectFiles}
                                     className={`
-                                ${theme === 'dark' ? 'text-red-500' : 'text-red-700'}   
+                                ${theme === 'dark' ? 'text-orange-500' : 'text-orange-700'}   
                                 active:animate-pop
                                 lowercase
-                                text-red-600
-                                file:rounded-2xl file:border-0
+                                text-orange-500
+                                file:font-semibold
+                                file:rounded-md file:border-0
                                 file:text-md  file:h-8
                                 p-0
                                 m-0
@@ -336,7 +337,7 @@ const UploadImages = () => {
                                 />
                             <input type="submit" hidden={true} />
                             <button
-                                className={`text-white active:animate-pop h-8 text-md w-24 min-w-24 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-100 bg-gray-300 text-gray-600'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 rounded-2xl`}
+                                className={`text-white active:animate-pop h-8 font-semibold text-md w-24 min-w-24 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-100 bg-gray-300 text-gray-600'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 rounded-md`}
                                 disabled={!isValid || uploading}
                                 onClick={uploadImages}
                             >
@@ -345,7 +346,7 @@ const UploadImages = () => {
                             <div className={` items-center w-28 ${numSelectedImages > 0 ? "visible" : "hidden"} `}>
                                 Uploading: {progressMessage.progess}/{numSelectedImages}
                             </div>
-                            <div className={`lowercase w-22 min-w-22 ${theme === 'dark' ? 'text-red-500' : 'text-red-700'}`}>
+                            <div className={`lowercase w-22 min-w-22 ${theme === 'dark' ? 'text-orange-500' : 'text-orange-700'}`}>
                                 {validationMessage} 
                             </div>
                         </TagSelect>
@@ -357,19 +358,20 @@ const UploadImages = () => {
                                         return (
                                             <Card className={`m-1.5 p-0 text-left ${theme === 'dark' ? 'border-gray-600' : 'border-gray-200'}  border-2`}>
                                                 <CardContent className={`h-full flex flex-col justify-center ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-gray-300'}`}>
-                                                    <div className="flex justify-items-end justify-end">
-                                                        <div className="justify-end justify-items-end relative">
+                                                    <div className="flex justify-items-end justify-end relative">
+                                                        <div className="justify-end justify-items-end">
                                                             <CardMedia component="img" className={`justify-items-start justify-start rounded-sm ${img.uploading ? "animate-pulse" : ""}`} image={img.src} alt={"image-" + i} key={i}
                                                             />
                                                         </div>
-                                                        <span
-                                                            className={`absolute md-auto mt-[3.5em] mr-[4.4em] place-items-left h-10 w-10 animate-spin rounded-full ${!img.uploading ? "invisible" : ""} border-4 border-solid border-current border-r-transparent  motion-reduce:animate-[spin_1.5s_linear_infinite]`}
-                                                        ></span>
-                                                        <span className={`absolute mt-[4em] mr-[4.7em] text-sm pt-2.5 pr-2.5 ${!img.uploading ? "invisible" : ""}`}>
+                                                        <div className="absolute top-1/2 left-1/2 ">
+                                                        <span className={`animate-spin rounded-full w-11 h-11 absolute ${!img.uploading ? "" : ""} border-4 border-solid border-current border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite]`}>
+                                                        </span>
+                                                            <span className={`pt-3 pl-1.5 absolute text-sm ${!img.uploading ? "" : ""}`}>
                                                             {
                                                                 img.uploadProgress + "%"
                                                             }
                                                         </span>
+                                                        </div>
                                                     </div>
                                                     <span className={`absolute text-md font-semibold ${!img.uploadComplete || !img.uploadError ? "invisible" : ""}`}>
                                                         {
