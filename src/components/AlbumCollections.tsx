@@ -77,7 +77,7 @@ const Albums: React.FC<AlbumsProps> = (props) => {
                     rowConstraints={{ singleRowMaxHeight: 250 }}
                     render={{
                         photo: ({ onClick }, { photo, index }) => (
-                            <div className="pl-2 pr-2" onClick={onClick}>
+                            <div className="p-1" onClick={onClick}>
                                 <Link to={photo.album}>
                                 <div className=''>
                                     <img src={photo.src} key={index} className="rounded-md hover:opacity-85 animate-appear max-h-56" />

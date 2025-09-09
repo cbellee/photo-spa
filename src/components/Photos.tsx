@@ -301,7 +301,7 @@ const Photos: React.FC<PhotoProps> = (props) => {
                     </div>
                 }
                 <RowsPhotoAlbum
-                    padding={0}
+                    padding={30}
                     spacing={0}
                     photos={photos}
                     rowConstraints={{ singleRowMaxHeight: 200, minPhotos: 1, maxPhotos: 10 }}
@@ -310,12 +310,12 @@ const Photos: React.FC<PhotoProps> = (props) => {
                     onClick={({ index }) => setIndex(index)} // open in LightBox
                     render={{
                         photo: ({ onClick }, { photo }) => (
-                            <div className="grid group justify-center p-0" key={photo.id}>
+                            <div className="grid group justify-center object-fill p-1" key={photo.id}>
                                 <img
                                     alt={photo.description}
                                     src={photo.src}
                                     key={`img-${index}`}
-                                    className={`[grid-column:1] [grid-row:1] rounded-xl p-2 max-h-[300px] animate-appear ${photo.orientation === 270 ? '-rotate-90' : `rotate-[${photo.orientation}deg]`}`}
+                                    className={`hover:opacity-85 hover:cursor-pointer [grid-column:1] [grid-row:1] rounded-sm  max-h-[300px]  animate-appear object-fill ${photo.orientation === 270 ? '-rotate-90' : `rotate-[${photo.orientation}deg]`}`}
                                     onClick={onClick}
                                 />
                                 {(isAdmin && isEditMode && isAuthenticated) && (

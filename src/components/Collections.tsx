@@ -74,7 +74,7 @@ const Collections: React.FC<CollectionsProps> = (props) => {
                     rowConstraints={{ singleRowMaxHeight: 250 }}
                     render={{
                         photo: ({ onClick }, { photo, index }) => (
-                            <div className="pl-2 pr-2">
+                            <div className="p-1">
                                 <Link to={photo.collection}>
                                     <img src={photo.src} key={index} className="rounded-md hover:opacity-85 animate-appear max-h-56" />
                                 </Link>
