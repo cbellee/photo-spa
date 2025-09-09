@@ -19,7 +19,7 @@ export default function Header() {
       <div className={` text-lg ${theme === 'dark' ? 'text-white bg-gray-950' : 'bg-gray-100'}`}>
         <div className="flex items-center">
           <a href="/">
-            <img src="/app-icon.png" className="justify-start min-w-16 w-16 h-14 p-2" alt="logo" />
+            <img src="/app-icon.png" className="justify-start max-h-16 min-h-16 p-2" alt="logo" />
           </a>
           <h2 className="text-2xl uppercase tracking-widest transform-none font-extralight"></h2>
           <nav>
@@ -127,7 +127,7 @@ export default function Header() {
         align-items: center;
       }
     `}</style>
-    <div className="flex-grow"></div>
+          <div className="flex-grow"></div>
           <div className="flex items-center min-w-max text-sm">
             {
               (isAuthenticated && userName != null) && (

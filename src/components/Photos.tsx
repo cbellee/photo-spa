@@ -301,26 +301,21 @@ const Photos: React.FC<PhotoProps> = (props) => {
                     </div>
                 }
                 <RowsPhotoAlbum
-                    sizes={{
-                        size: "992px",
-                        sizes: [
-                            { viewport: "(max-width: 767px)", size: "calc(100vw - 32px)" },
-                            { viewport: "(max-width: 1279px)", size: "calc(100vw - 288px)" },
-                        ],
-                    }}
-                    photos={photos}
-                    key="rows_album"
                     padding={0}
                     spacing={0}
+                    photos={photos}
+                    rowConstraints={{ singleRowMaxHeight: 200, minPhotos: 1, maxPhotos: 10 }}
+                    targetRowHeight={100}
+                    key="rows_album"
                     onClick={({ index }) => setIndex(index)} // open in LightBox
                     render={{
                         photo: ({ onClick }, { photo }) => (
-                            <div className="grid [grid-template-columns:1fr] pl-2 pr-2 pb-3 group justify-center pt-1" key={photo.id}>
+                            <div className="grid  group justify-center" key={photo.id}>
                                 <img
                                     alt={photo.description}
                                     src={photo.src}
                                     key={`img-${index}`}
-                                    className={`[grid-column:1] [grid-row:1] object-fill inline-block rounded-md ${photo.orientation === 270 ? '-rotate-90' : `rotate-[${photo.orientation}deg]`}`}
+                                    className={`[grid-column:1] [grid-row:1] rounded-xl p-2 max-h-[300px] ${photo.orientation === 270 ? '-rotate-90' : `rotate-[${photo.orientation}deg]`}`}
                                     onClick={onClick}
                                 />
                                 {(isAdmin && isEditMode && isAuthenticated) && (
@@ -391,8 +386,6 @@ const Photos: React.FC<PhotoProps> = (props) => {
                             </div>
                         ),
                     }}
-                    rowConstraints={{ singleRowMaxHeight: 200, minPhotos: 1, maxPhotos: 6 }}
-                    targetRowHeight={200}
                 />
                 <Outlet />
             </Box>
