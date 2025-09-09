@@ -306,7 +306,7 @@ const Photos: React.FC<PhotoProps> = (props) => {
                     photos={photos}
                     rowConstraints={{ singleRowMaxHeight: 200, minPhotos: 1, maxPhotos: 10 }}
                     targetRowHeight={100}
-                    key="rows_album"
+                    key={`album_rows-${index}`}
                     onClick={({ index }) => setIndex(index)} // open in LightBox
                     render={{
                         photo: ({ onClick }, { photo }) => (

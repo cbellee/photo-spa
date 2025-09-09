@@ -71,9 +71,10 @@ const Collections: React.FC<CollectionsProps> = (props) => {
                     spacing={0}
                     key={`album-${index}`}
                     targetRowHeight={200}
+                    rowConstraints={{ singleRowMaxHeight: 250 }}
                     render={{
                         photo: ({ onClick }, { photo, index }) => (
-                            <div className="">
+                            <div className="pl-2 pr-2">
                                 <Link to={photo.collection}>
                                     <img src={photo.src} key={index} className="rounded-md hover:opacity-85 animate-appear max-h-56" />
                                 </Link>
@@ -81,7 +82,6 @@ const Collections: React.FC<CollectionsProps> = (props) => {
                             </div>
                         ),
                     }}
-                    rowConstraints={{ singleRowMaxHeight: 250 }}
                 />
             </Box>
         </div>
