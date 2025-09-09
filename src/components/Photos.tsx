@@ -254,8 +254,8 @@ const Photos: React.FC<PhotoProps> = (props) => {
     }
 
     return (
-        <div className=''>
-            <Box sx={{ width: "90%", mx: "auto" }}>
+        <div className={`${theme === 'dark' ? 'bg-slate-900' : 'bg-gray-300'}`}>
+            <Box sx={{ width: "90%", mx: "auto", p: 2 }}>
                 <div className="text-left pt-4 pb-4 text-md">
                     <Link to="/" className={`dark:text-blue-500 uppercase ${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'}`} relative="path"><span className='underline'>Collections</span></Link>
                     <span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} uppercase`}> &gt; <Link to={`/${params.collection}`}><span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} underline`}>{params.collection}</span></Link></span>
@@ -310,12 +310,12 @@ const Photos: React.FC<PhotoProps> = (props) => {
                     onClick={({ index }) => setIndex(index)} // open in LightBox
                     render={{
                         photo: ({ onClick }, { photo }) => (
-                            <div className="grid  group justify-center" key={photo.id}>
+                            <div className="grid group justify-center p-0" key={photo.id}>
                                 <img
                                     alt={photo.description}
                                     src={photo.src}
                                     key={`img-${index}`}
-                                    className={`[grid-column:1] [grid-row:1] rounded-xl p-2 max-h-[300px] ${photo.orientation === 270 ? '-rotate-90' : `rotate-[${photo.orientation}deg]`}`}
+                                    className={`[grid-column:1] [grid-row:1] rounded-xl p-2 max-h-[300px] animate-appear ${photo.orientation === 270 ? '-rotate-90' : `rotate-[${photo.orientation}deg]`}`}
                                     onClick={onClick}
                                 />
                                 {(isAdmin && isEditMode && isAuthenticated) && (
@@ -395,11 +395,6 @@ const Photos: React.FC<PhotoProps> = (props) => {
                 index={index}
                 close={() => setIndex(-1)}
                 plugins={[Fullscreen, Slideshow, Thumbnails]}
-                styles={{
-                    container: {
-                        background: "bg-gray-950",
-                    },
-                }}
             />
         </div>
     )

@@ -13,9 +13,7 @@ export default function Layout() {
             <main className={`mb-auto`}>
                 <Outlet /> {/* Nested routes render here */}
             </main>
-            <footer>
                 <Footer />
-            </footer>
         </div>
     );
 }

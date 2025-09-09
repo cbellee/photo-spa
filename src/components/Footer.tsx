@@ -7,7 +7,7 @@ const currentYearUTC = new Date().getUTCFullYear();
 
     return (
         <div className={`align-middle text-center bottom-0 p-6 rounded-b-md ${theme === 'dark' ? 'text-white bg-gray-950' : 'bg-gray-100'}`}>
-            <p className="text-centeruppercase text-sm uppercase">&copy; {currentYearUTC} - Photo Album</p>
+            <p className="text-centeruppercase text-sm uppercase">&copy; Photo Album {currentYearUTC} </p>
         </div>
     );
 }
