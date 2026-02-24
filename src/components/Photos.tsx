@@ -1,62 +1,36 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect, useRef, Fragment } from 'react';
 import { useParams, Link, Outlet } from 'react-router-dom';
 import Box from "@mui/material/Box";
-import { apiConfig } from '../config/apiConfig.ts';
-import axios from 'axios';
-import { useMsal } from "@azure/msal-react";
-
 import { RowsPhotoAlbum } from 'react-photo-album';
 import "react-photo-album/rows.css";
-
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
-
 import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
 import Slideshow from "yet-another-react-lightbox/plugins/slideshow";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
-import { tokenRequest } from '../config/msalConfig.ts';
-import TagSelectEdit from './TagSelectEdit.tsx';
+import TagSelector from './TagSelector';
 import { FaArrowRotateRight, FaArrowRotateLeft } from "react-icons/fa6";
 import PhotoExifData from './PhotoExifData.tsx';
 import MultiRadio from './MultiRadio.tsx';
 import FileUploadService from '../services/FileUploadService';
-import { getAccessToken } from '../utils/utils.ts';
 import { useTheme } from '../context/ThemeContext.tsx';
-
-interface Photo {
-    name: string;
-    id: string;
-    url: string;
-    src: string;
-    width: number;
-    height: number;
-    collection: string;
-    albumImage: boolean;
-    collectionImage: boolean;
-    album: string;
-    description: string;
-    exifData?: Record<string, string>;
-    isDeleted: boolean;
-    orientation: number;
-}
-
-interface Params extends Record<string, string | undefined> {
-    collection: string;
-    album: string;
-}
+import { useAuth } from '../hooks/useAuth';
+import { fetchPhotos, fetchTags } from '../services/photoService';
+import type { Photo, PhotoRouteParams } from '../types';
+import LoadingSpinner from './LoadingSpinner';
+import Breadcrumb from './Breadcrumb';
 
 interface PhotoProps {
     collection: string;
     album: string;
 }
 
-const Photos: React.FC<PhotoProps> = (props) => {
+const Photos: React.FC<PhotoProps> = () => {
     const [photos, setPhotos] = useState<Photo[]>([]);
     const [index, setIndex] = useState<number>(-1);
-    const msalContext = useMsal();
+    const { isAuthenticated, token } = useAuth();
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
-    const isAuthenticated = msalContext.instance.getAllAccounts().length > 0;
     const [collection, setCollection] = useState('');
     const [album, setAlbum] = useState('');
     const [collectionImage, setCollectionImage] = useState('');
@@ -64,26 +38,23 @@ const Photos: React.FC<PhotoProps> = (props) => {
     const [isEditMode, setIsEditMode] = useState(false);
     const [isValid, setIsValid] = useState(false);
     const [validationMessage, setValidationMessage] = useState('');
-    const [token, setToken] = useState("");
     const [albumImage, setAlbumImage] = useState('');
     const { theme } = useTheme();
     const [showExif, setShowExif] = useState(false);
     const [isLoading, setisLoading] = useState(true);
+    const originalPhotosRef = useRef<Photo[]>([]);
 
-    let params = useParams<Params>();
-    let instance = msalContext.instance;
-    let accounts = msalContext.accounts;
+    const params = useParams<PhotoRouteParams>();
 
     useEffect(() => {
-        getAccessToken(instance, accounts, tokenRequest, setToken);
         setIsAdmin(true);
     }, [isAuthenticated]);
 
-    const handleShowExif = (event) => {
+    const handleShowExif = (event: React.ChangeEvent<HTMLInputElement>) => {
         setShowExif(event.target.checked);
     }
 
-    const handleAlbumThumbnail = (imageName) => {
+    const handleAlbumThumbnail = (imageName: string) => {
         setAlbumImage(imageName);
 
         let photo = photos.filter((photo => photo.name.includes(imageName)));
@@ -101,7 +72,7 @@ const Photos: React.FC<PhotoProps> = (props) => {
         });
     }
 
-    const handleCollectionThumbnail = (imageName) => {
+    const handleCollectionThumbnail = (imageName: string) => {
         setCollectionImage(imageName);
 
         let photo = photos.filter((photo => photo.name.includes(imageName)));
@@ -141,10 +112,10 @@ const Photos: React.FC<PhotoProps> = (props) => {
         }
     }
 
-    async function checkCollectionExists(collection) {
-        const data = await axios.get(`${apiConfig.photoApiEndpoint}/tags`)
+    async function checkCollectionExists(collection: string) {
+        const data = await fetchTags()
 
-        for (const [c, a] of Object.entries(data.data)) {
+        for (const [c, a] of Object.entries(data)) {
             if (c === collection) {
                 // collection already exists, so we don't require the collectionImage
                 setCollectionExists(true);
@@ -152,7 +123,7 @@ const Photos: React.FC<PhotoProps> = (props) => {
         }
     }
 
-    const onChangeCollection = (collection, id) => {
+    const onChangeCollection = (collection: string, id: string) => {
         //console.log("collection: " + collection)
         //console.log("id: " + id)
         checkCollectionExists(collection);
@@ -160,30 +131,33 @@ const Photos: React.FC<PhotoProps> = (props) => {
         //console.log("collection: " + collection)
     }
 
-    const onChangeAlbum = (album, id) => {
+    const onChangeAlbum = (album: string, id: string) => {
         setAlbum(album);
         //console.log("album " + album)
         //console.log("id: " + id)
     }
 
     useEffect(() => {
-        let url = `${apiConfig.photoApiEndpoint}/${params.collection}/${params.album}`;
-        axios.get(url)
-            .then(response => {
-                //console.log("response: " + JSON.stringify(response.data));
-                setPhotos(response.data);
+        fetchPhotos(params.collection!, params.album!)
+            .then(data => {
+                //console.log("response: " + JSON.stringify(data));
+                setPhotos(data);
                 setisLoading(false);
             })
             .catch(error => {
                 console.error(error);
             });
-    }, [props.collection, props.album]);
+    }, [params.collection, params.album]);
 
     const setEditMode = () => {
+        if (!isEditMode) {
+            // Snapshot current state when entering edit mode
+            originalPhotosRef.current = photos.map(p => ({ ...p }));
+        }
         setIsEditMode(!isEditMode);
     }
 
-    const onChangeIsDeleted = (event) => {
+    const onChangeIsDeleted = (event: React.ChangeEvent<HTMLInputElement>) => {
 
         let photo = photos.filter((photo => photo.name.includes(event.target.id)));
         setPhotos((prevState) => {
@@ -193,7 +167,7 @@ const Photos: React.FC<PhotoProps> = (props) => {
         });
     }
 
-    const onChangeDescription = (event) => {
+    const onChangeDescription = (event: React.ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();
 
         let photo = photos.filter((photo => photo.name.includes(event.target.id)));
@@ -204,15 +178,16 @@ const Photos: React.FC<PhotoProps> = (props) => {
         });
     }
 
-    const handleImageOrientation = (event, direction) => {
-        console.log("id: " + JSON.stringify(event.target.id))
+    const handleImageOrientation = (event: React.MouseEvent<SVGElement>, direction: string) => {
+        const targetId = event.currentTarget.id;
+        console.log("id: " + JSON.stringify(targetId))
 
         const lower_limit = 0;
         const upper_limit = 360;
         const step = 90;
         const rotate = [0, 90, 180, 270];
 
-        let photo = photos.filter((photo => photo.name.includes(event.target.id)));
+        let photo = photos.filter((photo => photo.name.includes(targetId)));
         let orientation = photo[0].orientation;
         //orientation = (orientation + step) % upper_limit;
         let pos = rotate.indexOf(orientation);
@@ -225,7 +200,7 @@ const Photos: React.FC<PhotoProps> = (props) => {
         console.log("width: " + photo[0].width)
 
         setPhotos((prevState) => {
-            return prevState.map((photo) => photo.name === event.target.id ? {
+            return prevState.map((photo) => photo.name === targetId ? {
                 ...photo, orientation: orientation
             } : photo)
         });
@@ -234,15 +209,28 @@ const Photos: React.FC<PhotoProps> = (props) => {
     function saveEditedData(data: Photo[]) {
         console.log("saving edited data")
 
-        if (!isAuthenticated) {
+        if (!isAuthenticated || !token) {
             console.error("this action requires authentication");
             return;
         }
 
-        //console.log(JSON.stringify(data))
+        // Only send photos that have actually changed
+        const changedPhotos = data.filter(photo => {
+            const original = originalPhotosRef.current.find(o => o.name === photo.name);
+            if (!original) return true;
+            return (
+                photo.description !== original.description ||
+                photo.collection !== original.collection ||
+                photo.album !== original.album ||
+                photo.orientation !== original.orientation ||
+                photo.isDeleted !== original.isDeleted ||
+                photo.collectionImage !== original.collectionImage ||
+                photo.albumImage !== original.albumImage
+            );
+        });
 
-        for (let i = 0; i < data.length; i++) {
-            FileUploadService.update(data[i], token)
+        for (let i = 0; i < changedPhotos.length; i++) {
+            FileUploadService.update(changedPhotos[i], token)
                 .then((response) => {
                     //console.log("response: " + JSON.stringify(response));
                 }).catch((error) => {
@@ -256,50 +244,41 @@ const Photos: React.FC<PhotoProps> = (props) => {
     return (
         <div className={`${theme === 'dark' ? 'bg-slate-900' : 'bg-gray-300'}`}>
             <Box sx={{ width: "90%", mx: "auto", p: 2 }}>
-                <div className="text-left pt-4 pb-4 text-md">
-                    <Link to="/" className={`dark:text-blue-500 uppercase ${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'}`} relative="path"><span className='underline'>Collections</span></Link>
-                    <span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} uppercase`}> &gt; <Link to={`/${params.collection}`}><span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} underline`}>{params.collection}</span></Link></span>
-                    <span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} uppercase`}> &gt; <span className={`${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'} uppercase`}>{params.album}</span></span>
-                    {
-                        (isAuthenticated && isAdmin && !isLoading) && (
-                            <span className='inline justify-end float-right pr-2'>
-                                {
-                                    isEditMode && (<button className={`text-white h-8 text-md mt-1 mr-2 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-400 bg-gray-500 text-gray-100'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-md`} onClick={() => saveEditedData(photos)}>
-                                        {
-                                            "Save"
-                                        }
-                                    </button>)
-                                }
-                                <button className={`text-white h-8 text-md mt-0 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-400 bg-gray-500 text-gray-100'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-md`} onClick={setEditMode}>
-                                    {
-                                        isEditMode ? "Cancel" : "Edit"
-                                    }
-                                </button>
-                                {
-                                    isEditMode && (
-                                        <>
-                                            <label className={`uppercase text-sm ml-2 mr-2 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-500'} uppercase`}>Show Exif</label>
-                                            <input type="checkbox"
-                                                onChange={(event) => { handleShowExif(event) }}
-                                            >
-                                            </input>
-                                        </>
-                                    )
-                                }
-                            </span>
-                        )
-                    }
-                </div>
+                <Breadcrumb segments={[
+                    { label: 'Collections', to: '/' },
+                    { label: params.collection!, to: `/${params.collection}` },
+                    { label: params.album! },
+                ]} />
                 {
-                    isLoading &&
-                    <div className={`flex justify-center md-auto text-white ${!isLoading ? "invisible" : ""}`}>
-                        <span
-                            className={`justify-center md-auto mt-[3.5em] mr-[4.4em] h-28 w-28 animate-spin rounded-full border-[9px] border-solid border-white border-current border-r-transparent `}
-                        >
-                        </span>
-                        <span className='relative top-[100px] right-[167px] uppercase'>Loading...</span>
-                    </div>
+                    (isAuthenticated && isAdmin && !isLoading) && (
+                        <div className='inline justify-end float-right pr-2'>
+                            {
+                                isEditMode && (<button className={`text-white h-8 text-md mt-1 mr-2 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-400 bg-gray-500 text-gray-100'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-md`} onClick={() => saveEditedData(photos)}>
+                                    {
+                                        "Save"
+                                    }
+                                </button>)
+                            }
+                            <button className={`text-white h-8 text-md mt-0 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-400 bg-gray-500 text-gray-100'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-md`} onClick={setEditMode}>
+                                {
+                                    isEditMode ? "Cancel" : "Edit"
+                                }
+                            </button>
+                            {
+                                isEditMode && (
+                                    <>
+                                        <label className={`uppercase text-sm ml-2 mr-2 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-500'} uppercase`}>Show Exif</label>
+                                        <input type="checkbox"
+                                            onChange={(event) => { handleShowExif(event) }}
+                                        >
+                                        </input>
+                                    </>
+                                )
+                            }
+                        </div>
+                    )
                 }
+                <LoadingSpinner visible={isLoading} />
                 <RowsPhotoAlbum
                     padding={30}
                     spacing={0}
@@ -337,12 +316,13 @@ const Photos: React.FC<PhotoProps> = (props) => {
                                                 id={photo.name}
                                                 onChange={(event) => onChangeDescription(event)}
                                             />
-                                            <TagSelectEdit
+                                            <TagSelector
+                                                mode="edit"
                                                 id={photo.name}
                                                 collection={photo.collection}
                                                 album={photo.album}
-                                                selectedAlbum={(event) => onChangeAlbum(event, photo.name)}
-                                                selectedCollection={(event) => onChangeCollection(event, photo.name)}
+                                                selectedAlbum={(event: string) => onChangeAlbum(event, photo.name)}
+                                                selectedCollection={(event: string) => onChangeCollection(event, photo.name)}
                                                 isFormValid={isFormValid}
                                             />
                                             <div className=''>
