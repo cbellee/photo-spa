@@ -7,6 +7,7 @@ import { fetchAlbums } from '../services/photoService';
 import type { CollectionPhoto, CollectionRouteParams } from '../types';
 import LoadingSpinner from './LoadingSpinner';
 import Breadcrumb from './Breadcrumb';
+import LazyImage from './LazyImage';
 
 import "react-photo-album/rows.css";
 import "yet-another-react-lightbox/styles.css";
@@ -55,7 +56,7 @@ const Albums: React.FC<AlbumsProps> = () => {
                             <div className="p-1" onClick={onClick}>
                                 <Link to={photo.album}>
                                 <div className=''>
-                                    <img src={photo.src} key={index} className="rounded-md hover:opacity-85 animate-appear max-h-56" />
+                                    <LazyImage src={photo.src} key={index} placeholderWidth={photo.width} placeholderHeight={photo.height} className="rounded-md hover:opacity-85 max-h-56" />
                                 </div>
                                 </Link>
                                 <Link to={photo.album} className={`uppercase text-sm underline ${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'}`}>{photo.album}</Link>

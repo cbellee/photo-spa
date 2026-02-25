@@ -20,6 +20,7 @@ import { fetchPhotos, fetchTags } from '../services/photoService';
 import type { Photo, PhotoRouteParams } from '../types';
 import LoadingSpinner from './LoadingSpinner';
 import Breadcrumb from './Breadcrumb';
+import LazyImage from './LazyImage';
 
 interface PhotoProps {
     collection: string;
@@ -290,11 +291,14 @@ const Photos: React.FC<PhotoProps> = () => {
                     render={{
                         photo: ({ onClick }, { photo }) => (
                             <div className="grid group justify-center object-fill p-1" key={photo.id}>
-                                <img
+                                <LazyImage
                                     alt={photo.description}
                                     src={photo.src}
                                     key={`img-${index}`}
-                                    className={`hover:opacity-85 hover:cursor-pointer [grid-column:1] [grid-row:1] rounded-sm  max-h-[300px]  animate-appear object-fill ${photo.orientation === 270 ? '-rotate-90' : `rotate-[${photo.orientation}deg]`}`}
+                                    placeholderWidth={photo.width}
+                                    placeholderHeight={photo.height}
+                                    wrapperClassName="[grid-column:1] [grid-row:1]"
+                                    className={`hover:opacity-85 hover:cursor-pointer rounded-sm max-h-[300px] object-fill ${photo.orientation === 270 ? '-rotate-90' : `rotate-[${photo.orientation}deg]`}`}
                                     onClick={onClick}
                                 />
                                 {(isAdmin && isEditMode && isAuthenticated) && (
