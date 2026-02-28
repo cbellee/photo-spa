@@ -53,7 +53,7 @@ const Albums: React.FC<AlbumsProps> = () => {
                     rowConstraints={{ singleRowMaxHeight: 250 }}
                     render={{
                         photo: ({ onClick }, { photo, index }) => (
-                            <div className="p-1" onClick={onClick}>
+                            <div className="p-1" key={`album-${photo.album}-${index}`} onClick={onClick}>
                                 <Link to={photo.album}>
                                 <div className=''>
                                     <LazyImage src={photo.src} key={index} placeholderWidth={photo.width} placeholderHeight={photo.height} className="rounded-md hover:opacity-85 max-h-56" />

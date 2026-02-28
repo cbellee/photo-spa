@@ -1,6 +1,7 @@
 import React from 'react';
 import { RouterProvider } from 'react-router-dom'
 import { MsalProvider } from '@azure/msal-react';
+import type { IPublicClientApplication } from '@azure/msal-browser';
 import { ThemeProvider } from './context/ThemeContext';
 import Collections from './components/Collections.tsx';
 import Albums from './components/AlbumCollections.tsx';
@@ -12,7 +13,7 @@ import Layout from './components/Layout';
 import About from './components/About.tsx';
 import './app.css'
 
-function App({ msalInstance}) {
+function App({ msalInstance}: { msalInstance: IPublicClientApplication }) {
 
   const router = createBrowserRouter([
     {
@@ -46,12 +47,16 @@ function App({ msalInstance}) {
           }
         ]
     },
-]);
+], {
+    future: {
+      v7_relativeSplatPath: true,
+    },
+  });
 
   return (
     <MsalProvider instance={msalInstance}>
       <ThemeProvider>
-        <RouterProvider router={router} />
+        <RouterProvider router={router} future={{ v7_startTransition: true }} />
       </ThemeProvider>
     </MsalProvider>
   );

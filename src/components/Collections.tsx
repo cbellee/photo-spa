@@ -47,7 +47,7 @@ const Collections: React.FC<CollectionsProps> = () => {
                     rowConstraints={{ singleRowMaxHeight: 250 }}
                     render={{
                         photo: ({ onClick }, { photo, index }) => (
-                            <div className="p-1">
+                            <div className="p-1" key={`col-${photo.collection}-${index}`}>
                                 <Link to={photo.collection}>
                                     <LazyImage src={photo.src} key={index} placeholderWidth={photo.width} placeholderHeight={photo.height} className="rounded-md hover:opacity-85 max-h-56" />
                                 </Link>

@@ -93,21 +93,17 @@ const Photos: React.FC<PhotoProps> = () => {
     async function isFormValid() {
         if (collection === "" && !collectionExists) {
             let msg = "collection is not set";
-            //console.log(msg)
             setIsValid(false);
             setValidationMessage(msg);
         } else if (album === "") {
             let msg = "album is not set";
-            //console.log(msg)
             setIsValid(false);
             setValidationMessage(msg);
         } else if (collectionImage === "" && !collectionExists) {
             let msg = "collection image thumbnail is not set";
-            //console.log(msg)
             setIsValid(false);
             setValidationMessage(msg);
         } else {
-            //console.log("form is valid")
             setIsValid(true);
             setValidationMessage("");
         }
@@ -125,23 +121,17 @@ const Photos: React.FC<PhotoProps> = () => {
     }
 
     const onChangeCollection = (collection: string, id: string) => {
-        //console.log("collection: " + collection)
-        //console.log("id: " + id)
         checkCollectionExists(collection);
         setCollection(collection);
-        //console.log("collection: " + collection)
     }
 
     const onChangeAlbum = (album: string, id: string) => {
         setAlbum(album);
-        //console.log("album " + album)
-        //console.log("id: " + id)
     }
 
     useEffect(() => {
         fetchPhotos(params.collection!, params.album!)
             .then(data => {
-                //console.log("response: " + JSON.stringify(data));
                 setPhotos(data);
                 setisLoading(false);
             })
@@ -152,7 +142,6 @@ const Photos: React.FC<PhotoProps> = () => {
 
     const setEditMode = () => {
         if (!isEditMode) {
-            // Snapshot current state when entering edit mode
             originalPhotosRef.current = photos.map(p => ({ ...p }));
         }
         setIsEditMode(!isEditMode);
@@ -181,8 +170,6 @@ const Photos: React.FC<PhotoProps> = () => {
 
     const handleImageOrientation = (event: React.MouseEvent<SVGElement>, direction: string) => {
         const targetId = event.currentTarget.id;
-        console.log("id: " + JSON.stringify(targetId))
-
         const lower_limit = 0;
         const upper_limit = 360;
         const step = 90;
@@ -190,15 +177,8 @@ const Photos: React.FC<PhotoProps> = () => {
 
         let photo = photos.filter((photo => photo.name.includes(targetId)));
         let orientation = photo[0].orientation;
-        //orientation = (orientation + step) % upper_limit;
         let pos = rotate.indexOf(orientation);
-        console.log("pos: " + pos)
-
-
         orientation = rotate[++pos % 4];
-
-        console.log("orientation: " + orientation)
-        console.log("width: " + photo[0].width)
 
         setPhotos((prevState) => {
             return prevState.map((photo) => photo.name === targetId ? {
@@ -233,7 +213,6 @@ const Photos: React.FC<PhotoProps> = () => {
         for (let i = 0; i < changedPhotos.length; i++) {
             FileUploadService.update(changedPhotos[i], token)
                 .then((response) => {
-                    //console.log("response: " + JSON.stringify(response));
                 }).catch((error) => {
                     console.error("error updating photo data: " + error);
                 });
@@ -244,7 +223,7 @@ const Photos: React.FC<PhotoProps> = () => {
 
     return (
         <div className={`${theme === 'dark' ? 'bg-slate-900' : 'bg-gray-300'}`}>
-            <Box sx={{ width: "90%", mx: "auto", p: 2 }}>
+            <Box className='w-[90%] mx-auto p-2 box-border'>
                 <Breadcrumb segments={[
                     { label: 'Collections', to: '/' },
                     { label: params.collection!, to: `/${params.collection}` },
@@ -252,7 +231,7 @@ const Photos: React.FC<PhotoProps> = () => {
                 ]} />
                 {
                     (isAuthenticated && isAdmin && !isLoading) && (
-                        <div className='inline justify-end float-right pr-2'>
+                        <div className='text-right pb-2 pr-1'>
                             {
                                 isEditMode && (<button className={`text-white h-8 text-md mt-1 mr-2 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-400 bg-gray-500 text-gray-100'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-md`} onClick={() => saveEditedData(photos)}>
                                     {
@@ -281,29 +260,34 @@ const Photos: React.FC<PhotoProps> = () => {
                 }
                 <LoadingSpinner visible={isLoading} />
                 <RowsPhotoAlbum
-                    padding={30}
-                    spacing={0}
+                    padding={0}
+                    spacing={5}
                     photos={photos}
                     rowConstraints={{ singleRowMaxHeight: 200, minPhotos: 1, maxPhotos: 10 }}
                     targetRowHeight={100}
                     key={`album_rows-${index}`}
                     onClick={({ index }) => setIndex(index)} // open in LightBox
                     render={{
-                        photo: ({ onClick }, { photo }) => (
-                            <div className="grid group justify-center object-fill p-1" key={photo.id}>
+                        photo: ({ onClick }, { photo, index, width, height }) => (
+                            <div className={`grid group justify-center overflow-hidden ${isEditMode ? 'w-full' : ''}`} key={`photo-${photo.id}-${index}`} style={{ width, height }}>
                                 <LazyImage
                                     alt={photo.description}
                                     src={photo.src}
-                                    key={`img-${index}`}
                                     placeholderWidth={photo.width}
                                     placeholderHeight={photo.height}
-                                    wrapperClassName="[grid-column:1] [grid-row:1]"
-                                    className={`hover:opacity-85 hover:cursor-pointer rounded-sm max-h-[300px] object-fill ${photo.orientation === 270 ? '-rotate-90' : `rotate-[${photo.orientation}deg]`}`}
+                                    wrapperClassName={`[grid-column:1] [grid-row:1] ${isEditMode ? 'h-[200px] overflow-hidden ' : ''}`}
+                                    className={`hover:opacity-85 hover:cursor-pointer rounded-sm ${isEditMode ? 'w-full p-2 h-[200px] object-contain bg-black rounded-t-md' : 'w-full h-full object-cover'}`}
+                                    style={{
+                                        transform: `rotate(${photo.orientation}deg)${photo.orientation === 90 || photo.orientation === 270
+                                                ? ` scale(${Math.min(photo.width * 2, photo.height) / Math.max(photo.width, photo.height)})`
+                                                : ''
+                                            }`,
+                                    }}
                                     onClick={onClick}
                                 />
                                 {(isAdmin && isEditMode && isAuthenticated) && (
-                                    <div id={photo.name} className={`[grid-column:1] z-0 [grid-row:1] place-self-start text-white bg-gray-500 m-1 p-1 rounded-md overflow-hidden`}>
-                                        <FaArrowRotateRight id={photo.name} onClick={(e) => handleImageOrientation(e, 'cw')} />
+                                    <div id={photo.name} className={`[grid-column:1] z-0 [grid-row:1] place-self-start text-white bg-gray-500 m-1 p-1 hover:border-[1px] rounded-md overflow-hidden`}>
+                                        <FaArrowRotateRight className={'cursor-grab opacity-50 hover:opacity-100'} id={photo.name} onClick={(e) => handleImageOrientation(e, 'cw')} />
                                     </div>
                                 )
                                 }
@@ -379,6 +363,38 @@ const Photos: React.FC<PhotoProps> = () => {
                 index={index}
                 close={() => setIndex(-1)}
                 plugins={[Fullscreen, Slideshow, Thumbnails]}
+                render={{
+                    slide: ({ slide }) => {
+                        const photo = slide as Photo;
+                        return (
+                            <img
+                                src={photo.src}
+                                alt={photo.description}
+                                style={{
+                                    maxWidth: '100%',
+                                    maxHeight: '100%',
+                                    objectFit: 'contain',
+                                    transform: photo.orientation ? `rotate(${photo.orientation}deg)` : undefined,
+                                }}
+                            />
+                        );
+                    },
+                    thumbnail: ({ slide }) => {
+                        const photo = slide as Photo;
+                        return (
+                            <img
+                                src={photo.src}
+                                alt={photo.description}
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover',
+                                    transform: photo.orientation ? `rotate(${photo.orientation}deg)` : undefined,
+                                }}
+                            />
+                        );
+                    },
+                }}
             />
         </div>
     )
