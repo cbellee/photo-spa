@@ -1,9 +1,9 @@
 const msalConfig = {
     auth: {
-        clientId: "689078c3-c0ad-4c10-a0d3-1c430c2e471d",
-        authority: "https://belleenetexternal.ciamlogin.com",
+        clientId: import.meta.env.VITE_MSAL_CLIENT_ID || "689078c3-c0ad-4c10-a0d3-1c430c2e471d",
+        authority: import.meta.env.VITE_MSAL_AUTHORITY || "https://belleenetexternal.ciamlogin.com",
         redirectUri: "/",
-        postLogoutRedirectUri: "http://localhost:5173",
+        postLogoutRedirectUri: import.meta.env.VITE_POST_LOGOUT_REDIRECT_URI || "/",
     },
     cache: {
         cacheLocation: "sessionStorage",
@@ -12,7 +12,7 @@ const msalConfig = {
 };
 
 const tokenRequest = {
-    scopes: ["api://689078c3-c0ad-4c10-a0d3-1c430c2e471d/photo.all"]
+    scopes: [import.meta.env.VITE_MSAL_SCOPE || "api://689078c3-c0ad-4c10-a0d3-1c430c2e471d/photo.all"]
 };
 
 const photoUploaderRole = "photo.upload";

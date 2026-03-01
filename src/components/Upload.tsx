@@ -1,20 +1,14 @@
 import React, { useState, useEffect } from "react";
 import FileUploadService from "../services/FileUploadService.tsx";
-import TagSelect from "./TagSelect.tsx";
+import TagSelector from "./TagSelector";
 import MultiRadio from "./MultiRadio.tsx";
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import { useIsAuthenticated } from '@azure/msal-react';
-import { AuthenticatedTemplate, UnauthenticatedTemplate } from '@azure/msal-react';
-import { useMsal } from '@azure/msal-react';
-import { tokenRequest } from '../config/msalConfig.ts';
-import axios from 'axios';
-import { apiConfig } from '../config/apiConfig.ts';
-import { getAccessToken } from '../utils/utils.ts';
+import ImagePreviewGrid from "./ImagePreviewGrid";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from '../context/ThemeContext.tsx';
 import { useForm, SubmitHandler, FormProvider, set } from 'react-hook-form';
+import { useAuth } from '../hooks/useAuth';
+import { fetchTags } from '../services/photoService';
+import type { ImagePreview, UploadPhoto } from '../types';
 
 const UploadImages = () => {
     const formMethods = useForm({ mode: "onChange", reValidateMode: "onChange" });
@@ -35,32 +29,18 @@ const UploadImages = () => {
     const [albumExists, setAlbumExists] = useState(false);
 
     const [isValid, setIsValid] = useState(false);
-    const isAuthenticated = useIsAuthenticated();
-    const { instance, accounts } = useMsal();
-    const [token, setToken] = useState<string | null>(null);
+    const { isAuthenticated, token } = useAuth();
     const [validationMessage, setValidationMessage] = useState("totes");
     const [progressMessage, setProgressMessage] = useState({ progess: 0, total: selectedFiles?.length });
     const navigate = useNavigate();
-    const { theme, toggleTheme } = useTheme();
+    const { theme } = useTheme();
 
-    const onSubmit = (data) => {
+    const onSubmit = (data: Record<string, unknown>) => {
         console.log("onSubmit: " + data);
         uploadImages();
     }
 
-    useEffect(() => {
-        getAccessToken(instance, accounts, tokenRequest, setToken);
-    }, [isAuthenticated]);
-
     async function isFormValid() {
-        /*         console.log("collection: " + collection);
-                console.log("album: " + album);
-                console.log("collectionImage: " + collectionImage);
-                console.log("albumImage: " + albumImage);
-                console.log("selectedFiles: " + selectedFiles);
-                console.log("albumExists: " + albumExists);
-                console.log("collectionExists: " + collectionExists); */
-
         if (collection === "" && !collectionExists) {
             let msg = "Collection is not set";
             setIsValid(false);
@@ -92,11 +72,11 @@ const UploadImages = () => {
         }
     }
 
-    async function checkCollectionExists(collection) {
-        const response = await axios.get(`${apiConfig.photoApiEndpoint}/tags`)
+    async function checkCollectionExists(collection: string) {
+        const data = await fetchTags()
         var collectionExists = false;
 
-        for (const [c, a] of Object.entries(response.data)) {
+        for (const [c, a] of Object.entries(data)) {
             if (c == collection) {
                 collectionExists = true;
             }
@@ -106,12 +86,12 @@ const UploadImages = () => {
         setCollectionExists(collectionExists);
     }
 
-    async function checkAlbumExists(album) {
-        const response = await axios.get(`${apiConfig.photoApiEndpoint}/tags`)
+    async function checkAlbumExists(album: string) {
+        const data = await fetchTags()
         var albumExists = false;
 
-        Object.keys(response.data).map((d) => {
-            let v = response.data[d];
+        Object.keys(data).map((d) => {
+            let v = data[d];
             if (v.includes(album)) {
                 albumExists = true;
                 return;
@@ -122,55 +102,34 @@ const UploadImages = () => {
         setAlbumExists(albumExists);
     }
 
-    const setCollectionAsync = (collection) => {
+    const setCollectionAsync = (collection: string) => {
         setTimeout(() => {
             setCollection(collection);
         }, 0);
     }
 
-    const setAlbumAsync = (album) => {
+    const setAlbumAsync = (album: string) => {
         setTimeout(() => {
             setAlbum(album);
         }, 0);
     }
 
-    const handleAlbumThumbnail = (imageName) => {
+    const handleAlbumThumbnail = (imageName: string) => {
         setAlbumImage(imageName);
     }
 
-    const handleCollectionThumbnail = (imageName) => {
+    const handleCollectionThumbnail = (imageName: string) => {
         setCollectionImage(imageName);
     }
 
-    const onChangeCollection = (collection) => {
+    const onChangeCollection = (collection: string) => {
         checkCollectionExists(collection);
         setCollectionAsync(collection);
     }
 
-    const onChangeAlbum = (album) => {
+    const onChangeAlbum = (album: string) => {
         checkAlbumExists(album);
         setAlbumAsync(album);
-    }
-
-    interface ImagePreview {
-        uploading: boolean;
-        uploadComplete: boolean;
-        uploadError?: boolean;
-        src: string;
-        width: number;
-        height: number;
-        name: string;
-        type: string;
-        size: number;
-        collection: string;
-        album: string;
-        collectionImage: boolean;
-        albumImage: boolean;
-        description: string;
-        length: number;
-        uploadProgress?: number;
-        orientation?: number;
-        isDeleted?: boolean;
     }
 
     const selectFiles = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -205,7 +164,7 @@ const UploadImages = () => {
         setImagePreviews(images);
     };
 
-    async function upload(idx, file) {
+    async function upload(idx: number, file: File) {
         await setImagePreviews((prevImages) => {
             let _images = [...prevImages];
             _images[idx].uploading = true;
@@ -225,7 +184,18 @@ const UploadImages = () => {
             console.error("Token is null");
             return;
         }
-        return await FileUploadService.upload(file, imagePreviews[idx], token, (event) => {
+        return await FileUploadService.upload(file, {
+            name: imagePreviews[idx].name,
+            collection: imagePreviews[idx].collection,
+            album: imagePreviews[idx].album,
+            collectionImage: imagePreviews[idx].collectionImage,
+            albumImage: imagePreviews[idx].albumImage,
+            description: imagePreviews[idx].description,
+            orientation: String(imagePreviews[idx].orientation ?? 0),
+            isDeleted: imagePreviews[idx].isDeleted ?? false,
+            size: imagePreviews[idx].size,
+            type: imagePreviews[idx].type,
+        } as UploadPhoto, token, (event) => {
             if (event.total && event.loaded) {
                 let progress = Math.round((100 * event.loaded) / event.total);
                 console.log(file.name + " progress: " + (100 * event.loaded) / event.total);
@@ -312,8 +282,9 @@ const UploadImages = () => {
         <FormProvider {...formMethods}>
             <form onSubmit={formMethods.handleSubmit(onSubmit)} className="">
                 <div className={`font-thin text-white  text-sm`}>
-                    <AuthenticatedTemplate>
-                        <TagSelect selectedAlbum={onChangeAlbum} selectedCollection={onChangeCollection}>
+                    {isAuthenticated ? (
+                        <>
+                            <TagSelector mode="create" selectedAlbum={onChangeAlbum} selectedCollection={onChangeCollection}>
                                 <input
                                     type="file"
                                     multiple
@@ -335,103 +306,43 @@ const UploadImages = () => {
                                 w-48
                                 hover:file:bg-gray-100`}
                                 />
-                            <input type="submit" hidden={true} />
-                            <button
-                                className={`text-white active:animate-pop h-8 font-semibold text-md w-24 min-w-24 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-100 bg-gray-300 text-gray-600'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 rounded-md`}
-                                disabled={!isValid || uploading}
-                                onClick={uploadImages}
-                            >
-                                Upload
-                            </button>
-                            <div className={` items-center w-28 ${numSelectedImages > 0 ? "visible" : "hidden"} `}>
-                                Uploading: {progressMessage.progess}/{numSelectedImages}
-                            </div>
-                            <div className={`lowercase w-22 min-w-22 ${theme === 'dark' ? 'text-orange-500' : 'text-orange-700'}`}>
-                                {validationMessage} 
-                            </div>
-                        </TagSelect>
-
-                        {imagePreviews && (
-                            <div className="justify-items-center">
-                                <div className={`grid 2xl:grid-cols-7 xl:grid-cols-5 lg:grid-cols-4 sm:grid-cols-2 ${theme === 'dark' ? 'bg-gray-950' : 'bg-gray-300'}`}>
-                                    {imagePreviews.map((img, i) => {
-                                        return (
-                                            <Card className={`m-1.5 p-0 text-left ${theme === 'dark' ? 'border-gray-600' : 'border-gray-200'}  border-2`}>
-                                                <CardContent className={`h-full flex flex-col justify-center ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-gray-300'}`}>
-                                                    <div className="flex justify-items-end justify-end relative">
-                                                        <div className="justify-end justify-items-end">
-                                                            <CardMedia component="img" className={`justify-items-start justify-start rounded-sm ${img.uploading ? "animate-pulse" : ""}`} image={img.src} alt={"image-" + i} key={i}
-                                                            />
-                                                        </div>
-                                                        <div className="absolute top-1/2 left-1/2 ">
-                                                        <span className={`animate-spin rounded-full w-11 h-11 absolute ${!img.uploading ? "" : ""} border-4 border-solid border-current border-r-transparent motion-reduce:animate-[spin_1.5s_linear_infinite]`}>
-                                                        </span>
-                                                            <span className={`pt-3 pl-1.5 absolute text-sm ${!img.uploading ? "" : ""}`}>
-                                                            {
-                                                                img.uploadProgress + "%"
-                                                            }
-                                                        </span>
-                                                        </div>
-                                                    </div>
-                                                    <span className={`absolute text-md font-semibold ${!img.uploadComplete || !img.uploadError ? "invisible" : ""}`}>
-                                                        {
-                                                            img.uploadError ?
-                                                                "Upload Error" :
-                                                                "Upload Complete"
-                                                        }
-                                                    </span>
-                                                    <div className="h-full"></div>
-                                                    <div className="flex flex-col">
-                                                        <div className="p-0 m-0 pt-2 justify-end flex flex-col">
-                                                            <label className="font-semibold">Name</label>
-                                                            <div className="">{imagePreviews[i].name}</div>
-                                                            <label className="font-semibold">Description</label>
-                                                            <input type="text"
-                                                                value={imagePreviews[i].description}
-                                                                defaultValue={imagePreviews[i].description}
-                                                                className={`rounded-sm pl-1 block ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'} w-full`}
-                                                                onChange={(e) => { setImagePreviews((prevImages) => { let _images = [...prevImages]; _images[i].description = e.target.value; return _images; }) }}
-                                                            >
-                                                            </input>
-                                                            <div className="col-span-2">
-                                                                {
-                                                                    collectionExists ?
-                                                                        <></>
-                                                                        :
-                                                                        <MultiRadio
-                                                                            groupName="Collection"
-                                                                            imageName={`${img.name}`}
-                                                                            handler={handleCollectionThumbnail}
-                                                                        />
-                                                                }
-                                                                {
-                                                                    albumExists ?
-                                                                        <></>
-                                                                        :
-                                                                        <MultiRadio
-                                                                            groupName="Album"
-                                                                            imageName={`${img.name}`}
-                                                                            handler={handleAlbumThumbnail}
-                                                                        />
-                                                                }
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </CardContent>
-                                            </Card>
-                                        );
-                                    })}
+                                <input type="submit" hidden={true} />
+                                <button
+                                    className={`text-white active:animate-pop h-8 font-semibold text-md w-24 min-w-24 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-100 bg-gray-300 text-gray-600'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 rounded-md`}
+                                    disabled={!isValid || uploading}
+                                    onClick={uploadImages}
+                                >
+                                    Upload
+                                </button>
+                                <div className={` items-center w-28 ${numSelectedImages > 0 ? "visible" : "hidden"} `}>
+                                    Uploading: {progressMessage.progess}/{numSelectedImages}
                                 </div>
-                            </div>
+                                <div className={`lowercase w-22 min-w-22 ${theme === 'dark' ? 'text-orange-500' : 'text-orange-700'}`}>
+                                    {validationMessage}
+                                </div>
+                            </TagSelector>
 
-                        )}
-                    </AuthenticatedTemplate>
-                    <UnauthenticatedTemplate>
+                            <ImagePreviewGrid
+                                imagePreviews={imagePreviews}
+                                collectionExists={collectionExists}
+                                albumExists={albumExists}
+                                onDescriptionChange={(i, value) => {
+                                    setImagePreviews((prevImages) => {
+                                        let _images = [...prevImages];
+                                        _images[i].description = value;
+                                        return _images;
+                                    });
+                                }}
+                                onCollectionThumbnail={handleCollectionThumbnail}
+                                onAlbumThumbnail={handleAlbumThumbnail}
+                            />
+                        </>
+                    ) : (
                         <div className="justify-items-center">
                             <h2 className="text-white text-center mt-20 items-center justify-items-center visible flex transform-none relative rotate-0">
                                 You must be signed in and granted access to upload photos</h2>
                         </div>
-                    </UnauthenticatedTemplate>
+                    )}
                 </div>
             </form>
         </FormProvider>

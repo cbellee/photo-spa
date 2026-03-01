@@ -1,48 +1,8 @@
 import axios, { AxiosRequestConfig, AxiosResponse, AxiosProgressEvent } from "axios";
-import { apiConfig } from "../config/apiConfig.ts";
+import { apiConfig } from "../config/apiConfig";
+import type { Photo, UploadPhoto, UpdatePhoto } from '../types';
 
 let url = `${apiConfig.photoApiEndpoint}`;
-
-interface UploadPhoto {
-    name: string;
-    collection: string;
-    album: string;
-    collectionImage: boolean;
-    albumImage: boolean;
-    description: string;
-    orientation: string;
-    isDeleted: boolean;
-    size: number;
-    type: string;
-}
-
-interface Photo {
-    name: string;
-    id: string;
-    url: string;
-    src: string;
-    width: number;
-    height: number;
-    collection: string;
-    albumImage: boolean;
-    collectionImage: boolean;
-    album: string;
-    description: string;
-    exifData?: Record<string, string>;
-    isDeleted: boolean;
-    orientation: number;
-}
-
-interface UpdatePhoto {
-    name: string;
-    collection: string;
-    collectionImage: string;
-    albumImage: string;
-    album: string;
-    description: string;
-    orientation: string;
-    isDeleted: string;
-}
 
 async function update(
     photoData: Photo,
@@ -60,8 +20,6 @@ async function update(
     }
 
     console.log("update photo data: ", JSON.stringify(update));
-    //console.log('token: ', token);
-
     let headers = {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`,
@@ -86,20 +44,6 @@ async function upload(
     let formData = new FormData();
 
     formData.append("photo", file);
-
-    /*     formData.append("metadata", JSON.stringify({
-            name: data.name,
-            type: file.type,
-            description: data.description,
-            size: file.size,
-            collection: data.collection,
-            album: data.album,
-            collectionImage: data.collectionImage,
-            albumImage: data.albumImage,
-            isDeleted: false,
-            orientation: 0,
-        })); */
-
     formData.append("metadata", JSON.stringify(data));
 
     const config: AxiosRequestConfig = {
