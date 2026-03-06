@@ -15,7 +15,6 @@ export default function PhotoExifData({ data }: { data: string | null | undefine
         return (
             <Fragment>
                 <hr className={`mt-2 pt-2 ${theme === 'dark' ? 'border-gray-500' :  'border-gray-400'}`} />
-                <span className='font-semibold mb-2'>Exif</span>
                 {
                     Object.entries(parsed).map(([key, value]) => (
                         <div className='text-left text-sm' key={key}>
