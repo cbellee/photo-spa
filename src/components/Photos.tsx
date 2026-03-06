@@ -123,10 +123,20 @@ const Photos: React.FC<PhotoProps> = () => {
     const onChangeCollection = (collection: string, id: string) => {
         checkCollectionExists(collection);
         setCollection(collection);
+        setPhotos((prevState) => {
+            return prevState.map((photo) => photo.name === id ? {
+                ...photo, collection: collection
+            } : photo)
+        });
     }
 
     const onChangeAlbum = (album: string, id: string) => {
         setAlbum(album);
+        setPhotos((prevState) => {
+            return prevState.map((photo) => photo.name === id ? {
+                ...photo, album: album
+            } : photo)
+        });
     }
 
     useEffect(() => {
@@ -168,7 +178,7 @@ const Photos: React.FC<PhotoProps> = () => {
         });
     }
 
-    const handleImageOrientation = (event: React.MouseEvent<SVGElement>, direction: string) => {
+    const handleImageOrientation = (event: React.MouseEvent<HTMLDivElement>, direction: string) => {
         const targetId = event.currentTarget.id;
         const lower_limit = 0;
         const upper_limit = 360;
@@ -223,7 +233,7 @@ const Photos: React.FC<PhotoProps> = () => {
 
     return (
         <div className={`${theme === 'dark' ? 'bg-slate-900' : 'bg-gray-300'}`}>
-            <Box className='w-[90%] mx-auto p-2 box-border'>
+            <Box className='w-[90%] mx-auto box-border'>
                 <Breadcrumb segments={[
                     { label: 'Collections', to: '/' },
                     { label: params.collection!, to: `/${params.collection}` },
@@ -231,130 +241,150 @@ const Photos: React.FC<PhotoProps> = () => {
                 ]} />
                 {
                     (isAuthenticated && isAdmin && !isLoading) && (
-                        <div className='text-right pb-2 pr-1'>
+                        <div className='text-right pb-4'>
                             {
-                                isEditMode && (<button className={`text-white h-8 text-md mt-1 mr-2 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-400 bg-gray-500 text-gray-100'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-md`} onClick={() => saveEditedData(photos)}>
+                                isEditMode && (
+                                    <div className="pr-4 inline">
+                                        <label className={`uppercase text-sm pr-2 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-500'} uppercase`}>Show Exif</label>
+                                        <input type="checkbox"
+                                            onChange={(event) => { handleShowExif(event) }}
+                                        >
+                                        </input>
+                                    </div>
+                                )
+                            }
+                            {
+                                isEditMode && (<button className={`text-white h-8 text-md mr-2 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-400 bg-gray-500 text-gray-100'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-sm `} onClick={() => saveEditedData(photos)}>
                                     {
                                         "Save"
                                     }
                                 </button>)
                             }
-                            <button className={`text-white h-8 text-md mt-0 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-400 bg-gray-500 text-gray-100'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-md`} onClick={setEditMode}>
+                            <button className={`text-white h-8 text-md ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-400 bg-gray-500 text-gray-100'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-sm`} onClick={setEditMode}>
                                 {
                                     isEditMode ? "Cancel" : "Edit"
                                 }
                             </button>
-                            {
-                                isEditMode && (
-                                    <>
-                                        <label className={`uppercase text-sm ml-2 mr-2 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-500'} uppercase`}>Show Exif</label>
-                                        <input type="checkbox"
-                                            onChange={(event) => { handleShowExif(event) }}
-                                        >
-                                        </input>
-                                    </>
-                                )
-                            }
                         </div>
                     )
                 }
                 <LoadingSpinner visible={isLoading} />
-                <RowsPhotoAlbum
-                    padding={0}
-                    spacing={5}
-                    photos={photos}
-                    rowConstraints={{ singleRowMaxHeight: 200, minPhotos: 1, maxPhotos: 10 }}
-                    targetRowHeight={100}
-                    key={`album_rows-${index}`}
-                    onClick={({ index }) => setIndex(index)} // open in LightBox
-                    render={{
-                        photo: ({ onClick }, { photo, index, width, height }) => (
-                            <div className={`grid group justify-center overflow-hidden ${isEditMode ? 'w-full' : ''}`} key={`photo-${photo.id}-${index}`} style={{ width, height }}>
-                                <LazyImage
-                                    alt={photo.description}
-                                    src={photo.src}
-                                    placeholderWidth={photo.width}
-                                    placeholderHeight={photo.height}
-                                    wrapperClassName={`[grid-column:1] [grid-row:1] ${isEditMode ? 'h-[200px] overflow-hidden ' : ''}`}
-                                    className={`hover:opacity-85 hover:cursor-pointer rounded-sm ${isEditMode ? 'w-full p-2 h-[200px] object-contain bg-black rounded-t-md' : 'w-full h-full object-cover'}`}
-                                    style={{
-                                        transform: `rotate(${photo.orientation}deg)${photo.orientation === 90 || photo.orientation === 270
-                                                ? ` scale(${Math.min(photo.width * 2, photo.height) / Math.max(photo.width, photo.height)})`
-                                                : ''
-                                            }`,
-                                    }}
-                                    onClick={onClick}
-                                />
-                                {(isAdmin && isEditMode && isAuthenticated) && (
-                                    <div id={photo.name} className={`[grid-column:1] z-0 [grid-row:1] place-self-start text-white bg-gray-500 m-1 p-1 hover:border-[1px] rounded-md overflow-hidden`}>
-                                        <FaArrowRotateRight className={'cursor-grab opacity-50 hover:opacity-100'} id={photo.name} onClick={(e) => handleImageOrientation(e, 'cw')} />
-                                    </div>
-                                )
-                                }
-                                <div className={`[grid-column:1] [grid-row:1] place-self-end block ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-500'}  ${isAuthenticated} ? : group-hover:opacity-60 opacity-0 text-white overflow-hidden w-full`}>{photo.description}</div>
-                                {
-                                    (isEditMode && isAdmin) && (
-                                        <div className={` flex ${theme === 'dark' ? 'bg-gray-700 text-white border-b-gray-600 border-l-gray-600 border-r-gray-600' : 'bg-gray-100 text-gray-700 border-b-gray-300 border-l-gray-300 border-r-gray-300'} flex-col text-left pr-2 pl-2 pb-2 pt-2  border-l-2 border-r-2 border-b-2 rounded-b-lg`}>
-                                            <label>Description</label>
+                {isEditMode ? (
+                    <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4 pb-8">
+                        {photos.map((photo, idx) => (
+                            <div className="flex flex-col overflow-visible border-1 border-gray-600 shadow-md shadow-black/60 rounded-sm" key={`photo-edit-${photo.id}-${idx}`}>
+                                <div className="relative h-[200px] w-full bg-slate-800 rounded-t-md rounded-l-md rounded-r-md rounded-bl-none overflow-hidden">
+                                    <LazyImage
+                                        alt={photo.description}
+                                        src={photo.src}
+                                        wrapperClassName="absolute inset-0"
+                                        className="hover:opacity-85 hover:cursor-pointer w-full h-full p-2 object-scale-down "
+                                        style={{
+                                            transform: photo.orientation ? `rotate(${photo.orientation}deg)` : undefined,
+                                        }}
+                                        onClick={() => setIndex(idx)}
+                                    />
+                                    {(isAdmin && isAuthenticated) && (
+                                        <div id={photo.name} className="absolute top-2 left-2 z-10 text-neutral-400 bg-orange-900 p-1 hover:border-[1px] rounded-xl hover:bg-orange-400 hover:text-white" onClick={(e) => handleImageOrientation(e, 'cw')}>
+                                            <FaArrowRotateRight className="cursor-grab rounded-xl" id={photo.name} />
+                                        </div>
+                                    )}
+                                </div>
+                                {isAdmin && (
+                                    <div className={`flex ${theme === 'dark' ? 'bg-gray-700 text-gray-200' : 'bg-gray-100 text-gray-600'} rounded-b-md flex-col gap-3 text-left p-2`}>
+                                        <div>
+                                            <label className="text-xs font-semibold uppercase tracking-wide opacity-70">Description</label>
                                             <input
                                                 type="text"
                                                 name='description'
-                                                className={`pl-2 rounded-md h-8 ${theme === 'dark' ? 'bg-gray-600 text-white' : 'bg-gray-300 text-gray-700'} `}
+                                                className={`w-full px-1.5 py-1.5 rounded-sm text-sm border ${theme === 'dark' ? 'bg-gray-700 text-white border-gray-500 focus:border-blue-400' : 'bg-white text-gray-800 border-gray-300 focus:border-blue-500'} outline-none transition-colors`}
                                                 value={photo.description}
                                                 id={photo.name}
                                                 onChange={(event) => onChangeDescription(event)}
                                             />
-                                            <TagSelector
-                                                mode="edit"
-                                                id={photo.name}
-                                                collection={photo.collection}
-                                                album={photo.album}
-                                                selectedAlbum={(event: string) => onChangeAlbum(event, photo.name)}
-                                                selectedCollection={(event: string) => onChangeCollection(event, photo.name)}
-                                                isFormValid={isFormValid}
-                                            />
-                                            <div className=''>
-                                                <label>Delete {photo.isDeleted}</label>
-                                                <input
-                                                    type='checkbox'
-                                                    name='isDeleted'
-                                                    className='block'
-                                                    checked={photo.isDeleted}
-                                                    id={photo.name}
-                                                    onChange={(event) => onChangeIsDeleted(event)}
-                                                    disabled={photo.collectionImage || photo.albumImage}
-                                                />
-                                            </div>
-                                            <div className="col-span-2">
-                                                {
-                                                    collectionExists ?
-                                                        <></>
-                                                        :
-                                                        <MultiRadio
-                                                            groupName="Collection"
-                                                            imageName={`${photo.name}`}
-                                                            handler={handleCollectionThumbnail}
-                                                            checked={photo.collectionImage}
-                                                        />
-                                                }
-                                                <MultiRadio
-                                                    groupName="Album"
-                                                    imageName={`${photo.name}`}
-                                                    handler={handleAlbumThumbnail}
-                                                    checked={photo.albumImage}
-                                                />
-                                            </div>
-                                            {
-                                                showExif &&
-                                                <PhotoExifData data={photo.exifData} />
-                                            }
                                         </div>
-                                    )
-                                }
+                                        <TagSelector
+                                            mode="edit"
+                                            id={photo.name}
+                                            collection={photo.collection}
+                                            album={photo.album}
+                                            selectedAlbum={(event: string) => onChangeAlbum(event, photo.name)}
+                                            selectedCollection={(event: string) => onChangeCollection(event, photo.name)}
+                                            isFormValid={isFormValid}
+                                        />
+                                        <div className='flex items-center gap-2'>
+                                            <label className="text-xs font-semibold uppercase tracking-wide opacity-70">Delete</label>
+                                            <input
+                                                type='checkbox'
+                                                name='isDeleted'
+                                                className={`rounded accent-red-500 cursor-pointer`}
+                                                checked={photo.isDeleted}
+                                                id={photo.name}
+                                                onChange={(event) => onChangeIsDeleted(event)}
+                                                disabled={photo.collectionImage || photo.albumImage}
+                                            />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            {
+                                                collectionExists ?
+                                                    <></>
+                                                    :
+                                                    <MultiRadio
+                                                        groupName="Collection"
+                                                        imageName={`${photo.name}`}
+                                                        handler={handleCollectionThumbnail}
+                                                        checked={photo.collectionImage}
+                                                    />
+                                            }
+                                            <MultiRadio
+                                                groupName="Album"
+                                                imageName={`${photo.name}`}
+                                                handler={handleAlbumThumbnail}
+                                                checked={photo.albumImage}
+                                            />
+                                        </div>
+                                        {
+                                            showExif &&
+                                            <PhotoExifData data={photo.exifData} />
+                                        }
+                                    </div>
+                                )}
                             </div>
-                        ),
-                    }}
-                />
+                        ))}
+                    </div>
+                ) : (
+                    <RowsPhotoAlbum
+                        padding={0}
+                        spacing={5}
+                        photos={photos}
+                        rowConstraints={{ singleRowMaxHeight: 200, minPhotos: 1, maxPhotos: 10 }}
+                        targetRowHeight={200}
+                        key={`album_rows-${index}`}
+                        onClick={({ index }) => setIndex(index)}
+                        render={{
+                            photo: ({ onClick }, { photo, index, width, height }) => (
+                                <div className="grid group justify-center overflow-hidden" key={`photo-${photo.id}-${index}`} style={{ width, height }}>
+                                    <LazyImage
+                                        alt={photo.description}
+                                        src={photo.src}
+                                        placeholderWidth={photo.width}
+                                        placeholderHeight={photo.height}
+                                        wrapperClassName="[grid-column:1] [grid-row:1]"
+                                        className="hover:opacity-85 hover:cursor-pointer w-full h-full object-cover"
+                                        style={{
+                                            transform: `rotate(${photo.orientation}deg)${photo.orientation === 90 || photo.orientation === 270
+                                                ? ` scale(${Math.min(photo.width * 2, photo.height) / Math.max(photo.width, photo.height)})`
+                                                : ''
+                                                }`,
+                                        }}
+                                        onClick={onClick}
+                                    />
+                                    <div className={`[grid-column:1] [grid-row:1] place-self-end block ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-500'} ${isAuthenticated ? 'group-hover:opacity-60 opacity-0' : 'opacity-0'} text-white overflow-hidden w-full`}>{photo.description}</div>
+                                </div>
+                            ),
+                        }}
+                    />
+                )}
                 <Outlet />
             </Box>
             <Lightbox
