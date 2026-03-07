@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import * as photoService from '../services/photoService';
-import { useTags } from '../hooks/useTags';
+import { useTags, clearTagCache } from '../hooks/useTags';
 
 vi.mock('../services/photoService', () => ({
   fetchTags: vi.fn(),
@@ -10,6 +10,7 @@ vi.mock('../services/photoService', () => ({
 describe('useTags', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    clearTagCache();
   });
 
   it('starts with empty collectionAlbumData', () => {
