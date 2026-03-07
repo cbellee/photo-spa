@@ -5,14 +5,17 @@ import { screen, waitFor } from '@testing-library/react';
 import TagSelector from '../components/TagSelector';
 import { FormProvider, useForm } from 'react-hook-form';
 
-// Mock useTags hook
+// Mock useTags hook – the Map must be a stable reference (like the real
+// useState-based hook) to prevent infinite re-render loops in useEffect.
+const stableCollectionAlbumData = new Map([
+    ['trips', ['coral-bay', 'hong-kong', 'karijini']],
+    ['sport', ['parasailing', 'skydiving']],
+    ['vintage', ['nature']],
+]);
+
 vi.mock('../hooks/useTags', () => ({
     useTags: () => ({
-        collectionAlbumData: new Map([
-            ['trips', ['coral-bay', 'hong-kong', 'karijini']],
-            ['sport', ['parasailing', 'skydiving']],
-            ['vintage', ['nature']],
-        ]),
+        collectionAlbumData: stableCollectionAlbumData,
     }),
 }));
 
@@ -41,8 +44,8 @@ describe('TagSelector (mode="create")', () => {
 
     it('renders Collection and Album labels', () => {
         renderWithProviders(<TagSelectorWithForm {...defaultProps} />);
-        expect(screen.getByText('Collection:')).toBeInTheDocument();
-        expect(screen.getByText('Album:')).toBeInTheDocument();
+        expect(screen.getByText('Collection')).toBeInTheDocument();
+        expect(screen.getByText('Album')).toBeInTheDocument();
     });
 
     it('populates dropdowns from useTags hook', () => {
@@ -65,7 +68,7 @@ describe('TagSelector (mode="create")', () => {
 
     it('uses useTags hook for collection data', () => {
         renderWithProviders(<TagSelectorWithForm {...defaultProps} />);
-        expect(screen.getByText('Collection:')).toBeInTheDocument();
+        expect(screen.getByText('Collection')).toBeInTheDocument();
     });
 });
 
