@@ -1,3 +1,7 @@
+/**
+ * About — Static informational page describing the application.
+ * Simple presentational component with no state or side effects.
+ */
 import React from 'react';
 import { useTheme } from '../context/ThemeContext';
 

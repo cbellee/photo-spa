@@ -1,3 +1,7 @@
+/**
+ * Footer — Site-wide footer displaying the copyright year.
+ * Theme-aware background and text styling.
+ */
 import React from 'react'
 import { useTheme } from '../context/ThemeContext';
 

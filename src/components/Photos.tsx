@@ -1,3 +1,18 @@
+/**
+ * Photos — The most complex component in the app. Displays photos for a
+ * given collection/album in either browse mode (RowsPhotoAlbum with
+ * lightbox) or edit mode (CSS grid of editable cards).
+ *
+ * Complexity:
+ *  - Two rendering modes toggled by isEditMode.
+ *  - Edit mode cards include inline description editing, collection/album
+ *    reassignment via TagSelector, thumbnail radio selection (MultiRadio),
+ *    image rotation, deletion, and optional EXIF data display.
+ *  - Tracks per-photo dirty state against originalPhotosRef to build a
+ *    minimal diff for the save operation.
+ *  - Save sends bulk tag updates (collection, album, description, delete,
+ *    thumbnail flags) and rotation patches via FileUploadService.
+ */
 import React, { useState, useEffect, useRef, Fragment } from 'react';
 import { useParams, Link, Outlet } from 'react-router-dom';
 import Box from "@mui/material/Box";
@@ -241,36 +256,41 @@ const Photos: React.FC<PhotoProps> = () => {
                 ]} />
                 {
                     (isAuthenticated && isAdmin && !isLoading) && (
-                        <div className='text-right pb-4'>
+                        <div className={`flex flex-wrap gap-x-4 gap-y-3 px-4 py-3 items-center rounded-md ${theme === 'dark' ? 'bg-gray-800/60 text-gray-200 border border-gray-700' : 'bg-white/80 text-gray-600 border border-gray-200 shadow-sm'}`}>
                             {
                                 isEditMode && (
-                                    <div className="pr-4 inline">
-                                        <label className={`uppercase text-sm pr-2 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-500'} uppercase`}>Show Exif</label>
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <span className="text-xs font-semibold uppercase tracking-wide opacity-70">Show Exif</span>
                                         <input type="checkbox"
+                                            className="accent-orange-500 cursor-pointer"
                                             onChange={(event) => { handleShowExif(event) }}
-                                        >
-                                        </input>
-                                    </div>
+                                        />
+                                    </label>
                                 )
                             }
+                            <div className="flex-1" />
                             {
-                                isEditMode && (<button className={`text-white h-8 text-md mr-2 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-400 bg-gray-500 text-gray-100'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-sm `} onClick={() => saveEditedData(photos)}>
-                                    {
-                                        "Save"
-                                    }
-                                </button>)
+                                isEditMode && (
+                                    <button
+                                        className={`h-8 text-md font-semibold w-24 rounded-md ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-400 bg-gray-500 text-gray-100'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'}`}
+                                        onClick={() => saveEditedData(photos)}
+                                    >
+                                        Save
+                                    </button>
+                                )
                             }
-                            <button className={`text-white h-8 text-md ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-400 bg-gray-500 text-gray-100'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 w-32 pl-2 pr-2 font-semibold text-md rounded-sm`} onClick={setEditMode}>
-                                {
-                                    isEditMode ? "Cancel" : "Edit"
-                                }
+                            <button
+                                className={`h-8 text-md font-semibold w-24 rounded-md ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-400 bg-gray-500 text-gray-100'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'}`}
+                                onClick={setEditMode}
+                            >
+                                {isEditMode ? "Cancel" : "Edit"}
                             </button>
                         </div>
                     )
                 }
                 <LoadingSpinner visible={isLoading} />
                 {isEditMode ? (
-                    <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4 pb-8">
+                    <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4 pb-8 pt-4">
                         {photos.map((photo, idx) => (
                             <div className="flex flex-col overflow-visible border-1 border-gray-600 shadow-md shadow-black/60 rounded-sm" key={`photo-edit-${photo.id}-${idx}`}>
                                 <div className="relative h-[200px] w-full bg-slate-800 rounded-t-md rounded-l-md rounded-r-md rounded-bl-none overflow-hidden">
@@ -353,6 +373,7 @@ const Photos: React.FC<PhotoProps> = () => {
                         ))}
                     </div>
                 ) : (
+                    <div className="pt-4">
                     <RowsPhotoAlbum
                         padding={0}
                         spacing={5}
@@ -384,6 +405,7 @@ const Photos: React.FC<PhotoProps> = () => {
                             ),
                         }}
                     />
+                    </div>
                 )}
                 <Outlet />
             </Box>

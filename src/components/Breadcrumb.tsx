@@ -1,3 +1,8 @@
+/**
+ * Breadcrumb — Renders a breadcrumb navigation trail from an array of
+ * segments. Each segment can be a plain label or a clickable Link.
+ * Theme-aware colouring for separators and links.
+ */
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';

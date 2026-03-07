@@ -1,3 +1,9 @@
+/**
+ * Collections — Top-level gallery page that fetches and displays all
+ * photo collections as a responsive row-based grid. Each collection
+ * thumbnail links to its AlbumCollections view. Uses RowsPhotoAlbum
+ * for the masonry-style layout and LazyImage for progressive loading.
+ */
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Box from "@mui/material/Box";
@@ -49,7 +55,7 @@ const Collections: React.FC<CollectionsProps> = () => {
                         photo: ({ onClick }, { photo, index }) => (
                             <div className="p-1" key={`col-${photo.collection}-${index}`}>
                                 <Link to={photo.collection}>
-                                    <LazyImage src={photo.src} key={index} placeholderWidth={photo.width} placeholderHeight={photo.height} className="rounded-md hover:opacity-85 max-h-56" />
+                                    <LazyImage src={photo.src} key={index} placeholderWidth={photo.width} placeholderHeight={photo.height} className="rounded-sm hover:opacity-85 max-h-56" />
                                 </Link>
                                 <Link to={photo.collection} className={`uppercase text-sm underline ${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'}`}>{photo.collection}</Link>
                             </div>

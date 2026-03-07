@@ -1,3 +1,8 @@
+/**
+ * Layout — Root layout shell that wraps every route. Provides the
+ * Header, a flex-grow main area (React Router Outlet), and the Footer.
+ * Applies the global dark/light theme background.
+ */
 import { Outlet } from 'react-router-dom';
 import * as React from 'react';
 import Footer from './Footer.tsx'

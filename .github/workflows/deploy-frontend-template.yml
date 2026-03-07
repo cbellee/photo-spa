@@ -117,9 +117,15 @@ jobs:
         id: setup-node
         with:
           node-version: 18
-      - run: | 
-            npm install
-            npm run build
+      - name: install-dependencies
+        id: install-dependencies
+        run: npm install
+      - name: run-unit-tests
+        id: run-unit-tests
+        run: npm test
+      - name: build-spa
+        id: build-spa
+        run: npm run build
 
       - name: upload-spa
         id: upload-spa

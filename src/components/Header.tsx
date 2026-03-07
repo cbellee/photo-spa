@@ -1,3 +1,9 @@
+/**
+ * Header — Site-wide top navigation bar containing the app logo, desktop
+ * NavLinks, a hamburger-triggered MobileMenu for small screens, the
+ * authenticated user's name, sign-in/out controls, and a dark/light
+ * theme toggle button.
+ */
 import React, { useState } from "react";
 import SignInAndOut from "./SignInAndOut.tsx";
 import { IoMoon } from "react-icons/io5";

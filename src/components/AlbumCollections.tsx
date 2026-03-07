@@ -1,3 +1,10 @@
+/**
+ * AlbumCollections — Displays the albums within a single collection as a
+ * responsive row-based photo grid. Fetches album data on mount using the
+ * collection name from the URL params. Each album thumbnail links to its
+ * Photos view. Uses RowsPhotoAlbum for layout and LazyImage for
+ * progressive image loading.
+ */
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Box from "@mui/material/Box";
@@ -56,7 +63,7 @@ const Albums: React.FC<AlbumsProps> = () => {
                             <div className="p-1" key={`album-${photo.album}-${index}`} onClick={onClick}>
                                 <Link to={photo.album}>
                                 <div className=''>
-                                    <LazyImage src={photo.src} key={index} placeholderWidth={photo.width} placeholderHeight={photo.height} className="rounded-md hover:opacity-85 max-h-56" />
+                                    <LazyImage src={photo.src} key={index} placeholderWidth={photo.width} placeholderHeight={photo.height} className="rounded-sm hover:opacity-85 max-h-56" />
                                 </div>
                                 </Link>
                                 <Link to={photo.album} className={`uppercase text-sm underline ${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'}`}>{photo.album}</Link>

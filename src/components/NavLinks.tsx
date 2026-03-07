@@ -1,5 +1,12 @@
+/**
+ * NavLinks — Desktop horizontal navigation bar rendered inside Header.
+ * Filters nav items by authentication state (e.g. Upload is auth-only)
+ * and highlights the active route with an orange accent.
+ * Collections stays highlighted on descendant /:collection and
+ * /:collection/:album routes.
+ */
 import React, { Fragment } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 
 interface NavLinksProps {
@@ -12,6 +19,9 @@ export interface NavItem {
     authRequired?: boolean;
 }
 
+/** Named top-level routes that are NOT part of the collections hierarchy */
+const nonCollectionPrefixes = ['/upload', '/about'];
+
 const navItems: NavItem[] = [
     { to: '/upload', label: 'Upload', authRequired: true },
     { to: '/', label: 'Collections' },
@@ -20,6 +30,12 @@ const navItems: NavItem[] = [
 
 const NavLinks: React.FC<NavLinksProps> = ({ isAuthenticated }) => {
     const { theme } = useTheme();
+    const location = useLocation();
+
+    /** True when the current path is /, /:collection, or /:collection/:album */
+    const isCollectionsRoute = !nonCollectionPrefixes.some((p) =>
+        location.pathname.toLowerCase().startsWith(p),
+    );
 
     const activeClass = theme === 'dark'
         ? 'hover:text-orange-200 text-orange-300'
@@ -43,9 +59,13 @@ const NavLinks: React.FC<NavLinksProps> = ({ isAuthenticated }) => {
                     <li>
                         <NavLink
                             to={item.to}
-                            className={({ isActive }) =>
-                                isActive ? `${activeClass} active` : inactiveClass
-                            }
+                            className={({ isActive }) => {
+                                const active =
+                                    item.to === '/'
+                                        ? isCollectionsRoute
+                                        : isActive;
+                                return active ? `${activeClass} active` : inactiveClass;
+                            }}
                         >
                             {item.label}
                         </NavLink>

@@ -1,3 +1,7 @@
+/**
+ * ErrorPage — React Router error boundary page. Catches routing errors
+ * and displays the error message or status text to the user.
+ */
 import React from "react";
 import { useRouteError } from "react-router-dom";
 

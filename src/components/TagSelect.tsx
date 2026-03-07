@@ -1,3 +1,11 @@
+/**
+ * TagSelect — Legacy/alternate version of the collection + album
+ * dropdown pair using react-select CreatableSelect. Integrated with
+ * react-hook-form via Controller. Superseded by TagSelector which adds
+ * edit-mode support and themed styling.
+ *
+ * @deprecated Use TagSelector instead.
+ */
 import React, { useState, useRef } from "react"
 import CreatableSelect from "react-select/creatable";
 import { useTheme } from "../context/ThemeContext";
