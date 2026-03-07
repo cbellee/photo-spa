@@ -1,3 +1,8 @@
+/**
+ * LoadingSpinner — Conditionally visible full-width spinner with a
+ * "Loading..." label. Used as a placeholder while async data fetches
+ * are in progress.
+ */
 import React from 'react';
 
 interface LoadingSpinnerProps {

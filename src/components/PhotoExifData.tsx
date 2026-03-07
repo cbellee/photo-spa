@@ -1,3 +1,8 @@
+/**
+ * PhotoExifData — Parses a JSON string of EXIF metadata and renders it
+ * as a scrollable key/value list inside a photo edit card. Handles
+ * null/undefined data gracefully and displays a parse-error fallback.
+ */
 import React, { Fragment } from 'react';
 import { useTheme } from '../context/ThemeContext';
 

@@ -1,3 +1,9 @@
+/**
+ * SignInAndOut — Authentication button that toggles between Sign In and
+ * Sign Out using MSAL popup flows. Acquires tokens silently after login
+ * and falls back to an interactive popup on failure. Guards against
+ * concurrent interactions with an interactionInProgress flag.
+ */
 import React from 'react';
 import { loginRequest, msalConfig, tokenRequest } from '../config/msalConfig.ts';
 import { useState } from 'react';

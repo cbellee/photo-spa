@@ -1,3 +1,18 @@
+/**
+ * Upload — Authenticated file upload page. Lets users select images,
+ * assign them to a collection and album via TagSelector (create mode),
+ * add per-image descriptions in ImagePreviewGrid, choose collection/
+ * album thumbnails, and upload with progress tracking.
+ *
+ * Complexity:
+ *  - Manages parallel uploads with per-file progress callbacks that
+ *    update imagePreviews state.
+ *  - Validates form completeness (collection, album, files selected)
+ *    and disables the upload button until valid.
+ *  - After all uploads finish, navigates to the newly created album.
+ *  - Uses react-hook-form FormProvider to share form context with the
+ *    TagSelector child component.
+ */
 import React, { useState, useEffect } from "react";
 import FileUploadService from "../services/FileUploadService.tsx";
 import TagSelector from "./TagSelector";
@@ -120,6 +135,18 @@ const UploadImages = () => {
 
     const handleCollectionThumbnail = (imageName: string) => {
         setCollectionImage(imageName);
+    }
+
+    const handleOrientationChange = (imageName: string) => {
+        const rotations = [0, 90, 180, 270];
+        setImagePreviews((prev) =>
+            prev.map((img) => {
+                if (img.name !== imageName) return img;
+                const current = img.orientation ?? 0;
+                const idx = rotations.indexOf(current);
+                return { ...img, orientation: rotations[(idx + 1) % 4] };
+            })
+        );
     }
 
     const onChangeCollection = (collection: string) => {
@@ -280,8 +307,8 @@ const UploadImages = () => {
 
     return (
         <FormProvider {...formMethods}>
-            <form onSubmit={formMethods.handleSubmit(onSubmit)} className="">
-                <div className={`font-thin text-white  text-sm`}>
+            <form onSubmit={formMethods.handleSubmit(onSubmit)}>
+                <div className={`font-thin text-white text-sm w-[90%] mx-auto pt-4`}>
                     {isAuthenticated ? (
                         <>
                             <TagSelector mode="create" selectedAlbum={onChangeAlbum} selectedCollection={onChangeCollection}>
@@ -294,30 +321,32 @@ const UploadImages = () => {
                                     className={`
                                 ${theme === 'dark' ? 'text-orange-500' : 'text-orange-700'}   
                                 active:animate-pop
-                                lowercase
                                 text-orange-500
                                 file:font-semibold
-                                file:rounded-md file:border-0
+                                file:rounded-sm file:border-0
                                 file:text-md  file:h-8
                                 p-0
                                 m-0
                                 file:bg-gray-300 file:text-gray-600
                                 file:min-w-24
-                                w-48
+                                file:mr-4
+                                w-auto
+                                leading-8
+                                whitespace-nowrap
                                 hover:file:bg-gray-100`}
                                 />
                                 <input type="submit" hidden={true} />
                                 <button
-                                    className={`text-white active:animate-pop h-8 font-semibold text-md w-24 min-w-24 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-100 bg-gray-300 text-gray-600'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 rounded-md`}
+                                    className={`text-white active:animate-pop h-8 font-semibold text-md w-24 min-w-24 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-100 bg-gray-300 text-gray-600'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 rounded-sm`}
                                     disabled={!isValid || uploading}
                                     onClick={uploadImages}
                                 >
                                     Upload
                                 </button>
-                                <div className={` items-center w-28 ${numSelectedImages > 0 ? "visible" : "hidden"} `}>
+                                <div className={`whitespace-nowrap leading-8 ${numSelectedImages > 0 ? "visible" : "hidden"}`}>
                                     Uploading: {progressMessage.progess}/{numSelectedImages}
                                 </div>
-                                <div className={`lowercase w-22 min-w-22 ${theme === 'dark' ? 'text-orange-500' : 'text-orange-700'}`}>
+                                <div className={`whitespace-nowrap leading-8 text-sm ${theme === 'dark' ? 'text-orange-500' : 'text-orange-700'}`}>
                                     {validationMessage}
                                 </div>
                             </TagSelector>
@@ -335,6 +364,7 @@ const UploadImages = () => {
                                 }}
                                 onCollectionThumbnail={handleCollectionThumbnail}
                                 onAlbumThumbnail={handleAlbumThumbnail}
+                                onOrientationChange={handleOrientationChange}
                             />
                         </>
                     ) : (

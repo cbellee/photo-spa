@@ -1,3 +1,12 @@
+/**
+ * MultiRadio — A single-selection radio group scoped to a named group
+ * (e.g. "Collection" or "Album"). Used to let users pick one image as
+ * the thumbnail for a collection or album.
+ *
+ * Complexity: Manages its own checked state internally and inverts
+ * selection when the already-selected option is clicked again, giving
+ * toggle-like behaviour within a radio group.
+ */
 import React, { useState, Fragment } from 'react'
 import '../styles/multiradio.css';
 

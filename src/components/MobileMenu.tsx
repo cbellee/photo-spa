@@ -1,3 +1,9 @@
+/**
+ * MobileMenu — Full-screen overlay navigation menu for small viewports.
+ * Toggled by the hamburger icon in Header. Contains navigation links
+ * and the sign-in/out button. Uses inline CSS for show/hide animation
+ * since the menu needs a full-viewport overlay.
+ */
 import React from 'react';
 import SignInAndOut from './SignInAndOut';
 import { useTheme } from '../context/ThemeContext';
