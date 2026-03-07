@@ -19,7 +19,6 @@ async function update(
         isDeleted: photoData.isDeleted.toString(),
     }
 
-    console.log("update photo data: ", JSON.stringify(update));
     let headers = {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`,

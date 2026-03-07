@@ -51,7 +51,6 @@ const UploadImages = () => {
     const { theme } = useTheme();
 
     const onSubmit = (data: Record<string, unknown>) => {
-        console.log("onSubmit: " + data);
         uploadImages();
     }
 
@@ -83,7 +82,6 @@ const UploadImages = () => {
         } else {
             setIsValid(true);
             setValidationMessage("");
-            console.log("Form is valid");
         }
     }
 
@@ -96,8 +94,6 @@ const UploadImages = () => {
                 collectionExists = true;
             }
         }
-
-        console.log("collection '" + collection + "' exists: " + collectionExists);
         setCollectionExists(collectionExists);
     }
 
@@ -112,8 +108,6 @@ const UploadImages = () => {
                 return;
             }
         })
-
-        console.log("album '" + album + "' exists: " + albumExists);
         setAlbumExists(albumExists);
     }
 
@@ -225,7 +219,6 @@ const UploadImages = () => {
         } as UploadPhoto, token, (event) => {
             if (event.total && event.loaded) {
                 let progress = Math.round((100 * event.loaded) / event.total);
-                console.log(file.name + " progress: " + (100 * event.loaded) / event.total);
 
                 setImagePreviews((prevImages) => {
                     let _images = [...prevImages];
@@ -243,7 +236,6 @@ const UploadImages = () => {
                 });
             })
             .catch((e) => {
-                console.log("Could not upload the image: " + file.name + "with error: " + e);
                 setImagePreviews((prevImages) => {
                     let _images = [...prevImages];
                     _images[idx].uploading = false;
@@ -262,7 +254,6 @@ const UploadImages = () => {
         setUploading(true)
 
         if (!isValid) {
-            console.log("Form is not valid");
             return;
         }
 
@@ -278,7 +269,6 @@ const UploadImages = () => {
         uploadPromises.forEach((p) => {
             p.then(() => {
                 progress += 1;
-                //console.log("progress: " + progress);
                 setProgressMessage({ progess: progress, total: selectedFiles.length });
             }).catch((e) => {
 

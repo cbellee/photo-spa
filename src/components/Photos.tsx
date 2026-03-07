@@ -213,8 +213,6 @@ const Photos: React.FC<PhotoProps> = () => {
     }
 
     function saveEditedData(data: Photo[]) {
-        console.log("saving edited data")
-
         if (!isAuthenticated || !token) {
             console.error("this action requires authentication");
             return;
