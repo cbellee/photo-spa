@@ -22,10 +22,10 @@ describe('PhotoExifData', () => {
     expect(screen.getByText('400')).toBeInTheDocument();
   });
 
-  it('renders "Exif" heading when data is provided', () => {
+  it('renders a horizontal rule when data is provided', () => {
     const exifJson = JSON.stringify({ Camera: 'Canon' });
-    renderWithProviders(<PhotoExifData data={exifJson} />);
-    expect(screen.getByText('Exif')).toBeInTheDocument();
+    const { container } = renderWithProviders(<PhotoExifData data={exifJson} />);
+    expect(container.querySelector('hr')).toBeInTheDocument();
   });
 
   it('renders "No exif data available" when data is null/undefined', () => {
