@@ -7,6 +7,7 @@ export interface CollectionPhoto {
     height: number;
     collection: string;
     album: string;
+    orientation: number;
 }
 
 /** Full photo with all metadata, as returned by the photos endpoint */
@@ -77,6 +78,25 @@ export interface UpdatePhoto {
 
 /** Tags response: collection name → array of album names */
 export type TagsResponse = Record<string, string[]>;
+
+/** Request body for rename operations */
+export interface RenameRequest {
+    newName: string;
+}
+
+/** Request body for thumbnail operations */
+export interface ThumbnailRequest {
+    imageName?: string;
+    orientation?: number;
+}
+
+/** Generic API response for admin operations */
+export interface AdminResponse {
+    message: string;
+    affected?: number;
+    newName?: string;
+    errors?: string[];
+}
 
 /** Route params for collection-level routes */
 export interface CollectionRouteParams extends Record<string, string | undefined> {
