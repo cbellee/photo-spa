@@ -1,10 +1,11 @@
 /**
  * AdminControls — Inline admin toolbar for collections and albums.
  * Provides: rename, soft-delete, rotate thumbnail, change thumbnail image.
+ * When the item is deleted, shows a restore button instead.
  * Shown only to authenticated users.
  */
 import React, { useState } from 'react';
-import { FaArrowRotateRight, FaPen, FaTrashCan, FaImages, FaCheck, FaXmark } from 'react-icons/fa6';
+import { FaArrowRotateRight, FaPen, FaTrashCan, FaImages, FaCheck, FaXmark, FaArrowRotateLeft } from 'react-icons/fa6';
 import { useTheme } from '../context/ThemeContext';
 
 interface AdminControlsProps {
@@ -20,6 +21,10 @@ interface AdminControlsProps {
     onChangeThumbnail: () => void;
     /** Whether admin controls should be shown */
     visible: boolean;
+    /** Whether this item is currently soft-deleted */
+    isDeleted?: boolean;
+    /** Called when user wants to restore a deleted item */
+    onUndelete?: () => Promise<void>;
 }
 
 const AdminControls: React.FC<AdminControlsProps> = ({
@@ -29,6 +34,8 @@ const AdminControls: React.FC<AdminControlsProps> = ({
     onRotateThumbnail,
     onChangeThumbnail,
     visible,
+    isDeleted = false,
+    onUndelete,
 }) => {
     const { theme } = useTheme();
     const [isRenaming, setIsRenaming] = useState(false);
@@ -64,6 +71,32 @@ const AdminControls: React.FC<AdminControlsProps> = ({
             setIsDeleting(false);
         }
     };
+
+    const handleUndelete = async () => {
+        if (!onUndelete) return;
+        setIsBusy(true);
+        try {
+            await onUndelete();
+        } finally {
+            setIsBusy(false);
+        }
+    };
+
+    // Deleted items only show the restore button.
+    if (isDeleted) {
+        return (
+            <div className={`flex items-center gap-1 mt-1 ${isBusy ? 'opacity-50 pointer-events-none' : ''}`}>
+                <button
+                    className={`${btnBase} text-green-500 hover:text-green-400`}
+                    onClick={handleUndelete}
+                    title="Restore"
+                >
+                    <FaArrowRotateLeft size={12} />
+                </button>
+                <span className={`text-xs ${dark ? 'text-red-400' : 'text-red-600'}`}>Deleted</span>
+            </div>
+        );
+    }
 
     return (
         <div className={`flex items-center gap-1 mt-1 ${isBusy ? 'opacity-50 pointer-events-none' : ''}`}>

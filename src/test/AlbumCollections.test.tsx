@@ -56,7 +56,7 @@ describe('AlbumCollections', () => {
     });
 
     await waitFor(() => {
-      expect(photoService.fetchAlbums).toHaveBeenCalledWith('trips');
+      expect(photoService.fetchAlbums).toHaveBeenCalledWith('trips', false);
     });
   });
 
