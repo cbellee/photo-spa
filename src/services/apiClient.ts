@@ -13,7 +13,7 @@ function delay(ms: number) {
 
 const apiClient = axios.create({
     baseURL: apiConfig.photoApiEndpoint,
-    timeout: 10_000,
+    timeout: 60_000,
 });
 
 apiClient.interceptors.response.use(
