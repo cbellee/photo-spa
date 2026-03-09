@@ -16,6 +16,7 @@ import { fetchCollections } from '../services/photoService';
 import {
     renameCollection,
     softDeleteCollection,
+    restoreCollection,
     updateCollectionThumbnail,
     fetchCollectionPhotos,
 } from '../services/adminService';
@@ -51,8 +52,8 @@ const Collections: React.FC<CollectionsProps> = () => {
     const [orientations, setOrientations] = useState<Record<string, number>>({});
     const [isEditing, setIsEditing] = useState(false);
 
-    const loadCollections = () => {
-        fetchCollections()
+    const loadCollections = (includeDeleted: boolean) => {
+        fetchCollections(includeDeleted)
             .then(data => {
                 setPhotos(data);
                 const savedOrientations: Record<string, number> = {};
@@ -75,7 +76,7 @@ const Collections: React.FC<CollectionsProps> = () => {
             });
     };
 
-    useEffect(() => { loadCollections(); }, []);
+    useEffect(() => { loadCollections(isEditing); }, [isEditing]);
 
     const handleRename = async (collection: string, newName: string) => {
         if (!token) return;
@@ -86,7 +87,15 @@ const Collections: React.FC<CollectionsProps> = () => {
     const handleDelete = async (collection: string) => {
         if (!token) return;
         await softDeleteCollection(collection, token);
-        setPhotos(prev => prev.filter(p => p.collection !== collection));
+        // Optimistically mark as deleted instead of removing
+        setPhotos(prev => prev.map(p => p.collection === collection ? { ...p, isDeleted: true } : p));
+    };
+
+    const handleRestore = async (collection: string) => {
+        if (!token) return;
+        await restoreCollection(collection, token);
+        // Optimistically mark as not deleted
+        setPhotos(prev => prev.map(p => p.collection === collection ? { ...p, isDeleted: false } : p));
     };
 
     const handleRotateThumbnail = async (collection: string) => {
@@ -113,7 +122,7 @@ const Collections: React.FC<CollectionsProps> = () => {
         await updateCollectionThumbnail(pickerCollection, { imageName }, token);
         setPickerCollection(null);
         setPickerPhotos([]);
-        loadCollections();
+        loadCollections(isEditing);
     };
 
     return (
@@ -146,8 +155,8 @@ const Collections: React.FC<CollectionsProps> = () => {
                     render={{
                         photo: ({ onClick }, { photo, index }) => (
                             <div className="p-1 pt-4" key={`col-${photo.collection}-${index}`}>
-                                <Link to={photo.collection}>
-                                    <div className="overflow-hidden rounded-sm max-h-56">
+                                <Link to={photo.isDeleted ? '#' : photo.collection} onClick={photo.isDeleted ? (e) => e.preventDefault() : undefined}>
+                                    <div className={`overflow-hidden rounded-sm max-h-56 relative transition-all ${photo.isDeleted ? 'border-2 border-red-500/70 opacity-50' : ''}`}>
                                         <LazyImage
                                             src={photo.src}
                                             key={index}
@@ -161,10 +170,15 @@ const Collections: React.FC<CollectionsProps> = () => {
                                                 transition: 'transform 0.3s ease',
                                             }}
                                         />
+                                        {photo.isDeleted && (
+                                            <div className="absolute inset-0 bg-red-900/30 flex items-center justify-center pointer-events-none rounded-sm">
+                                                <span className="text-red-200 font-bold text-xs uppercase tracking-widest bg-red-900/60 px-2 py-0.5 rounded">Deleted</span>
+                                            </div>
+                                        )}
                                     </div>
                                 </Link>
                                 <div className="flex items-center justify-between">
-                                    <Link to={photo.collection} className={`uppercase text-sm underline ${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'}`}>{photo.collection}</Link>
+                                    <Link to={photo.isDeleted ? '#' : photo.collection} onClick={photo.isDeleted ? (e) => e.preventDefault() : undefined} className={`uppercase text-sm underline ${photo.isDeleted ? 'line-through opacity-50' : ''} ${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'}`}>{photo.collection}</Link>
                                 </div>
                                 <AdminControls
                                     name={photo.collection}
@@ -173,6 +187,8 @@ const Collections: React.FC<CollectionsProps> = () => {
                                     onRotateThumbnail={() => handleRotateThumbnail(photo.collection)}
                                     onChangeThumbnail={() => handleOpenThumbnailPicker(photo.collection)}
                                     visible={isAuthenticated && isEditing}
+                                    isDeleted={photo.isDeleted}
+                                    onUndelete={() => handleRestore(photo.collection)}
                                 />
                             </div>
                         ),

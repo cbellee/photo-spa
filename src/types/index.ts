@@ -8,6 +8,7 @@ export interface CollectionPhoto {
     collection: string;
     album: string;
     orientation: number;
+    isDeleted: boolean;
 }
 
 /** Full photo with all metadata, as returned by the photos endpoint */
@@ -96,6 +97,7 @@ export interface AdminResponse {
     affected?: number;
     newName?: string;
     errors?: string[];
+    collectionDeleted?: boolean;
 }
 
 /** Route params for collection-level routes */

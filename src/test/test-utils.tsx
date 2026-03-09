@@ -153,6 +153,8 @@ export function createMockCollectionPhoto(overrides: Partial<CollectionPhoto> = 
     height: 600,
     collection: 'trips',
     album: '',
+    orientation: 0,
+    isDeleted: false,
     ...overrides,
   };
 }

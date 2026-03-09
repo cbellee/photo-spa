@@ -51,15 +51,6 @@ const ImagePreviewGrid: React.FC<ImagePreviewGridProps> = ({
                                 transform: img.orientation ? `rotate(${img.orientation}deg)` : undefined,
                             }}
                         />
-                        {/* Rotate button */}
-                        {!img.uploading && (
-                            <div
-                                className="absolute top-2 left-2 z-10 text-neutral-400 bg-orange-900 p-1 hover:border-[1px] rounded-xl hover:bg-orange-400 hover:text-white cursor-pointer"
-                                onClick={() => onOrientationChange(img.name)}
-                            >
-                                <FaArrowRotateRight className="rounded-xl" />
-                            </div>
-                        )}
                         {/* Upload progress overlay */}
                         {img.uploading && (
                             <div className="absolute inset-0 flex items-center justify-center bg-black/40">
@@ -110,6 +101,18 @@ const ImagePreviewGrid: React.FC<ImagePreviewGridProps> = ({
                                 />
                             )}
                         </div>
+                        {!img.uploading && (
+                            <div className='flex items-center gap-2'>
+                                <button
+                                    type='button'
+                                    className={`p-1.5 rounded-md transition-colors cursor-pointer ${theme === 'dark' ? 'text-gray-400 hover:text-orange-400' : 'text-gray-500 hover:text-orange-500'}`}
+                                    onClick={() => onOrientationChange(img.name)}
+                                    title='Rotate image'
+                                >
+                                    <FaArrowRotateRight size={16} />
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
             ))}

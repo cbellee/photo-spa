@@ -16,6 +16,7 @@ import { fetchAlbums, fetchPhotos } from '../services/photoService';
 import {
     renameAlbum,
     softDeleteAlbum,
+    restoreAlbum,
     updateAlbumThumbnail,
 } from '../services/adminService';
 import type { CollectionPhoto, CollectionRouteParams, Photo } from '../types';
@@ -52,8 +53,8 @@ const Albums: React.FC<AlbumsProps> = () => {
 
     const params = useParams<CollectionRouteParams>();
 
-    const loadAlbums = () => {
-        fetchAlbums(params.collection!)
+    const loadAlbums = (includeDeleted: boolean) => {
+        fetchAlbums(params.collection!, includeDeleted)
             .then(data => {
                 setPhotos(data);
                 const savedOrientations: Record<string, number> = {};
@@ -76,7 +77,10 @@ const Albums: React.FC<AlbumsProps> = () => {
             });
     };
 
-    useEffect(() => { loadAlbums(); }, [params.collection]);
+    useEffect(() => { loadAlbums(isEditing); }, [params.collection]);
+
+    // Re-fetch: include deleted in edit mode, exclude when leaving
+    useEffect(() => { loadAlbums(isEditing); }, [isEditing]);
 
     const handleRename = async (album: string, newName: string) => {
         if (!token || !params.collection) return;
@@ -86,8 +90,21 @@ const Albums: React.FC<AlbumsProps> = () => {
 
     const handleDelete = async (album: string) => {
         if (!token || !params.collection) return;
-        await softDeleteAlbum(params.collection, album, token);
-        setPhotos(prev => prev.filter(p => p.album !== album));
+        const result = await softDeleteAlbum(params.collection, album, token);
+        // If all albums are now deleted the collection itself was soft-deleted.
+        if (result.collectionDeleted) {
+            navigate('/');
+            return;
+        }
+        // Optimistically mark as deleted instead of removing
+        setPhotos(prev => prev.map(p => p.album === album ? { ...p, isDeleted: true } : p));
+    };
+
+    const handleRestore = async (album: string) => {
+        if (!token || !params.collection) return;
+        await restoreAlbum(params.collection, album, token);
+        // Optimistically mark as not deleted
+        setPhotos(prev => prev.map(p => p.album === album ? { ...p, isDeleted: false } : p));
     };
 
     const handleRotateThumbnail = async (album: string) => {
@@ -115,7 +132,7 @@ const Albums: React.FC<AlbumsProps> = () => {
         await updateAlbumThumbnail(params.collection, pickerAlbum, { imageName }, token);
         setPickerAlbum(null);
         setPickerPhotos([]);
-        loadAlbums();
+        loadAlbums(isEditing);
     };
 
     return (
@@ -152,8 +169,8 @@ const Albums: React.FC<AlbumsProps> = () => {
                     render={{
                         photo: ({ onClick }, { photo, index }) => (
                             <div className="p-1 pt-4" key={`album-${photo.album}-${index}`} onClick={onClick}>
-                                <Link to={photo.album}>
-                                    <div className="overflow-hidden rounded-sm max-h-56">
+                                <Link to={photo.isDeleted ? '#' : photo.album} onClick={photo.isDeleted ? (e) => e.preventDefault() : undefined}>
+                                    <div className={`overflow-hidden rounded-sm max-h-56 relative transition-all ${photo.isDeleted ? 'border-2 border-red-500/70 opacity-50' : ''}`}>
                                         <LazyImage
                                             src={photo.src}
                                             key={index}
@@ -167,10 +184,15 @@ const Albums: React.FC<AlbumsProps> = () => {
                                                 transition: 'transform 0.3s ease',
                                             }}
                                         />
+                                        {photo.isDeleted && (
+                                            <div className="absolute inset-0 bg-red-900/30 flex items-center justify-center pointer-events-none rounded-sm">
+                                                <span className="text-red-200 font-bold text-xs uppercase tracking-widest bg-red-900/60 px-2 py-0.5 rounded">Deleted</span>
+                                            </div>
+                                        )}
                                     </div>
                                 </Link>
                                 <div className="flex items-center justify-between">
-                                    <Link to={photo.album} className={`uppercase text-sm underline ${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'}`}>{photo.album}</Link>
+                                    <Link to={photo.isDeleted ? '#' : photo.album} onClick={photo.isDeleted ? (e) => e.preventDefault() : undefined} className={`uppercase text-sm underline ${photo.isDeleted ? 'line-through opacity-50' : ''} ${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'}`}>{photo.album}</Link>
                                 </div>
                                 <AdminControls
                                     name={photo.album}
@@ -179,6 +201,8 @@ const Albums: React.FC<AlbumsProps> = () => {
                                     onRotateThumbnail={() => handleRotateThumbnail(photo.album)}
                                     onChangeThumbnail={() => handleOpenThumbnailPicker(photo.album)}
                                     visible={isAuthenticated && isEditing}
+                                    isDeleted={photo.isDeleted}
+                                    onUndelete={() => handleRestore(photo.album)}
                                 />
                             </div>
                         ),

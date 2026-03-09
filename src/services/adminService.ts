@@ -67,6 +67,33 @@ export async function softDeleteAlbum(
     return res.data;
 }
 
+/** Restore (undelete) a soft-deleted album. */
+export async function restoreAlbum(
+    collection: string,
+    album: string,
+    token: string,
+): Promise<AdminResponse> {
+    const res = await axios.patch<AdminResponse>(
+        `${url}/${encodeURIComponent(collection)}/${encodeURIComponent(album)}`,
+        {},
+        { headers: authHeaders(token) },
+    );
+    return res.data;
+}
+
+/** Restore (undelete) a soft-deleted collection. */
+export async function restoreCollection(
+    collection: string,
+    token: string,
+): Promise<AdminResponse> {
+    const res = await axios.patch<AdminResponse>(
+        `${url}/${encodeURIComponent(collection)}`,
+        {},
+        { headers: authHeaders(token) },
+    );
+    return res.data;
+}
+
 /** Update the collection thumbnail (change image and/or rotate). */
 export async function updateCollectionThumbnail(
     collection: string,
