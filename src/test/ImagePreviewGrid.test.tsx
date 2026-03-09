@@ -114,7 +114,7 @@ describe('ImagePreviewGrid', () => {
 
     it('calls onOrientationChange with image name when rotate is clicked', () => {
         renderWithProviders(<ImagePreviewGrid {...defaultProps} />);
-        const rotateBtn = screen.getByTestId('rotate-icon').closest('div')!;
+        const rotateBtn = screen.getByTestId('rotate-icon').closest('button')!;
         fireEvent.click(rotateBtn);
         expect(defaultProps.onOrientationChange).toHaveBeenCalledWith('photo-1.jpg');
     });
