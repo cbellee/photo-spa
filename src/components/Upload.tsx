@@ -25,8 +25,7 @@ import { useAuth } from '../hooks/useAuth';
 import { fetchTags } from '../services/photoService';
 import type { ImagePreview, UploadPhoto } from '../types';
 
-/** Max files uploaded in parallel. Keep low to avoid ACA Envoy 503s. */
-const MAX_CONCURRENT_UPLOADS = 30;
+const MAX_CONCURRENT_UPLOADS = 100;
 
 const UploadImages = () => {
     const formMethods = useForm({ mode: "onChange", reValidateMode: "onChange" });
