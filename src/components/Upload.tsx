@@ -25,6 +25,9 @@ import { useAuth } from '../hooks/useAuth';
 import { fetchTags } from '../services/photoService';
 import type { ImagePreview, UploadPhoto } from '../types';
 
+/** Max files uploaded in parallel. Keep low to avoid ACA Envoy 503s. */
+const MAX_CONCURRENT_UPLOADS = 30;
+
 const UploadImages = () => {
     const formMethods = useForm({ mode: "onChange", reValidateMode: "onChange" });
     const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
@@ -264,15 +267,28 @@ const UploadImages = () => {
         const files = Array.from(selectedFiles);
         let progress = 0;
 
-        // Upload sequentially to avoid overwhelming the server with
-        // concurrent large-file uploads (ACA Envoy proxy drops excess
-        // connections after ~30 s, returning 503).
+        // Concurrency-limited upload pool. At most MAX_CONCURRENT_UPLOADS
+        // files are in-flight at once to avoid overwhelming the ACA Envoy
+        // proxy (which returns 503 after ~30 s on excess connections).
         try {
-            for (let i = 0; i < files.length; i++) {
-                await upload(i, files[i]);
-                progress += 1;
-                setProgressMessage({ progess: progress, total: selectedFiles.length });
+            const queue = files.map((file, i) => ({ i, file }));
+            let cursor = 0;
+
+            async function worker() {
+                while (cursor < queue.length) {
+                    const job = queue[cursor++];
+                    await upload(job.i, job.file);
+                    progress += 1;
+                    setProgressMessage({ progess: progress, total: files.length });
+                }
             }
+
+            const workers = Array.from(
+                { length: Math.min(MAX_CONCURRENT_UPLOADS, files.length) },
+                () => worker()
+            );
+            await Promise.all(workers);
+
             setUploading(false);
             setUploadCompleted(true);
             setSelectedFiles(null);
