@@ -264,15 +264,15 @@ const UploadImages = () => {
         const files = Array.from(selectedFiles);
         let progress = 0;
 
-        const uploadPromises = files.map((file, i) =>
-            upload(i, file).then(() => {
+        // Upload sequentially to avoid overwhelming the server with
+        // concurrent large-file uploads (ACA Envoy proxy drops excess
+        // connections after ~30 s, returning 503).
+        try {
+            for (let i = 0; i < files.length; i++) {
+                await upload(i, files[i]);
                 progress += 1;
                 setProgressMessage({ progess: progress, total: selectedFiles.length });
-            })
-        );
-
-        try {
-            await Promise.all(uploadPromises);
+            }
             setUploading(false);
             setUploadCompleted(true);
             setSelectedFiles(null);
