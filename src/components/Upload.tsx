@@ -251,7 +251,7 @@ const UploadImages = () => {
 
     async function uploadImages() {
         setUploadCompleted(false);
-        setUploading(true)
+        setUploading(true);
 
         if (!isValid) {
             return;
@@ -262,33 +262,25 @@ const UploadImages = () => {
         }
 
         const files = Array.from(selectedFiles);
-        setUploading(true);
         let progress = 0;
 
-        const uploadPromises = files.map((file, i) => upload(i, file));
-        uploadPromises.forEach((p) => {
-            p.then(() => {
+        const uploadPromises = files.map((file, i) =>
+            upload(i, file).then(() => {
                 progress += 1;
                 setProgressMessage({ progess: progress, total: selectedFiles.length });
-            }).catch((e) => {
-
-            });
-        });
-
-        Promise.all(uploadPromises)
-            .then(() => FileUploadService.getFiles())
-            .then((files) => {
-                setUploading(false);
-                setUploadCompleted(true);
-                setSelectedFiles(null);
-                navigate(`/${collection}`);
             })
-            .catch(() => {
-                setUploading(false);
-                setUploadCompleted(true);
-            });
+        );
 
-        setUploading(false)
+        try {
+            await Promise.all(uploadPromises);
+            setUploading(false);
+            setUploadCompleted(true);
+            setSelectedFiles(null);
+            navigate(`/${collection}`);
+        } catch {
+            setUploading(false);
+            setUploadCompleted(true);
+        }
     };
 
     useEffect(() => {
@@ -327,6 +319,7 @@ const UploadImages = () => {
                                 />
                                 <input type="submit" hidden={true} />
                                 <button
+                                    type="button"
                                     className={`text-white active:animate-pop h-8 font-semibold text-md w-24 min-w-24 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-100 bg-gray-300 text-gray-600'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 rounded-sm`}
                                     disabled={!isValid || uploading}
                                     onClick={uploadImages}
