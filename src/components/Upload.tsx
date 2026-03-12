@@ -25,7 +25,7 @@ import { useAuth } from '../hooks/useAuth';
 import { fetchTags } from '../services/photoService';
 import type { ImagePreview, UploadPhoto } from '../types';
 
-const MAX_CONCURRENT_UPLOADS = 100;
+const MAX_CONCURRENT_UPLOADS = 10;
 
 const UploadImages = () => {
     const formMethods = useForm({ mode: "onChange", reValidateMode: "onChange" });
