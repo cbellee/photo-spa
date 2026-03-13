@@ -186,7 +186,7 @@ describe('Photos', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText('Collections')).toBeInTheDocument();
+      expect(screen.getByText('collections')).toBeInTheDocument();
       expect(screen.getAllByText('trips').length).toBeGreaterThan(0);
       expect(screen.getAllByText('coral-bay').length).toBeGreaterThan(0);
     });

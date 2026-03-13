@@ -27,8 +27,8 @@ export default function Sidebar() {
     );
 
     const navItems = [
-        { to: '/', label: 'Collections', icon: IoImages, isActive: isCollectionsRoute },
-        ...(isAuthenticated ? [{ to: '/upload', label: 'Upload', icon: IoCloudUpload, isActive: false }] : []),
+        { to: '/', label: 'collections', icon: IoImages, isActive: isCollectionsRoute },
+        ...(isAuthenticated ? [{ to: '/upload', label: 'upload', icon: IoCloudUpload, isActive: false }] : []),
     ];
 
     const sidebarContent = (

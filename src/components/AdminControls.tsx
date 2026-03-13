@@ -49,13 +49,14 @@ const AdminControls: React.FC<AdminControlsProps> = ({
     const btnBase = `p-1.5 rounded-md transition-colors ${dark ? 'hover:bg-surface-cardHover text-gray-400' : 'hover:bg-gray-100 text-gray-500'}`;
 
     const handleRename = async () => {
-        if (newName.trim() === '' || newName === name) {
+        const normalized = newName.trim().toLowerCase();
+        if (normalized === '' || normalized === name.toLowerCase()) {
             setIsRenaming(false);
             return;
         }
         setIsBusy(true);
         try {
-            await onRename(newName.trim());
+            await onRename(normalized);
         } finally {
             setIsBusy(false);
             setIsRenaming(false);

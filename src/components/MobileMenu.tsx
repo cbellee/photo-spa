@@ -38,11 +38,11 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, isAuthenticated, onClos
             <ul className="flex flex-col items-center justify-between min-h-[250px]">
                 {isAuthenticated && (
                     <li className="text-sm font-medium">
-                        <a href="/upload" className={`${theme === 'dark' ? 'text-gray-300 hover:text-accent-light' : 'text-gray-600 hover:text-accent'}`}>Upload</a>
+                        <a href="/upload" className={`${theme === 'dark' ? 'text-gray-300 hover:text-accent-light' : 'text-gray-600 hover:text-accent'}`}>upload</a>
                     </li>
                 )}
                 <li className="text-sm font-medium">
-                    <a href="/" className={`${theme === 'dark' ? 'text-gray-300 hover:text-accent-light' : 'text-gray-600 hover:text-accent'}`}>Collections</a>
+                    <a href="/" className={`${theme === 'dark' ? 'text-gray-300 hover:text-accent-light' : 'text-gray-600 hover:text-accent'}`}>collections</a>
                 </li>
                 <li>
                     <SignInAndOut />

@@ -125,7 +125,7 @@ const Collections: React.FC<CollectionsProps> = () => {
 
     return (
         <div className="animate-appear">
-            <Breadcrumb segments={[{ label: 'Collections' }]} />
+            <Breadcrumb segments={[{ label: 'collections' }]} />
 
             <LoadingSpinner visible={isLoading} />
             {emptyMessage && !isLoading && (
@@ -179,11 +179,11 @@ const Collections: React.FC<CollectionsProps> = () => {
                                             : 'text-gray-700 hover:text-accent'
                                     }`}
                                 >
-                                    {photo.collection}
+                                    {photo.collection.toLowerCase()}
                                 </Link>
                             </div>
                             <AdminControls
-                                name={photo.collection}
+                                name={photo.collection.toLowerCase()}
                                 onRename={(newName) => handleRename(photo.collection, newName)}
                                 onDelete={() => handleDelete(photo.collection)}
                                 onRotateThumbnail={() => handleRotateThumbnail(photo.collection)}

@@ -79,8 +79,8 @@ describe('AlbumCollections', () => {
     });
 
     await waitFor(() => {
-      // Should show "Collections > trips" breadcrumb
-      expect(screen.getByText('Collections')).toBeInTheDocument();
+      // Should show "collections > trips" breadcrumb
+      expect(screen.getByText('collections')).toBeInTheDocument();
       expect(screen.getAllByText('trips').length).toBeGreaterThan(0);
     });
   });

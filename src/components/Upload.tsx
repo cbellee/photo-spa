@@ -16,7 +16,6 @@
 import React, { useState, useEffect } from "react";
 import FileUploadService from "../services/FileUploadService.tsx";
 import TagSelector from "./TagSelector";
-import MultiRadio from "./MultiRadio.tsx";
 import ImagePreviewGrid from "./ImagePreviewGrid";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from '../context/ThemeContext.tsx';
@@ -146,13 +145,15 @@ const UploadImages = () => {
     }
 
     const onChangeCollection = (collection: string) => {
-        checkCollectionExists(collection);
-        setCollectionAsync(collection);
+        const lc = collection.toLowerCase();
+        checkCollectionExists(lc);
+        setCollectionAsync(lc);
     }
 
     const onChangeAlbum = (album: string) => {
-        checkAlbumExists(album);
-        setAlbumAsync(album);
+        const lc = album.toLowerCase();
+        checkAlbumExists(lc);
+        setAlbumAsync(lc);
     }
 
     const selectFiles = (event: React.ChangeEvent<HTMLInputElement>): void => {

@@ -21,7 +21,7 @@ vi.mock('react-photo-album', () => ({
   ),
 }));
 
-describe('Collections', () => {
+describe('collections', () => {
   const mockPhotos = [
     createMockCollectionPhoto({ id: '1', collection: 'trips', src: 'https://example.com/trips.jpg' }),
     createMockCollectionPhoto({ id: '2', collection: 'sport', src: 'https://example.com/sport.jpg' }),
@@ -78,7 +78,7 @@ describe('Collections', () => {
     renderWithProviders(<Collections collection="" album="" />);
 
     await waitFor(() => {
-      expect(screen.getByText('Collections')).toBeInTheDocument();
+      expect(screen.getByText('collections')).toBeInTheDocument();
     });
   });
 

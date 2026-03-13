@@ -23,8 +23,8 @@ export interface NavItem {
 const nonCollectionPrefixes = ['/upload'];
 
 const navItems: NavItem[] = [
-    { to: '/upload', label: 'Upload', authRequired: true },
-    { to: '/', label: 'Collections' },
+    { to: '/upload', label: 'upload', authRequired: true },
+    { to: '/', label: 'collections' },
 ];
 
 const NavLinks: React.FC<NavLinksProps> = ({ isAuthenticated }) => {

@@ -136,7 +136,7 @@ const Albums: React.FC<AlbumsProps> = () => {
     return (
         <div className="animate-appear">
             <Breadcrumb segments={[
-                { label: 'Collections', to: '/' },
+                { label: 'collections', to: '/' },
                 { label: params.collection! },
             ]} />
 
@@ -193,11 +193,11 @@ const Albums: React.FC<AlbumsProps> = () => {
                                             : 'text-gray-700 hover:text-accent'
                                     }`}
                                 >
-                                    {photo.album}
+                                    {photo.album.toLowerCase()}
                                 </Link>
                             </div>
                             <AdminControls
-                                name={photo.album}
+                                name={photo.album.toLowerCase()}
                                 onRename={(newName) => handleRename(photo.album, newName)}
                                 onDelete={() => handleDelete(photo.album)}
                                 onRotateThumbnail={() => handleRotateThumbnail(photo.album)}
