@@ -3,6 +3,11 @@ import React, { useState, useEffect, useRef } from 'react';
 /** Module-level cache: src → blob URL. Survives component unmount/remount. */
 const blobCache = new Map<string, string>();
 
+/** Clear the blob cache (useful for tests). */
+export function clearBlobCache() {
+    blobCache.clear();
+}
+
 interface LazyImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
     /** Extra classes applied to the wrapper div */
     wrapperClassName?: string;
