@@ -10,7 +10,7 @@ describe('Breadcrumb', () => {
             <Breadcrumb segments={[{ label: 'Collections' }]} />,
         );
         expect(screen.getByText('Collections')).toBeInTheDocument();
-        expect(screen.queryByText('>')).not.toBeInTheDocument();
+        expect(screen.queryByText('/')).not.toBeInTheDocument();
     });
 
     it('renders multiple segments with separators', () => {
@@ -24,7 +24,7 @@ describe('Breadcrumb', () => {
         expect(screen.getByText('Collections')).toBeInTheDocument();
         expect(screen.getByText('trips')).toBeInTheDocument();
         expect(screen.getByText('coral-bay')).toBeInTheDocument();
-        expect(screen.getAllByText('>').length).toBe(2);
+        expect(screen.getAllByText('/').length).toBe(2);
     });
 
     it('renders linked segments as anchor tags', () => {
@@ -46,11 +46,11 @@ describe('Breadcrumb', () => {
         expect(text.closest('a')).toBeNull();
     });
 
-    it('applies uppercase styling', () => {
+    it('applies font-semibold to current segment', () => {
         renderWithProviders(
             <Breadcrumb segments={[{ label: 'Collections' }]} />,
         );
         const text = screen.getByText('Collections');
-        expect(text.className).toContain('uppercase');
+        expect(text.className).toContain('font-semibold');
     });
 });

@@ -1,8 +1,7 @@
 /**
  * MobileMenu — Full-screen overlay navigation menu for small viewports.
- * Toggled by the hamburger icon in Header. Contains navigation links
- * and the sign-in/out button. Uses inline CSS for show/hide animation
- * since the menu needs a full-viewport overlay.
+ * Now mostly handled by the Sidebar component, but kept for backward
+ * compatibility.
  */
 import React from 'react';
 import SignInAndOut from './SignInAndOut';
@@ -38,14 +37,14 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, isAuthenticated, onClos
             </div>
             <ul className="flex flex-col items-center justify-between min-h-[250px]">
                 {isAuthenticated && (
-                    <li className="uppercase">
-                        <a href="/upload">Upload</a>
+                    <li className="text-sm font-medium">
+                        <a href="/upload" className={`${theme === 'dark' ? 'text-gray-300 hover:text-accent-light' : 'text-gray-600 hover:text-accent'}`}>Upload</a>
                     </li>
                 )}
-                <li className="uppercase">
-                    <a href="/">Collections</a>
+                <li className="text-sm font-medium">
+                    <a href="/" className={`${theme === 'dark' ? 'text-gray-300 hover:text-accent-light' : 'text-gray-600 hover:text-accent'}`}>Collections</a>
                 </li>
-                <li className="uppercase">
+                <li>
                     <SignInAndOut />
                 </li>
             </ul>
@@ -60,8 +59,8 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, isAuthenticated, onClos
                     height: 100vh;
                     top: 0;
                     left: 0;
-                    background: ${theme === 'dark' ? 'rgb(3, 7, 18)' : 'white'};
-                    color: ${theme === 'dark' ? 'white' : 'gray'};
+                    background: ${theme === 'dark' ? '#0f0e17' : 'white'};
+                    color: ${theme === 'dark' ? 'white' : '#374151'};
                     z-index: 10;
                     display: flex;
                     flex-direction: column;

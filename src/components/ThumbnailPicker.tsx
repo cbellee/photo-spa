@@ -27,28 +27,28 @@ const ThumbnailPicker: React.FC<ThumbnailPickerProps> = ({
     const dark = theme === 'dark';
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60" onClick={onClose}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>
             <div
-                className={`relative max-w-4xl w-[90%] max-h-[80vh] overflow-y-auto rounded-lg shadow-xl p-4 ${dark ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}
+                className={`relative max-w-4xl w-[90%] max-h-[80vh] overflow-y-auto rounded-md shadow-xl p-5 ${dark ? 'bg-surface-card border border-surface-border text-white' : 'bg-white text-gray-900 border border-surface-light-border'}`}
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg font-semibold">{title}</h2>
-                    <button onClick={onClose} className={`p-1 rounded-md ${dark ? 'hover:bg-gray-600' : 'hover:bg-gray-200'}`}>
+                    <button onClick={onClose} className={`p-1.5 rounded-md transition-colors ${dark ? 'hover:bg-surface-cardHover text-gray-400' : 'hover:bg-gray-100 text-gray-500'}`}>
                         <FaXmark size={18} />
                     </button>
                 </div>
-                <div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-2">
+                <div className="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-3">
                     {photos.map((photo) => (
                         <button
                             key={photo.name}
                             onClick={() => onSelect(photo.name)}
-                            className={`relative rounded overflow-hidden border-2 transition-colors ${
+                            className={`relative rounded-md overflow-hidden border-2 transition-all duration-200 ${
                                 photo.name === currentThumbnailName
-                                    ? 'border-blue-500'
+                                    ? 'border-accent shadow-glow'
                                     : dark
-                                    ? 'border-gray-600 hover:border-gray-400'
-                                    : 'border-gray-200 hover:border-gray-400'
+                                    ? 'border-surface-border hover:border-accent/50'
+                                    : 'border-surface-light-border hover:border-accent/50'
                             }`}
                         >
                             <LazyImage
@@ -59,8 +59,8 @@ const ThumbnailPicker: React.FC<ThumbnailPickerProps> = ({
                                 }}
                             />
                             {photo.name === currentThumbnailName && (
-                                <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
-                                    <span className="text-xs font-bold bg-blue-500 text-white px-2 py-0.5 rounded">Current</span>
+                                <div className="absolute inset-0 bg-accent/20 flex items-center justify-center">
+                                    <span className="text-xs font-bold bg-accent text-white px-2 py-0.5 rounded-md">Current</span>
                                 </div>
                             )}
                         </button>

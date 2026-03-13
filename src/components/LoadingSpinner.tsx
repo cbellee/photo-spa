@@ -1,23 +1,24 @@
 /**
- * LoadingSpinner — Conditionally visible full-width spinner with a
- * "Loading..." label. Used as a placeholder while async data fetches
- * are in progress.
+ * LoadingSpinner — Themed loading indicator with accent color styling.
  */
 import React from 'react';
+import { useTheme } from '../context/ThemeContext';
 
 interface LoadingSpinnerProps {
     visible: boolean;
 }
 
 const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ visible }) => {
+    const { theme } = useTheme();
+
     if (!visible) return null;
 
     return (
-        <div className="flex justify-center md-auto text-white">
-            <span
-                className="justify-center md-auto mt-[3.5em] mr-[4.4em] h-28 w-28 animate-spin rounded-full border-[9px] border-solid border-white border-current border-r-transparent"
-            />
-            <span className="relative top-[100px] right-[167px] uppercase">Loading...</span>
+        <div className="flex flex-col items-center justify-center py-20 gap-4">
+            <span className="h-12 w-12 animate-spin rounded-full border-4 border-accent/30 border-t-accent" />
+            <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                Loading...
+            </span>
         </div>
     );
 };

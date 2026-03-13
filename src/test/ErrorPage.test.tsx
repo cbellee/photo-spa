@@ -37,8 +37,9 @@ describe('ErrorPage', () => {
     expect(screen.getByText('Not Found')).toBeInTheDocument();
   });
 
-  it('has id="error-page" on the container', () => {
+  it('uses dashboard card styling on the container', () => {
     const { container } = renderWithProviders(<ErrorPage />);
-    expect(container.querySelector('#error-page')).toBeInTheDocument();
+    const card = container.querySelector('.rounded-2xl');
+    expect(card).toBeInTheDocument();
   });
 });

@@ -1,7 +1,6 @@
 /**
- * Breadcrumb — Renders a breadcrumb navigation trail from an array of
- * segments. Each segment can be a plain label or a clickable Link.
- * Theme-aware colouring for separators and links.
+ * Breadcrumb — Renders a breadcrumb navigation trail with the new
+ * dashboard styling. Uses accent color for links and subtle separators.
  */
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -18,21 +17,29 @@ interface BreadcrumbProps {
 
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ segments }) => {
     const { theme } = useTheme();
-    const linkColor = theme === 'dark' ? 'text-blue-500' : 'text-blue-700';
 
     return (
-        <div className="text-left pt-4 pb-4 text-md">
+        <div className="flex items-center gap-2 pb-6 text-sm">
             {segments.map((segment, idx) => (
-                <span key={idx}>
+                <span key={idx} className="flex items-center gap-2">
                     {idx > 0 && (
-                        <span className={`${linkColor} uppercase`}> &gt; </span>
+                        <span className={`${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`}>/</span>
                     )}
                     {segment.to ? (
-                        <Link to={segment.to} className={`${linkColor} uppercase underline`}>
+                        <Link
+                            to={segment.to}
+                            className={`font-medium transition-colors ${
+                                theme === 'dark'
+                                    ? 'text-gray-400 hover:text-accent-light'
+                                    : 'text-gray-500 hover:text-accent'
+                            }`}
+                        >
                             {segment.label}
                         </Link>
                     ) : (
-                        <span className={`${linkColor} uppercase`}>{segment.label}</span>
+                        <span className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            {segment.label}
+                        </span>
                     )}
                 </span>
             ))}

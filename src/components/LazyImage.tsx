@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 
+/** Module-level cache: src → blob URL. Survives component unmount/remount. */
+const blobCache = new Map<string, string>();
+
 interface LazyImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
     /** Extra classes applied to the wrapper div */
     wrapperClassName?: string;
@@ -23,13 +26,25 @@ const LazyImage: React.FC<LazyImageProps> = ({
     placeholderHeight,
     ...rest
 }) => {
-    const [loaded, setLoaded] = useState(false);
-    const [progress, setProgress] = useState(0);
+    const cached = src ? blobCache.get(src) : undefined;
+    const [loaded, setLoaded] = useState(!!cached);
+    const [progress, setProgress] = useState(cached ? 100 : 0);
     const [indeterminate, setIndeterminate] = useState(false);
-    const [blobUrl, setBlobUrl] = useState<string | null>(null);
-    const [isVisible, setIsVisible] = useState(false);
+    const [blobUrl, setBlobUrl] = useState<string | null>(cached ?? null);
+    const [isVisible, setIsVisible] = useState(!!cached);
+    const [showSpinner, setShowSpinner] = useState(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
     const abortRef = useRef<AbortController | null>(null);
+
+    // Delay spinner visibility so cached/fast images never flash the overlay
+    useEffect(() => {
+        if (loaded) {
+            setShowSpinner(false);
+            return;
+        }
+        const timer = setTimeout(() => setShowSpinner(true), 150);
+        return () => clearTimeout(timer);
+    }, [loaded]);
 
     // Observe visibility – start loading only when the element is near the viewport
     useEffect(() => {
@@ -54,7 +69,15 @@ const LazyImage: React.FC<LazyImageProps> = ({
     useEffect(() => {
         if (!isVisible || !src) return;
 
-        // Reset state when src changes
+        // Already cached — use immediately, no fetch needed
+        const hit = blobCache.get(src);
+        if (hit) {
+            setBlobUrl(hit);
+            setProgress(100);
+            return;
+        }
+
+        // Reset state when src changes (new uncached image)
         setLoaded(false);
         setProgress(0);
         setIndeterminate(false);
@@ -69,6 +92,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
 
                 if (!response.ok) {
                     // Fall back to native loading
+                    blobCache.set(src, src);
                     setBlobUrl(src);
                     return;
                 }
@@ -81,6 +105,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
                     setIndeterminate(true);
                     const blob = await response.blob();
                     const url = URL.createObjectURL(blob);
+                    blobCache.set(src, url);
                     setBlobUrl(url);
                     setProgress(100);
                     return;
@@ -105,11 +130,13 @@ const LazyImage: React.FC<LazyImageProps> = ({
                     type: response.headers.get('Content-Type') || 'image/jpeg',
                 });
                 const url = URL.createObjectURL(blob);
+                blobCache.set(src, url);
                 setBlobUrl(url);
                 setProgress(100);
             } catch (err: unknown) {
                 if (err instanceof DOMException && err.name === 'AbortError') return;
                 // Fall back to native loading on fetch failure
+                blobCache.set(src, src);
                 setBlobUrl(src);
                 setProgress(100);
             }
@@ -120,14 +147,8 @@ const LazyImage: React.FC<LazyImageProps> = ({
         };
     }, [isVisible, src]);
 
-    // Revoke object URL on unmount or when it changes
-    useEffect(() => {
-        return () => {
-            if (blobUrl && blobUrl !== src) {
-                URL.revokeObjectURL(blobUrl);
-            }
-        };
-    }, [blobUrl, src]);
+    // Blob URLs are cached at module level so they persist across remounts;
+    // no cleanup needed here.
 
     const handleLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
         setLoaded(true);
@@ -135,16 +156,22 @@ const LazyImage: React.FC<LazyImageProps> = ({
     };
 
     // Build inline style for aspect-ratio placeholder so the div has
-    // real dimensions before the image loads, enabling IntersectionObserver
+    // real dimensions before the image loads, enabling IntersectionObserver.
+    // Skip when the wrapper is absolutely positioned (e.g. edit-mode cards)
+    // because absolute positioning already determines the wrapper size.
+    const isAbsolute = wrapperClassName.includes('absolute');
     const placeholderStyle: React.CSSProperties | undefined =
-        placeholderWidth && placeholderHeight
+        !isAbsolute && placeholderWidth && placeholderHeight
             ? { aspectRatio: `${placeholderWidth} / ${placeholderHeight}`, width: '100%' }
             : undefined;
 
+    // Only add `relative` when the wrapper doesn't already specify a position
+    const positionClass = isAbsolute ? '' : 'relative';
+
     return (
-        <div ref={wrapperRef} className={`relative ${wrapperClassName}`} style={placeholderStyle}>
-            {/* spinner overlay – visible until image loads */}
-            {!loaded && (
+        <div ref={wrapperRef} className={`${positionClass} ${wrapperClassName}`} style={placeholderStyle}>
+            {/* spinner overlay – visible only after a short delay so cached images don't flash */}
+            {!loaded && showSpinner && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-800/30 rounded-md z-10">
                     <svg
                         className="animate-spin h-8 w-8 text-white"
@@ -176,7 +203,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
                 <img
                     {...rest}
                     src={blobUrl}
-                    className={`${className} transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+                    className={`${className} ${cached ? '' : 'transition-opacity duration-300'} ${loaded ? 'opacity-100' : cached ? 'opacity-100' : 'opacity-0'}`}
                     onLoad={handleLoad}
                 />
             )}

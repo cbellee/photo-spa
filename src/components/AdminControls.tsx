@@ -46,7 +46,7 @@ const AdminControls: React.FC<AdminControlsProps> = ({
     if (!visible) return null;
 
     const dark = theme === 'dark';
-    const btnBase = `p-1.5 rounded-md transition-colors ${dark ? 'hover:bg-gray-600 text-gray-300' : 'hover:bg-gray-200 text-gray-600'}`;
+    const btnBase = `p-1.5 rounded-md transition-colors ${dark ? 'hover:bg-surface-cardHover text-gray-400' : 'hover:bg-gray-100 text-gray-500'}`;
 
     const handleRename = async () => {
         if (newName.trim() === '' || newName === name) {
@@ -110,7 +110,7 @@ const AdminControls: React.FC<AdminControlsProps> = ({
                             if (e.key === 'Enter') handleRename();
                             if (e.key === 'Escape') { setIsRenaming(false); setNewName(name); }
                         }}
-                        className={`text-xs px-1.5 py-0.5 rounded border outline-none w-28 ${dark ? 'bg-gray-700 text-white border-gray-500' : 'bg-white text-gray-800 border-gray-300'}`}
+                        className={`text-xs px-1.5 py-0.5 rounded-md border outline-none w-28 ${dark ? 'bg-surface text-white border-surface-border focus:border-accent' : 'bg-white text-gray-800 border-surface-light-border focus:border-accent'}`}
                         autoFocus
                     />
                     <button className={`${btnBase} text-green-500`} onClick={handleRename} title="Confirm rename">

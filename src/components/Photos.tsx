@@ -11,7 +11,6 @@
  */
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, Outlet } from 'react-router-dom';
-import Box from "@mui/material/Box";
 import { RowsPhotoAlbum } from 'react-photo-album';
 import "react-photo-album/rows.css";
 import Lightbox from "yet-another-react-lightbox";
@@ -42,7 +41,6 @@ const Photos: React.FC<PhotoProps> = () => {
     const [index, setIndex] = useState<number>(-1);
     const { isAuthenticated, token } = useAuth();
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
-    const [isEditMode, setIsEditMode] = useState(false);
     const { theme } = useTheme();
     const [showExif, setShowExif] = useState(false);
     const [isLoading, setisLoading] = useState(true);
@@ -97,7 +95,10 @@ const Photos: React.FC<PhotoProps> = () => {
     }
 
     const loadPhotos = (includeDeleted: boolean) => {
-        setisLoading(true);
+        // Only show spinner on first load, not re-fetches (avoids flash when closing lightbox)
+        if (photos.length === 0) {
+            setisLoading(true);
+        }
         fetchPhotos(params.collection!, params.album!, includeDeleted)
             .then(data => {
                 setPhotos(data);
@@ -110,15 +111,8 @@ const Photos: React.FC<PhotoProps> = () => {
     };
 
     useEffect(() => {
-        loadPhotos(false);
-    }, [params.collection, params.album]);
-
-    const setEditMode = () => {
-        const entering = !isEditMode;
-        setIsEditMode(entering);
-        // Re-fetch: include deleted in edit mode, exclude when leaving
-        loadPhotos(entering);
-    }
+        loadPhotos(isAuthenticated);
+    }, [params.collection, params.album, isAuthenticated]);
 
     const onChangeIsDeleted = (photoName: string) => {
         const current = photos.find(p => p.name === photoName);
@@ -156,8 +150,7 @@ const Photos: React.FC<PhotoProps> = () => {
     }
 
     return (
-        <div className={`${theme === 'dark' ? 'bg-slate-900' : 'bg-gray-300'}`}>
-            <Box className='w-[90%] mx-auto box-border'>
+        <div className="animate-appear">
                 <Breadcrumb segments={[
                     { label: 'Collections', to: '/' },
                     { label: params.collection!, to: `/${params.collection}` },
@@ -165,58 +158,53 @@ const Photos: React.FC<PhotoProps> = () => {
                 ]} />
                 {
                     (isAuthenticated && isAdmin && !isLoading) && (
-                        <div className={`flex flex-wrap gap-x-4 gap-y-3 px-4 py-3 items-center rounded-md ${theme === 'dark' ? 'bg-gray-800/60 text-gray-200 border border-gray-700' : 'bg-white/80 text-gray-600 border border-gray-200 shadow-sm'}`}>
-                            {
-                                isEditMode && (
-                                    <label className="flex items-center gap-2 cursor-pointer">
-                                        <span className="text-xs font-semibold uppercase tracking-wide opacity-70">Show Exif</span>
-                                        <input type="checkbox"
-                                            className="accent-orange-500 cursor-pointer"
-                                            onChange={(event) => { handleShowExif(event) }}
-                                        />
-                                    </label>
-                                )
-                            }
-                            <div className="flex-1" />
-                            <button
-                                className={`h-8 text-md font-semibold w-24 rounded-md ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-400 bg-gray-500 text-gray-100'} active:animate-pop`}
-                                onClick={setEditMode}
-                            >
-                                {isEditMode ? "Done" : "Edit"}
-                            </button>
+                        <div className={`flex flex-wrap gap-x-4 gap-y-3 px-4 py-3 mb-6 items-center rounded-md ${theme === 'dark' ? 'bg-surface-card text-gray-200 border border-surface-border' : 'bg-surface-light-card text-gray-600 border border-surface-light-border shadow-card-light'}`}>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                                <span className="text-xs font-semibold tracking-wide opacity-70">Show Exif</span>
+                                <input type="checkbox"
+                                    className="accent-accent cursor-pointer"
+                                    onChange={(event) => { handleShowExif(event) }}
+                                />
+                            </label>
                         </div>
                     )
                 }
                 <LoadingSpinner visible={isLoading} />
-                {isEditMode ? (
-                    <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4 pb-8 pt-4">
+                {(isAuthenticated && isAdmin) ? (
+                    <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-5 pb-8">
                         {photos.map((photo, idx) => (
-                            <div className={`flex flex-col overflow-visible shadow-md shadow-black/60 rounded-sm transition-all ${photo.isDeleted ? 'border-2 border-red-500/70 opacity-50' : 'border border-gray-600'}`} key={`photo-edit-${photo.id}-${idx}`}>
-                                <div className="relative h-[200px] w-full bg-slate-800 rounded-t-md rounded-l-md rounded-r-md rounded-bl-none overflow-hidden">
+                            <div className={`flex flex-col overflow-visible rounded-md transition-all duration-300 ${photo.isDeleted ? 'border-2 border-red-500/70 opacity-50' : ''} ${
+                                theme === 'dark'
+                                    ? 'bg-surface-card border border-surface-border shadow-card hover:shadow-card-hover'
+                                    : 'bg-surface-light-card border border-surface-light-border shadow-card-light hover:shadow-card-light-hover'
+                            }`} key={`photo-edit-${photo.id}-${idx}`}>
+                                <div className={`relative h-[200px] w-full rounded-t-md overflow-hidden ${theme === 'dark' ? 'bg-surface' : 'bg-gray-50'}`}>
                                     <LazyImage
                                         alt={photo.description}
                                         src={photo.src}
-                                        wrapperClassName="absolute inset-0"
-                                        className="hover:opacity-85 hover:cursor-pointer w-full h-full p-2 object-scale-down "
+                                        wrapperClassName="absolute inset-0 flex items-center justify-center"
+                                        className="hover:opacity-85 hover:cursor-pointer w-full h-full object-cover transition-transform duration-300"
                                         style={{
-                                            transform: photo.orientation ? `rotate(${photo.orientation}deg)` : undefined,
+                                            transform: photo.orientation
+                                                ? `rotate(${photo.orientation}deg)${photo.orientation === 90 || photo.orientation === 270 ? ' scale(1.35)' : ''}`
+                                                : undefined,
                                         }}
                                         onClick={() => setIndex(idx)}
                                     />
                                     {photo.isDeleted && (
                                         <div className="absolute inset-0 bg-red-900/30 flex items-center justify-center pointer-events-none rounded-t-md">
-                                            <span className="text-red-200 font-bold text-xs uppercase tracking-widest bg-red-900/60 px-2 py-0.5 rounded">Deleted</span>
+                                            <span className="text-red-200 font-bold text-xs uppercase tracking-widest bg-red-900/60 px-2 py-0.5 rounded-md">Deleted</span>
                                         </div>
                                     )}
                                 </div>
                                 {isAdmin && (
-                                    <div className={`flex ${theme === 'dark' ? 'bg-gray-700 text-gray-200' : 'bg-gray-100 text-gray-600'} rounded-b-md flex-col gap-3 text-left p-2`}>
+                                    <div className={`flex rounded-b-md flex-col gap-3 text-left p-3 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-600'}`}>
                                         <div>
-                                            <label className="text-xs font-semibold uppercase tracking-wide opacity-70">Description</label>
+                                            <label className="text-xs font-semibold tracking-wide opacity-70">Description</label>
                                             <input
                                                 type="text"
                                                 name='description'
-                                                className={`w-full px-1.5 py-1.5 rounded-sm text-sm border ${theme === 'dark' ? 'bg-gray-700 text-white border-gray-500 focus:border-blue-400' : 'bg-white text-gray-800 border-gray-300 focus:border-blue-500'} outline-none transition-colors`}
+                                                className={`w-full px-2 py-1.5 rounded-md text-sm border ${theme === 'dark' ? 'bg-surface text-white border-surface-border focus:border-accent' : 'bg-gray-50 text-gray-800 border-surface-light-border focus:border-accent'} outline-none transition-colors`}
                                                 value={photo.description}
                                                 id={photo.name}
                                                 onChange={(event) => onChangeDescription(event)}
@@ -231,7 +219,7 @@ const Photos: React.FC<PhotoProps> = () => {
                                             selectedCollection={(event: string) => onChangeCollection(event, photo.name)}
                                             isFormValid={() => {}}
                                         />
-                                        <div className='flex items-center gap-2'>
+                                        <div className='flex items-center gap-2 pt-1'>
                                             <button
                                                 type='button'
                                                 className={`p-1.5 rounded-md transition-colors cursor-pointer ${photo.isDeleted ? 'text-red-500' : theme === 'dark' ? 'text-gray-400 hover:text-red-400' : 'text-gray-500 hover:text-red-500'} ${(photo.collectionImage || photo.albumImage) ? 'opacity-30 pointer-events-none' : ''}`}
@@ -243,7 +231,7 @@ const Photos: React.FC<PhotoProps> = () => {
                                             <button
                                                 type='button'
                                                 id={photo.name}
-                                                className={`p-1.5 rounded-md transition-colors cursor-pointer ${theme === 'dark' ? 'text-gray-400 hover:text-orange-400' : 'text-gray-500 hover:text-orange-500'}`}
+                                                className={`p-1.5 rounded-md transition-colors cursor-pointer ${theme === 'dark' ? 'text-gray-400 hover:text-accent-light' : 'text-gray-500 hover:text-accent'}`}
                                                 onClick={(e) => handleImageOrientation(e as unknown as React.MouseEvent<HTMLDivElement>, 'cw')}
                                                 title='Rotate image'
                                             >
@@ -260,10 +248,10 @@ const Photos: React.FC<PhotoProps> = () => {
                         ))}
                     </div>
                 ) : (
-                    <div className="pt-4">
+                    <div>
                     <RowsPhotoAlbum
                         padding={0}
-                        spacing={5}
+                        spacing={6}
                         photos={photos}
                         rowConstraints={{ singleRowMaxHeight: 200, minPhotos: 1, maxPhotos: 10 }}
                         targetRowHeight={200}
@@ -271,23 +259,24 @@ const Photos: React.FC<PhotoProps> = () => {
                         onClick={({ index }) => setIndex(index)}
                         render={{
                             photo: ({ onClick }, { photo, index, width, height }) => (
-                                <div className="grid group justify-center overflow-hidden" key={`photo-${photo.id}-${index}`} style={{ width, height }}>
+                                <div className="group justify-center overflow-hidden rounded-sm" key={`photo-${photo.id}-${index}`} style={{ width, height }}>
                                     <LazyImage
                                         alt={photo.description}
                                         src={photo.src}
                                         placeholderWidth={photo.width}
                                         placeholderHeight={photo.height}
-                                        wrapperClassName="[grid-column:1] [grid-row:1]"
-                                        className="hover:opacity-85 hover:cursor-pointer w-full h-full object-cover"
+                                        wrapperClassName="[grid-column:1] [grid-row:1] w-full h-full"
+                                        className="hover:cursor-pointer w-full h-full object-cover transition-transform duration-500"
                                         style={{
-                                            transform: `rotate(${photo.orientation}deg)${photo.orientation === 90 || photo.orientation === 270
+                                            '--base-transform': `rotate(${photo.orientation}deg)${photo.orientation === 90 || photo.orientation === 270
                                                 ? ` scale(${Math.min(photo.width * 2, photo.height) / Math.max(photo.width, photo.height)})`
                                                 : ''
                                                 }`,
-                                        }}
+                                            transform: 'var(--base-transform)',
+                                        } as React.CSSProperties}
                                         onClick={onClick}
                                     />
-                                    <div className={`[grid-column:1] [grid-row:1] place-self-end block ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-500'} ${isAuthenticated ? 'group-hover:opacity-60 opacity-0' : 'opacity-0'} text-white overflow-hidden w-full`}>{photo.description}</div>
+
                                 </div>
                             ),
                         }}
@@ -295,7 +284,6 @@ const Photos: React.FC<PhotoProps> = () => {
                     </div>
                 )}
                 <Outlet />
-            </Box>
             <Lightbox
                 slides={photos}
                 open={index >= 0}

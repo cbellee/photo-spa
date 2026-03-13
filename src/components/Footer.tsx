@@ -1,6 +1,6 @@
 /**
- * Footer — Site-wide footer displaying the copyright year.
- * Theme-aware background and text styling.
+ * Footer — Minimal footer. Now unused in the sidebar layout but kept
+ * for backward compatibility.
  */
 import React from 'react'
 import { useTheme } from '../context/ThemeContext';
@@ -10,8 +10,8 @@ const { theme } = useTheme();
 const currentYearUTC = new Date().getUTCFullYear();
 
     return (
-        <div className={`align-middle text-center bottom-0 p-6 rounded-b-md ${theme === 'dark' ? 'text-white bg-gray-950' : 'bg-gray-100'}`}>
-            <p className="text-center uppercase text-sm">&copy; Photo Album {currentYearUTC} </p>
+        <div className={`text-center py-4 text-xs ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`}>
+            <p>&copy; {currentYearUTC} Photo Album</p>
         </div>
     );
 }

@@ -305,7 +305,7 @@ const UploadImages = () => {
     return (
         <FormProvider {...formMethods}>
             <form onSubmit={formMethods.handleSubmit(onSubmit)}>
-                <div className={`font-thin text-white text-sm w-[90%] mx-auto pt-4`}>
+                <div className="animate-appear">
                     {isAuthenticated ? (
                         <>
                             <TagSelector mode="create" selectedAlbum={onChangeAlbum} selectedCollection={onChangeCollection}>
@@ -316,35 +316,36 @@ const UploadImages = () => {
                                     accept="image/jpg, image/jpeg, image/png"
                                     onChange={selectFiles}
                                     className={`
-                                ${theme === 'dark' ? 'text-orange-500' : 'text-orange-700'}   
+                                ${theme === 'dark' ? 'text-accent-light' : 'text-accent'}   
                                 active:animate-pop
-                                text-orange-500
                                 file:font-semibold
-                                file:rounded-sm file:border-0
-                                file:text-md  file:h-8
+                                file:rounded-md file:border-0
+                                file:text-sm  file:h-9
                                 p-0
                                 m-0
-                                file:bg-gray-300 file:text-gray-600
+                                file:bg-accent file:text-white
                                 file:min-w-24
                                 file:mr-4
                                 w-auto
-                                leading-8
+                                leading-9
                                 whitespace-nowrap
-                                hover:file:bg-gray-100`}
+                                file:hover:bg-accent-dark
+                                file:transition-colors
+                                file:cursor-pointer`}
                                 />
                                 <input type="submit" hidden={true} />
                                 <button
                                     type="button"
-                                    className={`text-white active:animate-pop h-8 font-semibold text-md w-24 min-w-24 ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-100 bg-gray-300 text-gray-600'} ${!isValid ? 'active:animate-none' : 'active:animate-pop'} p-0 rounded-sm`}
+                                    className={`h-9 font-semibold text-sm w-24 min-w-24 rounded-md bg-accent hover:bg-accent-dark text-white transition-colors ${!isValid ? 'opacity-50 cursor-not-allowed' : 'active:animate-pop cursor-pointer'}`}
                                     disabled={!isValid || uploading}
                                     onClick={uploadImages}
                                 >
                                     Upload
                                 </button>
-                                <div className={`whitespace-nowrap leading-8 ${numSelectedImages > 0 ? "visible" : "hidden"}`}>
+                                <div className={`whitespace-nowrap leading-9 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} ${numSelectedImages > 0 ? "visible" : "hidden"}`}>
                                     Uploading: {progressMessage.progess}/{numSelectedImages}
                                 </div>
-                                <div className={`whitespace-nowrap leading-8 text-sm ${theme === 'dark' ? 'text-orange-500' : 'text-orange-700'}`}>
+                                <div className={`whitespace-nowrap leading-9 text-sm ${theme === 'dark' ? 'text-accent-light' : 'text-accent'}`}>
                                     {validationMessage}
                                 </div>
                             </TagSelector>
@@ -366,9 +367,10 @@ const UploadImages = () => {
                             />
                         </>
                     ) : (
-                        <div className="justify-items-center">
-                            <h2 className="text-white text-center mt-20 items-center justify-items-center visible flex transform-none relative rotate-0">
-                                You must be signed in and granted access to upload photos</h2>
+                        <div className="flex items-center justify-center py-20">
+                            <div className={`text-center px-8 py-6 rounded-md ${theme === 'dark' ? 'bg-surface-card border border-surface-border text-gray-300' : 'bg-surface-light-card border border-surface-light-border text-gray-600 shadow-card-light'}`}>
+                                <p className="text-lg font-medium">You must be signed in and granted access to upload photos</p>
+                            </div>
                         </div>
                     )}
                 </div>
