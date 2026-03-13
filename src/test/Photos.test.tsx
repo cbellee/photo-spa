@@ -192,18 +192,19 @@ describe('Photos', () => {
     });
   });
 
-  it('shows Edit button when authenticated', async () => {
+  it('shows edit controls when authenticated (auto edit mode)', async () => {
     setupAuthenticated();
     renderWithProviders(<PhotosWithRoute />, {
       routerProps: { initialEntries: ['/trips/coral-bay'] },
     });
 
+    // Edit mode is automatically active — Show Exif checkbox is visible
     await waitFor(() => {
-      expect(screen.getByText('Edit')).toBeInTheDocument();
+      expect(screen.getByText('Show Exif')).toBeInTheDocument();
     });
   });
 
-  it('does not show Edit button when unauthenticated', async () => {
+  it('does not show edit controls when unauthenticated', async () => {
     renderWithProviders(<PhotosWithRoute />, {
       routerProps: { initialEntries: ['/trips/coral-bay'] },
     });
@@ -212,75 +213,36 @@ describe('Photos', () => {
       expect(screen.getByTestId('photo-album')).toBeInTheDocument();
     });
 
-    expect(screen.queryByText('Edit')).not.toBeInTheDocument();
+    expect(screen.queryByText('Show Exif')).not.toBeInTheDocument();
   });
 
-  it('toggles edit mode — Edit becomes Done, no Save/Cancel buttons', async () => {
+  it('authenticated users are automatically in admin/edit mode', async () => {
     setupAuthenticated();
     renderWithProviders(<PhotosWithRoute />, {
       routerProps: { initialEntries: ['/trips/coral-bay'] },
     });
 
+    // Edit view renders automatically — no need to click Edit button
     await waitFor(() => {
-      expect(screen.getByText('Edit')).toBeInTheDocument();
+      expect(screen.getByText('Show Exif')).toBeInTheDocument();
     });
-
-    fireEvent.click(screen.getByText('Edit'));
-
-    await waitFor(() => {
-      expect(screen.getByText('Done')).toBeInTheDocument();
-    });
-    expect(screen.queryByText('Save')).not.toBeInTheDocument();
-    expect(screen.queryByText('Cancel')).not.toBeInTheDocument();
   });
 
-  it('KNOWN BUG: setIsAdmin(true) is hardcoded — every user is admin', async () => {
+  it('fetches with includeDeleted=true when authenticated', async () => {
     setupAuthenticated();
     renderWithProviders(<PhotosWithRoute />, {
       routerProps: { initialEntries: ['/trips/coral-bay'] },
     });
-
-    // The Edit button appears for every authenticated user because isAdmin is always true
-    await waitFor(() => {
-      expect(screen.getByText('Edit')).toBeInTheDocument();
-    });
-  });
-
-  it('entering edit mode re-fetches with includeDeleted=true', async () => {
-    setupAuthenticated();
-    renderWithProviders(<PhotosWithRoute />, {
-      routerProps: { initialEntries: ['/trips/coral-bay'] },
-    });
-
-    await waitFor(() => {
-      expect(screen.getByText('Edit')).toBeInTheDocument();
-    });
-
-    vi.mocked(photoService.fetchPhotos).mockClear();
-    fireEvent.click(screen.getByText('Edit'));
 
     await waitFor(() => {
       expect(photoService.fetchPhotos).toHaveBeenCalledWith('trips', 'coral-bay', true);
     });
   });
 
-  it('leaving edit mode re-fetches with includeDeleted=false', async () => {
-    setupAuthenticated();
+  it('fetches with includeDeleted=false when unauthenticated', async () => {
     renderWithProviders(<PhotosWithRoute />, {
       routerProps: { initialEntries: ['/trips/coral-bay'] },
     });
-
-    await waitFor(() => {
-      expect(screen.getByText('Edit')).toBeInTheDocument();
-    });
-
-    fireEvent.click(screen.getByText('Edit'));
-    await waitFor(() => {
-      expect(screen.getByText('Done')).toBeInTheDocument();
-    });
-
-    vi.mocked(photoService.fetchPhotos).mockClear();
-    fireEvent.click(screen.getByText('Done'));
 
     await waitFor(() => {
       expect(photoService.fetchPhotos).toHaveBeenCalledWith('trips', 'coral-bay', false);
@@ -321,14 +283,9 @@ describe('Photos', () => {
         routerProps: { initialEntries: ['/trips/coral-bay'] },
       });
 
+      // Edit mode is automatically active when authenticated — wait for edit controls
       await waitFor(() => {
-        expect(screen.getByText('Edit')).toBeInTheDocument();
-      });
-
-      fireEvent.click(screen.getByText('Edit'));
-
-      await waitFor(() => {
-        expect(screen.getByText('Done')).toBeInTheDocument();
+        expect(screen.getByText('Show Exif')).toBeInTheDocument();
       });
 
       vi.mocked(FileUploadService.update).mockClear();
@@ -475,12 +432,7 @@ describe('Photos', () => {
         routerProps: { initialEntries: ['/trips/coral-bay'] },
       });
 
-      await waitFor(() => {
-        expect(screen.getByText('Edit')).toBeInTheDocument();
-      });
-
-      fireEvent.click(screen.getByText('Edit'));
-
+      // Edit mode is automatically active when authenticated
       await waitFor(() => {
         expect(screen.getByText('Deleted')).toBeInTheDocument();
       });
@@ -493,12 +445,6 @@ describe('Photos', () => {
       renderWithProviders(<PhotosWithRoute />, {
         routerProps: { initialEntries: ['/trips/coral-bay'] },
       });
-
-      await waitFor(() => {
-        expect(screen.getByText('Edit')).toBeInTheDocument();
-      });
-
-      fireEvent.click(screen.getByText('Edit'));
 
       await waitFor(() => {
         expect(screen.getByText('Deleted')).toBeInTheDocument();
@@ -521,14 +467,9 @@ describe('Photos', () => {
         routerProps: { initialEntries: ['/trips/coral-bay'] },
       });
 
+      // Edit mode is automatically active when authenticated — wait for edit controls
       await waitFor(() => {
-        expect(screen.getByText('Edit')).toBeInTheDocument();
-      });
-
-      fireEvent.click(screen.getByText('Edit'));
-
-      await waitFor(() => {
-        expect(screen.getByText('Done')).toBeInTheDocument();
+        expect(screen.getByText('Show Exif')).toBeInTheDocument();
       });
 
       expect(screen.queryByText('Deleted')).not.toBeInTheDocument();
@@ -537,18 +478,13 @@ describe('Photos', () => {
 
   // ── Show Exif checkbox test ─────────────────────────────────────────────
 
-  it('shows the Show Exif checkbox in edit mode', async () => {
+  it('shows the Show Exif checkbox when authenticated (auto edit mode)', async () => {
     setupAuthenticated();
     renderWithProviders(<PhotosWithRoute />, {
       routerProps: { initialEntries: ['/trips/coral-bay'] },
     });
 
-    await waitFor(() => {
-      expect(screen.getByText('Edit')).toBeInTheDocument();
-    });
-
-    fireEvent.click(screen.getByText('Edit'));
-
+    // Edit mode is automatically active when authenticated
     await waitFor(() => {
       expect(screen.getByText('Show Exif')).toBeInTheDocument();
     });

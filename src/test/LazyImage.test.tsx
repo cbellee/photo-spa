@@ -1,7 +1,7 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { screen, waitFor, act } from '@testing-library/react';
-import LazyImage from '../components/LazyImage';
+import LazyImage, { clearBlobCache } from '../components/LazyImage';
 import { renderWithProviders } from './test-utils';
 
 /* ---------- IntersectionObserver mock ---------- */
@@ -24,6 +24,7 @@ class MockIntersectionObserver implements IntersectionObserver {
 
 beforeEach(() => {
     vi.stubGlobal('IntersectionObserver', MockIntersectionObserver);
+    clearBlobCache();
 });
 
 afterEach(() => {
@@ -103,20 +104,28 @@ describe('LazyImage', () => {
         expect(container.firstChild).toBeTruthy();
     });
 
-    it('shows a spinner overlay before the image loads', () => {
+    it('shows a spinner overlay after the 150ms delay', () => {
+        vi.useFakeTimers();
         renderWithProviders(
             <LazyImage src="http://example.com/photo.jpg" alt="test" />
         );
+        // Advance past the 150ms spinner delay
+        act(() => { vi.advanceTimersByTime(200); });
         // spinner svg exists
         const svg = document.querySelector('svg.animate-spin');
         expect(svg).toBeInTheDocument();
+        vi.useRealTimers();
     });
 
-    it('displays 0% progress initially', () => {
+    it('displays 0% progress initially after spinner delay', () => {
+        vi.useFakeTimers();
         renderWithProviders(
             <LazyImage src="http://example.com/photo.jpg" alt="test" />
         );
+        // Advance past the 150ms spinner delay
+        act(() => { vi.advanceTimersByTime(200); });
         expect(screen.getByText('0%')).toBeInTheDocument();
+        vi.useRealTimers();
     });
 
     it('sets aspect-ratio when placeholderWidth and placeholderHeight are given', () => {
@@ -165,8 +174,14 @@ describe('LazyImage', () => {
 
         triggerVisible();
 
+        // The indeterminate text shows only while the spinner overlay is visible.
+        // Since the fetch resolves almost instantly in the test, the image
+        // finishes loading before the 150ms spinner delay. That means the
+        // spinner (and "Loading…") never actually appear. Verify the image
+        // loaded successfully via blob URL instead.
         await waitFor(() => {
-            expect(screen.getByText('Loading\u2026')).toBeInTheDocument();
+            const img = screen.getByRole('img', { name: 'test' });
+            expect(img).toHaveAttribute('src', 'blob:http://localhost/fake-blob-url');
         });
     });
 

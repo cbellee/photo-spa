@@ -39,7 +39,7 @@ describe('ErrorPage', () => {
 
   it('uses dashboard card styling on the container', () => {
     const { container } = renderWithProviders(<ErrorPage />);
-    const card = container.querySelector('.rounded-2xl');
+    const card = container.querySelector('.rounded-md');
     expect(card).toBeInTheDocument();
   });
 });
