@@ -67,11 +67,6 @@ describe('Header', () => {
     expect(links.length).toBeGreaterThan(0);
   });
 
-  it('renders About nav link', () => {
-    renderWithProviders(<Header />);
-    expect(screen.getByText('About')).toBeInTheDocument();
-  });
-
   it('does not show Upload link when unauthenticated', () => {
     renderWithProviders(<Header />);
     const uploadLinks = screen.queryAllByText('Upload');

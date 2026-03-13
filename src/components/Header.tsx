@@ -29,7 +29,7 @@ export default function Header() {
           </a>
           <h2 className="text-2xl uppercase tracking-widest transform-none font-extralight"></h2>
           <nav>
-            <section className="MOBILE-MENU flex lg:hidden">
+            <section className="MOBILE-MENU flex md:hidden">
               <div
                 className="HAMBURGER-ICON space-y-2 pr-5"
                 onClick={() => setIsNavOpen((prev) => !prev)}
@@ -46,7 +46,7 @@ export default function Header() {
               />
             </section>
 
-            <div className=" text-gray-300 ml-6">
+            <div className="hidden md:flex text-gray-300 ml-6">
               <NavLinks isAuthenticated={isAuthenticated} />
             </div>
           </nav>

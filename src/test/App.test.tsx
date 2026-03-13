@@ -21,10 +21,6 @@ vi.mock('../components/Upload.tsx', () => ({
   default: () => <div data-testid="upload-page">Upload</div>,
 }));
 
-vi.mock('../components/About.tsx', () => ({
-  default: () => <div data-testid="about-page">About</div>,
-}));
-
 vi.mock('../components/Header.tsx', () => ({
   default: () => <div data-testid="mock-header">Header</div>,
 }));

@@ -60,7 +60,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, isAuthenticated, onClos
                     height: 100vh;
                     top: 0;
                     left: 0;
-                    background: ${theme === 'dark' ? 'rgb()' : 'white'};
+                    background: ${theme === 'dark' ? 'rgb(3, 7, 18)' : 'white'};
                     color: ${theme === 'dark' ? 'white' : 'gray'};
                     z-index: 10;
                     display: flex;

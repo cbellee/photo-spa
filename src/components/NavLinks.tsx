@@ -20,12 +20,11 @@ export interface NavItem {
 }
 
 /** Named top-level routes that are NOT part of the collections hierarchy */
-const nonCollectionPrefixes = ['/upload', '/about'];
+const nonCollectionPrefixes = ['/upload'];
 
 const navItems: NavItem[] = [
     { to: '/upload', label: 'Upload', authRequired: true },
     { to: '/', label: 'Collections' },
-    { to: '/About', label: 'About' },
 ];
 
 const NavLinks: React.FC<NavLinksProps> = ({ isAuthenticated }) => {
@@ -50,7 +49,7 @@ const NavLinks: React.FC<NavLinksProps> = ({ isAuthenticated }) => {
     );
 
     return (
-        <ul className="DESKTOP-MENU hidden space-x-8 lg:flex pr-6 uppercase">
+        <ul className="DESKTOP-MENU hidden space-x-8 md:flex pr-6 uppercase">
             {visibleItems.map((item, idx) => (
                 <Fragment key={item.to}>
                     {idx > 0 && (
