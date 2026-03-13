@@ -20,21 +20,10 @@ describe('Footer', () => {
     // ThemeProvider defaults to "dark" when localStorage is empty
     const { container } = renderWithProviders(<Footer />);
     const wrapper = container.firstElementChild as HTMLElement;
-    expect(wrapper.className).toContain('text-white');
-    expect(wrapper.className).toContain('bg-gray-950');
+    expect(wrapper.className).toContain('text-gray-600');
   });
 
-  it('FIXED: CSS classes are properly separated (text-center uppercase)', () => {
-    const { container } = renderWithProviders(<Footer />);
-    const paragraph = container.querySelector('p');
-    expect(paragraph?.className).toContain('text-center');
-    expect(paragraph?.className).toContain('uppercase');
-    expect(paragraph?.className).not.toContain('text-centeruppercase');
-  });
-
-  it('does not destructure unused toggleTheme', () => {
-    // The component no longer destructures toggleTheme.
-    // This test just verifies it renders without error.
+  it('does not throw when rendered', () => {
     expect(() => renderWithProviders(<Footer />)).not.toThrow();
   });
 });

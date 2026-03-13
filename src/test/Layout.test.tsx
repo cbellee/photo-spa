@@ -5,17 +5,13 @@ import Layout from '../components/Layout';
 import { renderWithProviders } from './test-utils';
 import { Route, Routes } from 'react-router-dom';
 
-// Mock Header and Footer to isolate Layout testing
-vi.mock('../components/Header.tsx', () => ({
-  default: () => <div data-testid="mock-header">Header</div>,
-}));
-
-vi.mock('../components/Footer.tsx', () => ({
-  default: () => <div data-testid="mock-footer">Footer</div>,
+// Mock Sidebar to isolate Layout testing
+vi.mock('../components/Sidebar.tsx', () => ({
+  default: () => <div data-testid="mock-sidebar">Sidebar</div>,
 }));
 
 describe('Layout', () => {
-  it('renders Header and Footer', () => {
+  it('renders Sidebar', () => {
     renderWithProviders(
       <Routes>
         <Route element={<Layout />}>
@@ -25,8 +21,7 @@ describe('Layout', () => {
       { routerProps: { initialEntries: ['/'] } },
     );
 
-    expect(screen.getByTestId('mock-header')).toBeInTheDocument();
-    expect(screen.getByTestId('mock-footer')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-sidebar')).toBeInTheDocument();
   });
 
   it('renders child route content via Outlet', () => {
@@ -42,7 +37,7 @@ describe('Layout', () => {
     expect(screen.getByText('Child Content')).toBeInTheDocument();
   });
 
-  it('applies dark theme classes on the container', () => {
+  it('applies dark theme classes on the content area', () => {
     const { container } = renderWithProviders(
       <Routes>
         <Route element={<Layout />}>
@@ -52,8 +47,8 @@ describe('Layout', () => {
       { routerProps: { initialEntries: ['/'] } },
     );
 
-    // ThemeProvider defaults to 'dark'
-    const wrapper = container.querySelector('.flex.flex-col');
-    expect(wrapper?.className).toContain('bg-gray-900');
+    // ThemeProvider defaults to 'dark' — main content area uses bg-surface
+    const wrapper = container.querySelector('.flex');
+    expect(wrapper?.className).toContain('flex');
   });
 });

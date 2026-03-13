@@ -35,14 +35,18 @@ const ImagePreviewGrid: React.FC<ImagePreviewGridProps> = ({
     if (!imagePreviews || imagePreviews.length === 0) return null;
 
     return (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-4 pb-8 pt-4">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-5 pb-8">
             {imagePreviews.map((img, i) => (
                 <div
                     key={img.name}
-                    className="flex flex-col overflow-visible border-1 border-gray-600 shadow-md shadow-black/60 rounded-sm"
+                    className={`flex flex-col overflow-visible rounded-md transition-all duration-300 ${
+                        theme === 'dark'
+                            ? 'bg-surface-card border border-surface-border shadow-card hover:shadow-card-hover'
+                            : 'bg-surface-light-card border border-surface-light-border shadow-card-light hover:shadow-card-light-hover'
+                    }`}
                 >
                     {/* Image area */}
-                    <div className="relative h-[200px] w-full bg-slate-800 rounded-t-md overflow-hidden">
+                    <div className={`relative h-[200px] w-full rounded-t-md overflow-hidden ${theme === 'dark' ? 'bg-surface' : 'bg-gray-50'}`}>
                         <img
                             src={img.src}
                             alt={`image-${i}`}
@@ -53,33 +57,33 @@ const ImagePreviewGrid: React.FC<ImagePreviewGridProps> = ({
                         />
                         {/* Upload progress overlay */}
                         {img.uploading && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-t-md">
                                 <div className="flex flex-col items-center gap-1">
-                                    <span className="animate-spin rounded-full w-10 h-10 border-4 border-solid border-white border-r-transparent" />
+                                    <span className="animate-spin rounded-full w-10 h-10 border-4 border-accent/30 border-t-accent" />
                                     <span className="text-white text-sm font-semibold">{img.uploadProgress}%</span>
                                 </div>
                             </div>
                         )}
                         {/* Upload result badge */}
                         {img.uploadComplete && (
-                            <div className={`absolute top-2 right-2 px-2 py-0.5 rounded text-xs font-semibold ${img.uploadError ? 'bg-red-600 text-white' : 'bg-green-600 text-white'}`}>
+                            <div className={`absolute top-2 right-2 px-2 py-0.5 rounded-md text-xs font-semibold ${img.uploadError ? 'bg-red-600 text-white' : 'bg-green-600 text-white'}`}>
                                 {img.uploadError ? 'Error' : 'Done'}
                             </div>
                         )}
                     </div>
 
                     {/* Detail panel */}
-                    <div className={`flex ${theme === 'dark' ? 'bg-gray-700 text-gray-200' : 'bg-gray-100 text-gray-600'} rounded-b-md flex-col gap-3 text-left p-2`}>
+                    <div className={`flex ${theme === 'dark' ? 'text-gray-200' : 'text-gray-600'} rounded-b-md flex-col gap-3 text-left p-3`}>
                         <div>
-                            <label className="text-xs font-semibold uppercase tracking-wide opacity-70">Name</label>
+                            <label className="text-xs font-semibold tracking-wide opacity-70">Name</label>
                             <div className="text-sm truncate">{img.name}</div>
                         </div>
                         <div>
-                            <label className="text-xs font-semibold uppercase tracking-wide opacity-70">Description</label>
+                            <label className="text-xs font-semibold tracking-wide opacity-70">Description</label>
                             <input
                                 type="text"
                                 value={img.description}
-                                className={`w-full px-1.5 py-1.5 rounded-sm text-sm border ${theme === 'dark' ? 'bg-gray-700 text-white border-gray-500 focus:border-blue-400' : 'bg-white text-gray-800 border-gray-300 focus:border-blue-500'} outline-none transition-colors`}
+                                className={`w-full px-2 py-1.5 rounded-md text-sm border ${theme === 'dark' ? 'bg-surface text-white border-surface-border focus:border-accent' : 'bg-gray-50 text-gray-800 border-surface-light-border focus:border-accent'} outline-none transition-colors`}
                                 onChange={(e) => onDescriptionChange(i, e.target.value)}
                             />
                         </div>
@@ -102,10 +106,10 @@ const ImagePreviewGrid: React.FC<ImagePreviewGridProps> = ({
                             )}
                         </div>
                         {!img.uploading && (
-                            <div className='flex items-center gap-2'>
+                            <div className='flex items-center gap-2 pt-1'>
                                 <button
                                     type='button'
-                                    className={`p-1.5 rounded-md transition-colors cursor-pointer ${theme === 'dark' ? 'text-gray-400 hover:text-orange-400' : 'text-gray-500 hover:text-orange-500'}`}
+                                    className={`p-1.5 rounded-md transition-colors cursor-pointer ${theme === 'dark' ? 'text-gray-400 hover:text-accent-light' : 'text-gray-500 hover:text-accent'}`}
                                     onClick={() => onOrientationChange(img.name)}
                                     title='Rotate image'
                                 >

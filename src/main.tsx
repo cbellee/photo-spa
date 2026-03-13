@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import "./styles/tailwind.output.css";
 import App from './App.tsx';
 import { msalConfig } from './config/msalConfig.ts';
 import { PublicClientApplication, EventType, AccountInfo, EventMessage } from '@azure/msal-browser';

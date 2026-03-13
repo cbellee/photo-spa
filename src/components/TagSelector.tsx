@@ -116,19 +116,19 @@ export default function TagSelector(props: TagSelectorProps) {
     const selectStyles = {
         control: (base: any, state: any) => ({
             ...base,
-            backgroundColor: theme === 'dark' ? '#374151' : '#fff',
+            backgroundColor: theme === 'dark' ? '#16151f' : '#f9fafb',
             borderColor: state.isFocused
-                ? (theme === 'dark' ? '#f97316' : '#ea580c')
-                : (theme === 'dark' ? '#4b5563' : '#d1d5db'),
-            borderRadius: '0.25rem',
+                ? '#7c5cfc'
+                : (theme === 'dark' ? '#2a293d' : '#e5e3ef'),
+            borderRadius: '0.75rem',
             minHeight: '2.25rem',
             fontSize: '0.875rem',
             boxShadow: state.isFocused
-                ? `0 0 0 1px ${theme === 'dark' ? '#f97316' : '#ea580c'}`
+                ? '0 0 0 1px #7c5cfc'
                 : 'none',
             transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
             '&:hover': {
-                borderColor: theme === 'dark' ? '#9ca3af' : '#9ca3af',
+                borderColor: theme === 'dark' ? '#9b7eff' : '#7c5cfc',
             },
         }),
         singleValue: (base: any) => ({
@@ -146,10 +146,10 @@ export default function TagSelector(props: TagSelectorProps) {
         }),
         menu: (base: any) => ({
             ...base,
-            backgroundColor: theme === 'dark' ? '#1f2937' : '#fff',
-            borderRadius: '0.375rem',
-            border: `1px solid ${theme === 'dark' ? '#374151' : '#e5e7eb'}`,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.25)',
+            backgroundColor: theme === 'dark' ? '#1e1d2b' : '#fff',
+            borderRadius: '0.75rem',
+            border: `1px solid ${theme === 'dark' ? '#2a293d' : '#e5e3ef'}`,
+            boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
             zIndex: 20,
             overflow: 'hidden',
         }),
@@ -160,29 +160,29 @@ export default function TagSelector(props: TagSelectorProps) {
         option: (base: any, state: any) => ({
             ...base,
             backgroundColor: state.isSelected
-                ? (theme === 'dark' ? '#f97316' : '#ea580c')
+                ? '#7c5cfc'
                 : state.isFocused
-                    ? (theme === 'dark' ? '#374151' : '#fff7ed')
+                    ? (theme === 'dark' ? '#252438' : '#f0ebff')
                     : 'transparent',
             color: state.isSelected
                 ? '#fff'
                 : (theme === 'dark' ? '#f3f4f6' : '#1f2937'),
             fontSize: '0.875rem',
             cursor: 'pointer',
-            '&:active': { backgroundColor: theme === 'dark' ? '#ea580c' : '#fed7aa' },
+            '&:active': { backgroundColor: theme === 'dark' ? '#5a3fd4' : '#ddd6fe' },
         }),
         indicatorSeparator: (base: any) => ({
             ...base,
-            backgroundColor: theme === 'dark' ? '#4b5563' : '#d1d5db',
+            backgroundColor: theme === 'dark' ? '#2a293d' : '#e5e3ef',
         }),
         dropdownIndicator: (base: any, state: any) => ({
             ...base,
             color: state.isFocused
-                ? (theme === 'dark' ? '#f97316' : '#ea580c')
+                ? '#7c5cfc'
                 : (theme === 'dark' ? '#6b7280' : '#9ca3af'),
             padding: '4px',
             transition: 'color 0.15s ease',
-            '&:hover': { color: theme === 'dark' ? '#f97316' : '#ea580c' },
+            '&:hover': { color: '#7c5cfc' },
         }),
         clearIndicator: (base: any) => ({
             ...base,
@@ -196,7 +196,7 @@ export default function TagSelector(props: TagSelectorProps) {
         return (
             <div className="grid grid-cols-1 gap-2">
                 <div>
-                    <label className="text-xs font-semibold uppercase tracking-wide opacity-70 mb-0.5 block">Collection</label>
+                    <label className="text-xs font-semibold tracking-wide opacity-70 mb-0.5 block">Collection</label>
                     <CreatableSelect
                         onChange={(event) => handleCollection(event)}
                         id={props.id}
@@ -212,7 +212,7 @@ export default function TagSelector(props: TagSelectorProps) {
                     />
                 </div>
                 <div>
-                    <label className="text-xs font-semibold uppercase tracking-wide opacity-70 mb-0.5 block">Album</label>
+                    <label className="text-xs font-semibold tracking-wide opacity-70 mb-0.5 block">Album</label>
                     <CreatableSelect
                         onChange={(event) => handleAlbum(event)}
                         name="album"
@@ -237,9 +237,9 @@ export default function TagSelector(props: TagSelectorProps) {
     const { control } = useFormContext();
 
     return (
-        <div className={`flex flex-wrap gap-x-4 gap-y-3 px-4 py-3 items-end rounded-md ${theme === 'dark' ? 'bg-gray-800/60 text-gray-200 border border-gray-700' : 'bg-white/80 text-gray-600 border border-gray-200 shadow-sm'}`}>
-            <div className="flex flex-col min-w-[180px] lowercase font-normal">
-                <label className="text-xs font-semibold uppercase tracking-wide opacity-70 mb-1">Collection</label>
+        <div className={`flex flex-wrap gap-x-4 gap-y-3 px-4 py-3 items-end rounded-md ${theme === 'dark' ? 'bg-surface-card text-gray-200 border border-surface-border' : 'bg-surface-light-card text-gray-600 border border-surface-light-border shadow-card-light'}`}>
+            <div className="flex flex-col min-w-[180px] font-normal">
+                <label className="text-xs font-semibold tracking-wide opacity-70 mb-1">Collection</label>
                 <Controller
                     name="collection"
                     control={control}
@@ -255,8 +255,8 @@ export default function TagSelector(props: TagSelectorProps) {
                     )}
                 />
             </div>
-            <div className="flex flex-col min-w-[180px] lowercase font-normal">
-                <label className="text-xs font-semibold uppercase tracking-wide opacity-70 mb-1">Album</label>
+            <div className="flex flex-col min-w-[180px] font-normal">
+                <label className="text-xs font-semibold tracking-wide opacity-70 mb-1">Album</label>
                 <Controller
                     name="album"
                     control={control}

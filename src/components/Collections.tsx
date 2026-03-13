@@ -8,7 +8,6 @@
  */
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Box from "@mui/material/Box";
 import { RowsPhotoAlbum } from 'react-photo-album';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../hooks/useAuth';
@@ -50,7 +49,6 @@ const Collections: React.FC<CollectionsProps> = () => {
 
     // Track per-collection orientation for optimistic rotate
     const [orientations, setOrientations] = useState<Record<string, number>>({});
-    const [isEditing, setIsEditing] = useState(false);
 
     const loadCollections = (includeDeleted: boolean) => {
         fetchCollections(includeDeleted)
@@ -76,7 +74,7 @@ const Collections: React.FC<CollectionsProps> = () => {
             });
     };
 
-    useEffect(() => { loadCollections(isEditing); }, [isEditing]);
+    useEffect(() => { loadCollections(isAuthenticated); }, [isAuthenticated]);
 
     const handleRename = async (collection: string, newName: string) => {
         if (!token) return;
@@ -122,79 +120,82 @@ const Collections: React.FC<CollectionsProps> = () => {
         await updateCollectionThumbnail(pickerCollection, { imageName }, token);
         setPickerCollection(null);
         setPickerPhotos([]);
-        loadCollections(isEditing);
+        loadCollections(isAuthenticated);
     };
 
     return (
-        <div>
-            <Box sx={{ width: "90%", mx: "auto" }}>
-                <Breadcrumb segments={[{ label: 'Collections' }]} />
-                {isAuthenticated && !isLoading && (
-                    <div className={`flex flex-wrap gap-x-4 gap-y-3 px-4 py-3 items-center rounded-md ${theme === 'dark' ? 'bg-gray-800/60 text-gray-200 border border-gray-700' : 'bg-white/80 text-gray-600 border border-gray-200 shadow-sm'}`}>
-                        <div className="flex-1" />
-                        <button
-                            className={`h-8 text-md font-semibold w-24 rounded-md ${theme === 'dark' ? 'hover:bg-gray-100 bg-gray-300 text-gray-600' : 'hover:bg-gray-400 bg-gray-500 text-gray-100'} active:animate-pop`}
-                            onClick={() => setIsEditing(prev => !prev)}
-                        >
-                            {isEditing ? 'Done' : 'Edit'}
-                        </button>
-                    </div>
-                )}
-                <LoadingSpinner visible={isLoading} />
-                {emptyMessage && !isLoading && (
-                    <p className={`text-center py-12 text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                        {emptyMessage}
-                    </p>
-                )}
-                <RowsPhotoAlbum
-                    photos={photos}
-                    padding={0}
-                    spacing={0}
-                    targetRowHeight={200}
-                    rowConstraints={{ singleRowMaxHeight: 250 }}
-                    render={{
-                        photo: ({ onClick }, { photo, index }) => (
-                            <div className="p-1 pt-4" key={`col-${photo.collection}-${index}`}>
-                                <Link to={photo.isDeleted ? '#' : photo.collection} onClick={photo.isDeleted ? (e) => e.preventDefault() : undefined}>
-                                    <div className={`overflow-hidden rounded-sm max-h-56 relative transition-all ${photo.isDeleted ? 'border-2 border-red-500/70 opacity-50' : ''}`}>
-                                        <LazyImage
-                                            src={photo.src}
-                                            key={index}
-                                            placeholderWidth={photo.width}
-                                            placeholderHeight={photo.height}
-                                            className="hover:opacity-85 w-full h-full object-cover"
-                                            style={{
-                                                transform: orientations[photo.collection]
-                                                    ? `rotate(${orientations[photo.collection]}deg) scale(1.4)`
-                                                    : undefined,
-                                                transition: 'transform 0.3s ease',
-                                            }}
-                                        />
-                                        {photo.isDeleted && (
-                                            <div className="absolute inset-0 bg-red-900/30 flex items-center justify-center pointer-events-none rounded-sm">
-                                                <span className="text-red-200 font-bold text-xs uppercase tracking-widest bg-red-900/60 px-2 py-0.5 rounded">Deleted</span>
-                                            </div>
-                                        )}
-                                    </div>
-                                </Link>
-                                <div className="flex items-center justify-between">
-                                    <Link to={photo.isDeleted ? '#' : photo.collection} onClick={photo.isDeleted ? (e) => e.preventDefault() : undefined} className={`uppercase text-sm underline ${photo.isDeleted ? 'line-through opacity-50' : ''} ${theme === 'dark' ? 'text-blue-500' : 'text-blue-700'}`}>{photo.collection}</Link>
+        <div className="animate-appear">
+            <Breadcrumb segments={[{ label: 'Collections' }]} />
+
+            <LoadingSpinner visible={isLoading} />
+            {emptyMessage && !isLoading && (
+                <p className={`text-center py-12 text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                    {emptyMessage}
+                </p>
+            )}
+            <RowsPhotoAlbum
+                photos={photos}
+                padding={0}
+                spacing={6}
+                targetRowHeight={220}
+                rowConstraints={{ singleRowMaxHeight: 280 }}
+                render={{
+                    photo: ({ onClick }, { photo, index, width, height }) => (
+                        <div className="group animate-appear" key={`col-${photo.collection}-${index}`} style={{ width, animationDelay: `${index * 50}ms` }}>
+                            <Link to={photo.isDeleted ? '#' : photo.collection} onClick={photo.isDeleted ? (e) => e.preventDefault() : undefined}>
+                                <div className={`overflow-hidden rounded-sm relative transition-all duration-300 ${
+                                    theme === 'dark'
+                                        ? 'shadow-card group-hover:shadow-card-hover'
+                                        : 'shadow-card-light group-hover:shadow-card-light-hover'
+                                } ${photo.isDeleted ? 'border-2 border-red-500/70 opacity-50' : ''}`}>
+                                    <LazyImage
+                                        src={photo.src}
+                                        key={index}
+                                        placeholderWidth={photo.width}
+                                        placeholderHeight={photo.height}
+                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                        style={{
+                                            transform: orientations[photo.collection]
+                                                ? `rotate(${orientations[photo.collection]}deg) scale(1.4)`
+                                                : undefined,
+                                            transition: 'transform 0.5s ease',
+                                        }}
+                                    />
+
+                                    {photo.isDeleted && (
+                                        <div className="absolute inset-0 bg-red-900/30 flex items-center justify-center pointer-events-none rounded-sm">
+                                            <span className="text-red-200 font-bold text-xs uppercase tracking-widest bg-red-900/60 px-2 py-0.5 rounded">Deleted</span>
+                                        </div>
+                                    )}
                                 </div>
-                                <AdminControls
-                                    name={photo.collection}
-                                    onRename={(newName) => handleRename(photo.collection, newName)}
-                                    onDelete={() => handleDelete(photo.collection)}
-                                    onRotateThumbnail={() => handleRotateThumbnail(photo.collection)}
-                                    onChangeThumbnail={() => handleOpenThumbnailPicker(photo.collection)}
-                                    visible={isAuthenticated && isEditing}
-                                    isDeleted={photo.isDeleted}
-                                    onUndelete={() => handleRestore(photo.collection)}
-                                />
+                            </Link>
+                            <div className="mt-2 px-1">
+                                <Link
+                                    to={photo.isDeleted ? '#' : photo.collection}
+                                    onClick={photo.isDeleted ? (e) => e.preventDefault() : undefined}
+                                    className={`text-sm font-medium transition-colors ${photo.isDeleted ? 'line-through opacity-50' : ''} ${
+                                        theme === 'dark'
+                                            ? 'text-gray-300 hover:text-accent-light'
+                                            : 'text-gray-700 hover:text-accent'
+                                    }`}
+                                >
+                                    {photo.collection}
+                                </Link>
                             </div>
-                        ),
-                    }}
-                />
-            </Box>
+                            <AdminControls
+                                name={photo.collection}
+                                onRename={(newName) => handleRename(photo.collection, newName)}
+                                onDelete={() => handleDelete(photo.collection)}
+                                onRotateThumbnail={() => handleRotateThumbnail(photo.collection)}
+                                onChangeThumbnail={() => handleOpenThumbnailPicker(photo.collection)}
+                                visible={isAuthenticated}
+                                isDeleted={photo.isDeleted}
+                                onUndelete={() => handleRestore(photo.collection)}
+                            />
+                        </div>
+                    ),
+                }}
+            />
 
             {pickerCollection && pickerPhotos.length > 0 && (
                 <ThumbnailPicker
