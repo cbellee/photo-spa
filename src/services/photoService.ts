@@ -17,6 +17,11 @@ export function fetchPhotos(collection: string, album: string, includeDeleted = 
     return apiClient.get<Photo[]>(`/${collection}/${album}${params}`).then(res => res.data);
 }
 
+export function fetchAllAlbums(includeDeleted = false): Promise<CollectionPhoto[]> {
+    const params = includeDeleted ? '?includeDeleted=true' : '';
+    return apiClient.get<CollectionPhoto[]>(`/albums${params}`).then(res => res.data);
+}
+
 export function fetchTags(): Promise<TagsResponse> {
     return apiClient.get<TagsResponse>('/tags').then(res => res.data);
 }

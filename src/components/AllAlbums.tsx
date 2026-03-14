@@ -12,7 +12,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { RowsPhotoAlbum } from 'react-photo-album';
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../hooks/useAuth';
-import { fetchAlbums, fetchPhotos, fetchTags } from '../services/photoService';
+import { fetchAllAlbums, fetchPhotos } from '../services/photoService';
 import {
     renameAlbum,
     softDeleteAlbum,
@@ -51,25 +51,8 @@ const AllAlbums: React.FC = () => {
     const loadAllAlbums = useCallback(async () => {
         try {
             setIsLoading(true);
-            const tags = await fetchTags();
-            const collections = Object.keys(tags);
 
-            if (collections.length === 0) {
-                setEmptyMessage('No albums found.');
-                setIsLoading(false);
-                return;
-            }
-
-            const results = await Promise.allSettled(
-                collections.map((c) => fetchAlbums(c, isAuthenticated)),
-            );
-
-            const allAlbums: CollectionPhoto[] = [];
-            for (const result of results) {
-                if (result.status === 'fulfilled') {
-                    allAlbums.push(...result.value);
-                }
-            }
+            const allAlbums = await fetchAllAlbums(isAuthenticated);
 
             const savedOrientations: Record<string, number> = {};
             for (const p of allAlbums) {
