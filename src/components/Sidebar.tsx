@@ -39,7 +39,7 @@ export default function Sidebar() {
             {/* Logo area */}
             <div className={`flex items-center gap-3 px-5 py-6 ${collapsed ? 'justify-center' : ''}`}>
                 <a href="/" className="flex items-center gap-3 no-underline">
-                    <img src="/app-icon.svg" className="w-16 h-16 flex-shrink-0 rounded-full p-2" alt="logo" />
+                    <img src={theme === 'dark' ? '/app-icon.svg' : '/app-icon-light.svg'} className="w-16 h-16 flex-shrink-0 rounded-full p-2" alt="logo" />
                     {!collapsed && (
                         <span className={`text-lg font-semibold tracking-wide ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                             Photos
