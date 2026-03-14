@@ -5,31 +5,37 @@ import NavLinks from '../components/NavLinks';
 import { renderWithProviders } from './test-utils';
 
 describe('NavLinks', () => {
-    it('renders Collections links when unauthenticated', () => {
+    it('renders collections links when unauthenticated', () => {
         renderWithProviders(<NavLinks isAuthenticated={false} />);
-        expect(screen.getByText('Collections')).toBeInTheDocument();
+        expect(screen.getByText('collections')).toBeInTheDocument();
     });
 
-    it('does not render Upload link when unauthenticated', () => {
+    it('renders albums link when unauthenticated', () => {
         renderWithProviders(<NavLinks isAuthenticated={false} />);
-        expect(screen.queryByText('Upload')).not.toBeInTheDocument();
+        expect(screen.getByText('albums')).toBeInTheDocument();
     });
 
-    it('renders Upload link when authenticated', () => {
-        renderWithProviders(<NavLinks isAuthenticated={true} />);
-        expect(screen.getByText('Upload')).toBeInTheDocument();
+    it('does not render upload link when unauthenticated', () => {
+        renderWithProviders(<NavLinks isAuthenticated={false} />);
+        expect(screen.queryByText('upload')).not.toBeInTheDocument();
     });
 
-    it('renders bothlinks when authenticated', () => {
+    it('renders upload link when authenticated', () => {
         renderWithProviders(<NavLinks isAuthenticated={true} />);
-        expect(screen.getByText('Upload')).toBeInTheDocument();
-        expect(screen.getByText('Collections')).toBeInTheDocument();
+        expect(screen.getByText('upload')).toBeInTheDocument();
+    });
+
+    it('renders both links when authenticated', () => {
+        renderWithProviders(<NavLinks isAuthenticated={true} />);
+        expect(screen.getByText('upload')).toBeInTheDocument();
+        expect(screen.getByText('albums')).toBeInTheDocument();
+        expect(screen.getByText('collections')).toBeInTheDocument();
     });
 
     it('renders separators between links', () => {
         renderWithProviders(<NavLinks isAuthenticated={true} />);
         const separators = screen.getAllByText('I');
-        // 2 items = 1 separator
-        expect(separators.length).toBe(1);
+        // 3 items = 2 separators
+        expect(separators.length).toBe(2);
     });
 });

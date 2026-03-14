@@ -81,7 +81,7 @@ const Photos: React.FC<PhotoProps> = () => {
     const onChangeCollection = (newCollection: string, id: string) => {
         const current = photos.find(p => p.name === id);
         if (!current) return;
-        const updated = { ...current, collection: newCollection };
+        const updated = { ...current, collection: newCollection.toLowerCase() };
         setPhotos(prev => prev.map(p => p.name === id ? updated : p));
         autoSavePhoto(updated);
     }
@@ -89,7 +89,7 @@ const Photos: React.FC<PhotoProps> = () => {
     const onChangeAlbum = (newAlbum: string, id: string) => {
         const current = photos.find(p => p.name === id);
         if (!current) return;
-        const updated = { ...current, album: newAlbum };
+        const updated = { ...current, album: newAlbum.toLowerCase() };
         setPhotos(prev => prev.map(p => p.name === id ? updated : p));
         autoSavePhoto(updated);
     }
@@ -152,7 +152,7 @@ const Photos: React.FC<PhotoProps> = () => {
     return (
         <div className="animate-appear">
                 <Breadcrumb segments={[
-                    { label: 'Collections', to: '/' },
+                    { label: 'collections', to: '/' },
                     { label: params.collection!, to: `/${params.collection}` },
                     { label: params.album! },
                 ]} />

@@ -136,7 +136,7 @@ const Albums: React.FC<AlbumsProps> = () => {
     return (
         <div className="animate-appear">
             <Breadcrumb segments={[
-                { label: 'Collections', to: '/' },
+                { label: 'collections', to: '/' },
                 { label: params.collection! },
             ]} />
 
@@ -155,7 +155,7 @@ const Albums: React.FC<AlbumsProps> = () => {
                 rowConstraints={{ singleRowMaxHeight: 280 }}
                 render={{
                     photo: ({ onClick }, { photo, index, width, height }) => (
-                        <div className="group animate-appear" key={`album-${photo.album}-${index}`} onClick={onClick} style={{ width, animationDelay: `${index * 50}ms` }}>
+                        <div className="group" key={`album-${photo.album}-${index}`} onClick={onClick} style={{ width }}>
                             <Link to={photo.isDeleted ? '#' : photo.album} onClick={photo.isDeleted ? (e) => e.preventDefault() : undefined}>
                                 <div className={`overflow-hidden rounded-sm relative transition-all duration-300 ${
                                     theme === 'dark'
@@ -193,11 +193,11 @@ const Albums: React.FC<AlbumsProps> = () => {
                                             : 'text-gray-700 hover:text-accent'
                                     }`}
                                 >
-                                    {photo.album}
+                                    {photo.album.toLowerCase()}
                                 </Link>
                             </div>
                             <AdminControls
-                                name={photo.album}
+                                name={photo.album.toLowerCase()}
                                 onRename={(newName) => handleRename(photo.album, newName)}
                                 onDelete={() => handleDelete(photo.album)}
                                 onRotateThumbnail={() => handleRotateThumbnail(photo.album)}

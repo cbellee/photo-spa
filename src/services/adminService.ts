@@ -17,7 +17,7 @@ export async function renameCollection(
     newName: string,
     token: string,
 ): Promise<AdminResponse> {
-    const body: RenameRequest = { newName };
+    const body: RenameRequest = { newName: newName.toLowerCase() };
     const res = await axios.put<AdminResponse>(
         `${url}/rename/${encodeURIComponent(collection)}`,
         body,
@@ -33,7 +33,7 @@ export async function renameAlbum(
     newName: string,
     token: string,
 ): Promise<AdminResponse> {
-    const body: RenameRequest = { newName };
+    const body: RenameRequest = { newName: newName.toLowerCase() };
     const res = await axios.put<AdminResponse>(
         `${url}/rename/${encodeURIComponent(collection)}/${encodeURIComponent(album)}`,
         body,

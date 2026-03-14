@@ -65,6 +65,9 @@ export default function TagSelector(props: TagSelectorProps) {
         albumDropDownRef.current?.clearValue();
     };
 
+    /** Force typed input to lowercase so new values are always lowercased */
+    const handleInputChange = (input: string) => input.toLowerCase();
+
     const handleCollection = (event: SelectOption) => {
         if (!event) {
             clearSelectedAlbum();
@@ -75,7 +78,8 @@ export default function TagSelector(props: TagSelectorProps) {
             return;
         }
 
-        const albums = collectionAlbumData.get(event.value);
+        const value = event.value.toLowerCase();
+        const albums = collectionAlbumData.get(event.value) ?? collectionAlbumData.get(value);
         clearSelectedAlbum();
 
         if (albums && albums.length > 0) {
@@ -85,19 +89,20 @@ export default function TagSelector(props: TagSelectorProps) {
         }
 
         if (props.mode === 'create') {
-            props.selectedCollection(event.value);
+            props.selectedCollection(value);
         } else {
-            props.selectedCollection(event.value, props.id);
+            props.selectedCollection(value, props.id);
             props.isFormValid();
         }
     };
 
     const handleAlbum = (event: SelectOption) => {
         if (event) {
+            const label = event.label.toLowerCase();
             if (props.mode === 'create') {
-                props.selectedAlbum(event.label);
+                props.selectedAlbum(label);
             } else {
-                props.selectedAlbum(event.label, props.id);
+                props.selectedAlbum(label, props.id);
                 props.isFormValid();
             }
         }
@@ -120,7 +125,7 @@ export default function TagSelector(props: TagSelectorProps) {
             borderColor: state.isFocused
                 ? '#7c5cfc'
                 : (theme === 'dark' ? '#2a293d' : '#e5e3ef'),
-            borderRadius: '0.75rem',
+            borderRadius: '0.25rem',
             minHeight: '2.25rem',
             fontSize: '0.875rem',
             boxShadow: state.isFocused
@@ -196,9 +201,10 @@ export default function TagSelector(props: TagSelectorProps) {
         return (
             <div className="grid grid-cols-1 gap-2">
                 <div>
-                    <label className="text-xs font-semibold tracking-wide opacity-70 mb-0.5 block">Collection</label>
+                    <label className="text-xs font-semibold tracking-wide opacity-70 mb-0.5 block">collection</label>
                     <CreatableSelect
                         onChange={(event) => handleCollection(event)}
+                        onInputChange={handleInputChange}
                         id={props.id}
                         name="collection"
                         isClearable={true}
@@ -212,9 +218,10 @@ export default function TagSelector(props: TagSelectorProps) {
                     />
                 </div>
                 <div>
-                    <label className="text-xs font-semibold tracking-wide opacity-70 mb-0.5 block">Album</label>
+                    <label className="text-xs font-semibold tracking-wide opacity-70 mb-0.5 block">album</label>
                     <CreatableSelect
                         onChange={(event) => handleAlbum(event)}
+                        onInputChange={handleInputChange}
                         name="album"
                         id={props.id}
                         ref={albumDropDownRef}
@@ -239,7 +246,7 @@ export default function TagSelector(props: TagSelectorProps) {
     return (
         <div className={`flex flex-wrap gap-x-4 gap-y-3 px-4 py-3 items-end rounded-md ${theme === 'dark' ? 'bg-surface-card text-gray-200 border border-surface-border' : 'bg-surface-light-card text-gray-600 border border-surface-light-border shadow-card-light'}`}>
             <div className="flex flex-col min-w-[180px] font-normal">
-                <label className="text-xs font-semibold tracking-wide opacity-70 mb-1">Collection</label>
+                <label className="text-xs font-semibold tracking-wide opacity-70 mb-1">collection</label>
                 <Controller
                     name="collection"
                     control={control}
@@ -248,6 +255,7 @@ export default function TagSelector(props: TagSelectorProps) {
                         <CreatableSelect
                             {...field}
                             onChange={(event) => { field.onChange(event); handleCollection(event); }}
+                            onInputChange={handleInputChange}
                             isClearable={true}
                             styles={selectStyles}
                             options={collectionOptions}
@@ -256,7 +264,7 @@ export default function TagSelector(props: TagSelectorProps) {
                 />
             </div>
             <div className="flex flex-col min-w-[180px] font-normal">
-                <label className="text-xs font-semibold tracking-wide opacity-70 mb-1">Album</label>
+                <label className="text-xs font-semibold tracking-wide opacity-70 mb-1">album</label>
                 <Controller
                     name="album"
                     control={control}
@@ -265,6 +273,7 @@ export default function TagSelector(props: TagSelectorProps) {
                         <CreatableSelect
                             {...field}
                             onChange={(event) => { field.onChange(event); handleAlbum(event); }}
+                            onInputChange={handleInputChange}
                             ref={albumDropDownRef}
                             styles={selectStyles}
                             isClearable={true}

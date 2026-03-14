@@ -5,6 +5,7 @@ import type { IPublicClientApplication } from '@azure/msal-browser';
 import { ThemeProvider } from './context/ThemeContext';
 import Collections from './components/Collections.tsx';
 import Albums from './components/AlbumCollections.tsx';
+import AllAlbums from './components/AllAlbums.tsx';
 import Photos from './components/Photos.tsx';
 import UploadImages from './components/Upload.tsx';
 import ErrorPage from "./components/ErrorPage.tsx";
@@ -22,6 +23,11 @@ function App({ msalInstance}: { msalInstance: IPublicClientApplication }) {
             {
                 path: "/",
                 element: <Collections collection="" album="" />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "/albums",
+                element: <AllAlbums />,
                 errorElement: <ErrorPage />,
             },
             {

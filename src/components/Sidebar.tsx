@@ -5,13 +5,13 @@
  */
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { IoMoon, IoSunny, IoImages, IoCloudUpload, IoMenu, IoClose } from 'react-icons/io5';
+import { IoMoon, IoSunny, IoFolderOpen, IoImages, IoCloudUpload, IoMenu, IoClose } from 'react-icons/io5';
 import { useIsAuthenticated, useMsal, useAccount } from '@azure/msal-react';
 import { useTheme } from '../context/ThemeContext';
 import SignInAndOut from './SignInAndOut';
 
 /** Named top-level routes that are NOT part of the collections hierarchy */
-const nonCollectionPrefixes = ['/upload'];
+const nonCollectionPrefixes = ['/upload', '/albums'];
 
 export default function Sidebar() {
     const [collapsed, setCollapsed] = useState(false);
@@ -26,9 +26,12 @@ export default function Sidebar() {
         location.pathname.toLowerCase().startsWith(p),
     );
 
+    const isAlbumsRoute = location.pathname.toLowerCase().startsWith('/albums');
+
     const navItems = [
-        { to: '/', label: 'Collections', icon: IoImages, isActive: isCollectionsRoute },
-        ...(isAuthenticated ? [{ to: '/upload', label: 'Upload', icon: IoCloudUpload, isActive: false }] : []),
+        { to: '/', label: 'collections', icon: IoFolderOpen, isActive: isCollectionsRoute },
+        { to: '/albums', label: 'albums', icon: IoImages, isActive: isAlbumsRoute },
+        ...(isAuthenticated ? [{ to: '/upload', label: 'upload', icon: IoCloudUpload, isActive: false }] : []),
     ];
 
     const sidebarContent = (
@@ -36,7 +39,7 @@ export default function Sidebar() {
             {/* Logo area */}
             <div className={`flex items-center gap-3 px-5 py-6 ${collapsed ? 'justify-center' : ''}`}>
                 <a href="/" className="flex items-center gap-3 no-underline">
-                    <img src="/app-icon.png" className="w-10 h-10 flex-shrink-0 rounded-md" alt="logo" />
+                    <img src="/app-icon.svg" className="w-16 h-16 flex-shrink-0 rounded-full p-2" alt="logo" />
                     {!collapsed && (
                         <span className={`text-lg font-semibold tracking-wide ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                             Photos
@@ -133,12 +136,12 @@ export default function Sidebar() {
             </aside>
 
             {/* Desktop sidebar */}
-            <aside className={`hidden md:flex flex-col flex-shrink-0 h-screen sticky top-0 transition-all duration-300 ${collapsed ? 'w-[72px]' : 'w-64'}`}>
+            <aside className={`hidden md:flex flex-col flex-shrink-0 h-screen sticky top-0 transition-all duration-300 ${collapsed ? 'w-[72px]' : 'w-60'}`}>
                 {sidebarContent}
                 {/* Collapse toggle */}
                 <button
                     onClick={() => setCollapsed(!collapsed)}
-                    className={`absolute -right-3 top-8 z-10 w-6 h-6 rounded-full flex items-center justify-center text-xs transition-all ${
+                    className={`absolute -right-3 top-[1.50rem] z-10 w-6 h-6 rounded-full flex items-center justify-center text-xs transition-all ${
                         theme === 'dark'
                             ? 'bg-sidebar-active text-gray-300 hover:bg-accent border border-sidebar-hover'
                             : 'bg-white text-gray-400 hover:bg-accent hover:text-white border border-gray-200 shadow-sm'

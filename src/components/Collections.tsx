@@ -125,7 +125,7 @@ const Collections: React.FC<CollectionsProps> = () => {
 
     return (
         <div className="animate-appear">
-            <Breadcrumb segments={[{ label: 'Collections' }]} />
+            <Breadcrumb segments={[{ label: 'collections' }]} />
 
             <LoadingSpinner visible={isLoading} />
             {emptyMessage && !isLoading && (
@@ -141,7 +141,7 @@ const Collections: React.FC<CollectionsProps> = () => {
                 rowConstraints={{ singleRowMaxHeight: 280 }}
                 render={{
                     photo: ({ onClick }, { photo, index, width, height }) => (
-                        <div className="group animate-appear" key={`col-${photo.collection}-${index}`} style={{ width, animationDelay: `${index * 50}ms` }}>
+                        <div className="group" key={`col-${photo.collection}-${index}`} style={{ width }}>
                             <Link to={photo.isDeleted ? '#' : photo.collection} onClick={photo.isDeleted ? (e) => e.preventDefault() : undefined}>
                                 <div className={`overflow-hidden rounded-sm relative transition-all duration-300 ${
                                     theme === 'dark'
@@ -179,11 +179,11 @@ const Collections: React.FC<CollectionsProps> = () => {
                                             : 'text-gray-700 hover:text-accent'
                                     }`}
                                 >
-                                    {photo.collection}
+                                    {photo.collection.toLowerCase()}
                                 </Link>
                             </div>
                             <AdminControls
-                                name={photo.collection}
+                                name={photo.collection.toLowerCase()}
                                 onRename={(newName) => handleRename(photo.collection, newName)}
                                 onDelete={() => handleDelete(photo.collection)}
                                 onRotateThumbnail={() => handleRotateThumbnail(photo.collection)}

@@ -32,22 +32,23 @@ export default function TagSelect(props: TagSelectProps) {
       setAlbumData([]);
       return;
     }
-    let albums = collectionAlbumData.get(event.value);
+    const value = event.value.toLowerCase();
+    let albums = collectionAlbumData.get(event.value) ?? collectionAlbumData.get(value);
 
     clearSelectedAlbum();
 
     if (albums && albums.length > 0) {
       setAlbumData(albums);
-      props.selectedCollection(event.value)
+      props.selectedCollection(value)
     } else {
       setAlbumData([]);
-      props.selectedCollection(event.value)
+      props.selectedCollection(value)
     }
   }
 
   const handleAlbum = (event: { value: number; label: string } | null) => {
     if (event) {
-      props.selectedAlbum(event.label)
+      props.selectedAlbum(event.label.toLowerCase())
     }
   }
 

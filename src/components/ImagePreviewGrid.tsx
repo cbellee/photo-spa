@@ -90,7 +90,7 @@ const ImagePreviewGrid: React.FC<ImagePreviewGridProps> = ({
                         <div className="flex flex-col">
                             {!collectionExists && (
                                 <MultiRadio
-                                    groupName="Collection"
+                                    groupName="collection"
                                     imageName={img.name}
                                     checked={false}
                                     handler={onCollectionThumbnail}
@@ -98,7 +98,7 @@ const ImagePreviewGrid: React.FC<ImagePreviewGridProps> = ({
                             )}
                             {!albumExists && (
                                 <MultiRadio
-                                    groupName="Album"
+                                    groupName="album"
                                     imageName={img.name}
                                     checked={false}
                                     handler={onAlbumThumbnail}

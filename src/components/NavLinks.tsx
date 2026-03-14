@@ -20,11 +20,12 @@ export interface NavItem {
 }
 
 /** Named top-level routes that are NOT part of the collections hierarchy */
-const nonCollectionPrefixes = ['/upload'];
+const nonCollectionPrefixes = ['/upload', '/albums'];
 
 const navItems: NavItem[] = [
-    { to: '/upload', label: 'Upload', authRequired: true },
-    { to: '/', label: 'Collections' },
+    { to: '/upload', label: 'upload', authRequired: true },
+    { to: '/albums', label: 'albums' },
+    { to: '/', label: 'collections' },
 ];
 
 const NavLinks: React.FC<NavLinksProps> = ({ isAuthenticated }) => {

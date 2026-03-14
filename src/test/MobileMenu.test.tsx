@@ -20,19 +20,19 @@ describe('MobileMenu', () => {
         defaultProps.onClose.mockClear();
     });
 
-    it('renders Collections link', () => {
+    it('renders collections link', () => {
         renderWithProviders(<MobileMenu {...defaultProps} />);
-        expect(screen.getByText('Collections')).toBeInTheDocument();
+        expect(screen.getByText('collections')).toBeInTheDocument();
     });
 
-    it('does not render Upload link when unauthenticated', () => {
+    it('does not render upload link when unauthenticated', () => {
         renderWithProviders(<MobileMenu {...defaultProps} />);
-        expect(screen.queryByText('Upload')).not.toBeInTheDocument();
+        expect(screen.queryByText('upload')).not.toBeInTheDocument();
     });
 
-    it('renders Upload link when authenticated', () => {
+    it('renders upload link when authenticated', () => {
         renderWithProviders(<MobileMenu {...{ ...defaultProps, isAuthenticated: true }} />);
-        expect(screen.getByText('Upload')).toBeInTheDocument();
+        expect(screen.getByText('upload')).toBeInTheDocument();
     });
 
     it('renders SignInAndOut component', () => {

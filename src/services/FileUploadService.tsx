@@ -10,10 +10,10 @@ async function update(
 ): Promise<AxiosResponse> {
     let update = {
         name: photoData.name,
-        collection: photoData.collection,
+        collection: photoData.collection.toLowerCase(),
         collectionImage: photoData.collectionImage.toString(),
         albumImage: photoData.albumImage.toString(),
-        album: photoData.album,
+        album: photoData.album.toLowerCase(),
         description: photoData.description,
         orientation: photoData.orientation.toString(),
         isDeleted: photoData.isDeleted.toString(),
