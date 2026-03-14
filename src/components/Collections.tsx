@@ -141,7 +141,7 @@ const Collections: React.FC<CollectionsProps> = () => {
                 rowConstraints={{ singleRowMaxHeight: 280 }}
                 render={{
                     photo: ({ onClick }, { photo, index, width, height }) => (
-                        <div className="group animate-appear" key={`col-${photo.collection}-${index}`} style={{ width, animationDelay: `${index * 50}ms` }}>
+                        <div className="group" key={`col-${photo.collection}-${index}`} style={{ width }}>
                             <Link to={photo.isDeleted ? '#' : photo.collection} onClick={photo.isDeleted ? (e) => e.preventDefault() : undefined}>
                                 <div className={`overflow-hidden rounded-sm relative transition-all duration-300 ${
                                     theme === 'dark'

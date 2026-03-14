@@ -155,7 +155,7 @@ const Albums: React.FC<AlbumsProps> = () => {
                 rowConstraints={{ singleRowMaxHeight: 280 }}
                 render={{
                     photo: ({ onClick }, { photo, index, width, height }) => (
-                        <div className="group animate-appear" key={`album-${photo.album}-${index}`} onClick={onClick} style={{ width, animationDelay: `${index * 50}ms` }}>
+                        <div className="group" key={`album-${photo.album}-${index}`} onClick={onClick} style={{ width }}>
                             <Link to={photo.isDeleted ? '#' : photo.album} onClick={photo.isDeleted ? (e) => e.preventDefault() : undefined}>
                                 <div className={`overflow-hidden rounded-sm relative transition-all duration-300 ${
                                     theme === 'dark'

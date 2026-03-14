@@ -57,27 +57,27 @@ const UploadImages = () => {
 
     async function isFormValid() {
         if (collection === "" && !collectionExists) {
-            let msg = "Collection is not set";
+            let msg = "collection is not set";
             setIsValid(false);
             setValidationMessage(msg);
         } else if (album === "" && !albumExists) {
-            let msg = "Album is not set";
+            let msg = "album is not set";
             setIsValid(false);
             setValidationMessage(msg);
         } else if (!selectedFiles && !uploadCompleted) {
-            let msg = "No files selected";
+            let msg = "no files selected";
             setIsValid(false);
             setValidationMessage(msg);
         } else if (collectionImage === "" && !collectionExists) {
-            let msg = "Collection image thumbnail is not set";
+            let msg = "collection image thumbnail is not set";
             setIsValid(false);
             setValidationMessage(msg);
         } else if (albumImage === "" && !albumExists) {
-            let msg = "Album image thumbnail is not set";
+            let msg = "album image thumbnail is not set";
             setIsValid(false);
             setValidationMessage(msg);
         } else if (uploadCompleted) {
-            let msg = "Upload completed";
+            let msg = "upload completed";
             setIsValid(false);
             setValidationMessage(msg);
         } else {
@@ -210,10 +210,10 @@ const UploadImages = () => {
         }
         return await FileUploadService.upload(file, {
             name: imagePreviews[idx].name,
-            collection: imagePreviews[idx].collection,
-            album: imagePreviews[idx].album,
-            collectionImage: imagePreviews[idx].collectionImage,
-            albumImage: imagePreviews[idx].albumImage,
+            collection: collection,
+            album: album,
+            collectionImage: collectionImage === file.name,
+            albumImage: albumImage === file.name,
             description: imagePreviews[idx].description,
             orientation: String(imagePreviews[idx].orientation ?? 0),
             isDeleted: imagePreviews[idx].isDeleted ?? false,
@@ -319,9 +319,11 @@ const UploadImages = () => {
                                     className={`
                                 ${theme === 'dark' ? 'text-accent-light' : 'text-accent'}   
                                 active:animate-pop
+                                lowercase
                                 file:font-semibold
                                 file:rounded-md file:border-0
                                 file:text-sm  file:h-9
+                                text-sm
                                 p-0
                                 m-0
                                 file:bg-accent file:text-white

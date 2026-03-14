@@ -165,32 +165,32 @@ describe('ImagePreviewGrid', () => {
         renderWithProviders(
             <ImagePreviewGrid {...defaultProps} collectionExists={false} albumExists={false} />
         );
-        expect(screen.getByText('Collection thumb')).toBeInTheDocument();
-        expect(screen.getByText('Album thumb')).toBeInTheDocument();
+        expect(screen.getByText('collection thumb')).toBeInTheDocument();
+        expect(screen.getByText('album thumb')).toBeInTheDocument();
     });
 
     it('hides Collection MultiRadio when collection exists', () => {
         renderWithProviders(
             <ImagePreviewGrid {...defaultProps} collectionExists={true} albumExists={false} />
         );
-        expect(screen.queryByText('Collection thumb')).not.toBeInTheDocument();
-        expect(screen.getByText('Album thumb')).toBeInTheDocument();
+        expect(screen.queryByText('collection thumb')).not.toBeInTheDocument();
+        expect(screen.getByText('album thumb')).toBeInTheDocument();
     });
 
     it('hides Album MultiRadio when album exists', () => {
         renderWithProviders(
             <ImagePreviewGrid {...defaultProps} collectionExists={false} albumExists={true} />
         );
-        expect(screen.getByText('Collection thumb')).toBeInTheDocument();
-        expect(screen.queryByText('Album thumb')).not.toBeInTheDocument();
+        expect(screen.getByText('collection thumb')).toBeInTheDocument();
+        expect(screen.queryByText('album thumb')).not.toBeInTheDocument();
     });
 
     it('hides both MultiRadios when both exist', () => {
         renderWithProviders(
             <ImagePreviewGrid {...defaultProps} collectionExists={true} albumExists={true} />
         );
-        expect(screen.queryByText('Collection thumb')).not.toBeInTheDocument();
-        expect(screen.queryByText('Album thumb')).not.toBeInTheDocument();
+        expect(screen.queryByText('collection thumb')).not.toBeInTheDocument();
+        expect(screen.queryByText('album thumb')).not.toBeInTheDocument();
     });
 
     it('adds animate-pulse class to image when uploading', () => {

@@ -10,6 +10,11 @@ describe('NavLinks', () => {
         expect(screen.getByText('collections')).toBeInTheDocument();
     });
 
+    it('renders albums link when unauthenticated', () => {
+        renderWithProviders(<NavLinks isAuthenticated={false} />);
+        expect(screen.getByText('albums')).toBeInTheDocument();
+    });
+
     it('does not render upload link when unauthenticated', () => {
         renderWithProviders(<NavLinks isAuthenticated={false} />);
         expect(screen.queryByText('upload')).not.toBeInTheDocument();
@@ -23,13 +28,14 @@ describe('NavLinks', () => {
     it('renders both links when authenticated', () => {
         renderWithProviders(<NavLinks isAuthenticated={true} />);
         expect(screen.getByText('upload')).toBeInTheDocument();
+        expect(screen.getByText('albums')).toBeInTheDocument();
         expect(screen.getByText('collections')).toBeInTheDocument();
     });
 
     it('renders separators between links', () => {
         renderWithProviders(<NavLinks isAuthenticated={true} />);
         const separators = screen.getAllByText('I');
-        // 2 items = 1 separator
-        expect(separators.length).toBe(1);
+        // 3 items = 2 separators
+        expect(separators.length).toBe(2);
     });
 });

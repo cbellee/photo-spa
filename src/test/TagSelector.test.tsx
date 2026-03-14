@@ -44,8 +44,8 @@ describe('TagSelector (mode="create")', () => {
 
     it('renders Collection and Album labels', () => {
         renderWithProviders(<TagSelectorWithForm {...defaultProps} />);
-        expect(screen.getByText('Collection')).toBeInTheDocument();
-        expect(screen.getByText('Album')).toBeInTheDocument();
+        expect(screen.getByText('collection')).toBeInTheDocument();
+        expect(screen.getByText('album')).toBeInTheDocument();
     });
 
     it('populates dropdowns from useTags hook', () => {
@@ -68,7 +68,7 @@ describe('TagSelector (mode="create")', () => {
 
     it('uses useTags hook for collection data', () => {
         renderWithProviders(<TagSelectorWithForm {...defaultProps} />);
-        expect(screen.getByText('Collection')).toBeInTheDocument();
+        expect(screen.getByText('collection')).toBeInTheDocument();
     });
 });
 
@@ -92,8 +92,8 @@ describe('TagSelector (mode="edit")', () => {
 
     it('renders Collection and Album labels', () => {
         renderWithProviders(<TagSelector {...defaultProps} />);
-        expect(screen.getByText('Collection')).toBeInTheDocument();
-        expect(screen.getByText('Album')).toBeInTheDocument();
+        expect(screen.getByText('collection')).toBeInTheDocument();
+        expect(screen.getByText('album')).toBeInTheDocument();
     });
 
     it('populates dropdowns from useTags hook', () => {
