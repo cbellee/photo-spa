@@ -71,7 +71,7 @@ export default function MultiRadio(props: MultiRadioProps) {
                         onClick={(e) => onChange(e)}
                         onChange={(e) => onChange(e)}
                         type="radio"
-                        className="h-3.5 justify-end ml-2 align-middle accent-orange-500"
+                        className="h-3.5 justify-end ml-2 align-middle accent-accent"
                         name={props.groupName}
                         defaultChecked={props.checked}
                     />
