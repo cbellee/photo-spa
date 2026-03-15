@@ -24,6 +24,7 @@ import { useAuth } from '../hooks/useAuth';
 import { fetchTags } from '../services/photoService';
 import type { ImagePreview, UploadPhoto } from '../types';
 import { apiConfig } from '../config/apiConfig';
+import Breadcrumb from "./Breadcrumb.tsx";
 
 const MAX_CONCURRENT_UPLOADS = apiConfig.maxConcurrentUploads;
 
@@ -312,6 +313,7 @@ const UploadImages = () => {
 
     return (
         <FormProvider {...formMethods}>
+            <Breadcrumb segments={[{ label: 'upload' }]} />
             <form onSubmit={formMethods.handleSubmit(onSubmit)}>
                 <div className="animate-appear">
                     {isAuthenticated ? (
