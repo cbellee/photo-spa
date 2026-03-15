@@ -312,20 +312,21 @@ const UploadImages = () => {
     }, [collection, album, collectionImage, albumImage, selectedFiles]);
 
     return (
-        <FormProvider {...formMethods}>
+        <>
             <Breadcrumb segments={[{ label: 'upload' }]} />
-            <form onSubmit={formMethods.handleSubmit(onSubmit)}>
-                <div className="animate-appear">
-                    {isAuthenticated ? (
-                        <>
-                            <TagSelector mode="create" selectedAlbum={onChangeAlbum} selectedCollection={onChangeCollection}>
-                                <input
-                                    type="file"
-                                    multiple
-                                    disabled={uploading}
-                                    accept="image/jpg, image/jpeg, image/png"
-                                    onChange={selectFiles}
-                                    className={`
+            <FormProvider {...formMethods}>
+                <form onSubmit={formMethods.handleSubmit(onSubmit)}>
+                    <div className="animate-appear">
+                        {isAuthenticated ? (
+                            <>
+                                <TagSelector mode="create" selectedAlbum={onChangeAlbum} selectedCollection={onChangeCollection}>
+                                    <input
+                                        type="file"
+                                        multiple
+                                        disabled={uploading}
+                                        accept="image/jpg, image/jpeg, image/png"
+                                        onChange={selectFiles}
+                                        className={`
                                 ${theme === 'dark' ? 'text-accent-light' : 'text-accent'}   
                                 active:animate-pop
                                 lowercase
@@ -344,50 +345,51 @@ const UploadImages = () => {
                                 file:hover:bg-accent-dark
                                 file:transition-colors
                                 file:cursor-pointer`}
-                                />
-                                <input type="submit" hidden={true} />
-                                <button
-                                    type="button"
-                                    className={`h-9 font-semibold text-sm w-24 min-w-24 rounded-md bg-accent hover:bg-accent-dark text-white transition-colors ${!isValid ? 'opacity-50 cursor-not-allowed' : 'active:animate-pop cursor-pointer'}`}
-                                    disabled={!isValid || uploading}
-                                    onClick={uploadImages}
-                                >
-                                    Upload
-                                </button>
-                                <div className={`whitespace-nowrap leading-9 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} ${numSelectedImages > 0 ? "visible" : "hidden"}`}>
-                                    Uploading: {progressMessage.progess}/{numSelectedImages}
-                                </div>
-                                <div className={`whitespace-nowrap leading-9 text-sm ${theme === 'dark' ? 'text-accent-light' : 'text-accent'}`}>
-                                    {validationMessage}
-                                </div>
-                            </TagSelector>
+                                    />
+                                    <input type="submit" hidden={true} />
+                                    <button
+                                        type="button"
+                                        className={`h-9 font-semibold text-sm w-24 min-w-24 rounded-md bg-accent hover:bg-accent-dark text-white transition-colors ${!isValid ? 'opacity-50 cursor-not-allowed' : 'active:animate-pop cursor-pointer'}`}
+                                        disabled={!isValid || uploading}
+                                        onClick={uploadImages}
+                                    >
+                                        Upload
+                                    </button>
+                                    <div className={`whitespace-nowrap leading-9 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} ${numSelectedImages > 0 ? "visible" : "hidden"}`}>
+                                        Uploading: {progressMessage.progess}/{numSelectedImages}
+                                    </div>
+                                    <div className={`whitespace-nowrap leading-9 text-sm ${theme === 'dark' ? 'text-accent-light' : 'text-accent'}`}>
+                                        {validationMessage}
+                                    </div>
+                                </TagSelector>
 
-                            <ImagePreviewGrid
-                                imagePreviews={imagePreviews}
-                                collectionExists={collectionExists}
-                                albumExists={albumExists}
-                                onDescriptionChange={(i, value) => {
-                                    setImagePreviews((prevImages) => {
-                                        let _images = [...prevImages];
-                                        _images[i].description = value;
-                                        return _images;
-                                    });
-                                }}
-                                onCollectionThumbnail={handleCollectionThumbnail}
-                                onAlbumThumbnail={handleAlbumThumbnail}
-                                onOrientationChange={handleOrientationChange}
-                            />
-                        </>
-                    ) : (
-                        <div className="flex items-center justify-center py-20">
-                            <div className={`text-center px-8 py-6 rounded-md ${theme === 'dark' ? 'bg-surface-card border border-surface-border text-gray-300' : 'bg-surface-light-card border border-surface-light-border text-gray-600 shadow-card-light'}`}>
-                                <p className="text-lg font-medium">You must be signed in and granted access to upload photos</p>
+                                <ImagePreviewGrid
+                                    imagePreviews={imagePreviews}
+                                    collectionExists={collectionExists}
+                                    albumExists={albumExists}
+                                    onDescriptionChange={(i, value) => {
+                                        setImagePreviews((prevImages) => {
+                                            let _images = [...prevImages];
+                                            _images[i].description = value;
+                                            return _images;
+                                        });
+                                    }}
+                                    onCollectionThumbnail={handleCollectionThumbnail}
+                                    onAlbumThumbnail={handleAlbumThumbnail}
+                                    onOrientationChange={handleOrientationChange}
+                                />
+                            </>
+                        ) : (
+                            <div className="flex items-center justify-center py-20">
+                                <div className={`text-center px-8 py-6 rounded-md ${theme === 'dark' ? 'bg-surface-card border border-surface-border text-gray-300' : 'bg-surface-light-card border border-surface-light-border text-gray-600 shadow-card-light'}`}>
+                                    <p className="text-lg font-medium">You must be signed in and granted access to upload photos</p>
+                                </div>
                             </div>
-                        </div>
-                    )}
-                </div>
-            </form>
-        </FormProvider>
+                        )}
+                    </div>
+                </form>
+            </FormProvider>
+        </>
     );
 };
 
