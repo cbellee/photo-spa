@@ -23,8 +23,9 @@ import { useForm, SubmitHandler, FormProvider, set } from 'react-hook-form';
 import { useAuth } from '../hooks/useAuth';
 import { fetchTags } from '../services/photoService';
 import type { ImagePreview, UploadPhoto } from '../types';
+import { apiConfig } from '../config/apiConfig';
 
-const MAX_CONCURRENT_UPLOADS = 30;
+const MAX_CONCURRENT_UPLOADS = apiConfig.maxConcurrentUploads;
 
 const UploadImages = () => {
     const formMethods = useForm({ mode: "onChange", reValidateMode: "onChange" });
