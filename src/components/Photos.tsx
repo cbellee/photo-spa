@@ -200,7 +200,7 @@ const Photos: React.FC<PhotoProps> = () => {
                                 {isAdmin && (
                                     <div className={`flex rounded-b-md flex-col gap-3 text-left p-3 ${theme === 'dark' ? 'text-gray-200' : 'text-gray-600'}`}>
                                         <div>
-                                            <label className="text-xs font-semibold tracking-wide opacity-70">Description</label>
+                                            <label className="text-xs font-semibold tracking-wide opacity-70">description</label>
                                             <input
                                                 type="text"
                                                 name='description'
