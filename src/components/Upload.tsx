@@ -23,8 +23,9 @@ import { useForm, SubmitHandler, FormProvider, set } from 'react-hook-form';
 import { useAuth } from '../hooks/useAuth';
 import { fetchTags } from '../services/photoService';
 import type { ImagePreview, UploadPhoto } from '../types';
+import { apiConfig } from '../config/apiConfig';
 
-const MAX_CONCURRENT_UPLOADS = 20;
+const MAX_CONCURRENT_UPLOADS = apiConfig.maxConcurrentUploads;
 
 const UploadImages = () => {
     const formMethods = useForm({ mode: "onChange", reValidateMode: "onChange" });
@@ -188,8 +189,8 @@ const UploadImages = () => {
         setImagePreviews(images);
     };
 
-    async function upload(idx: number, file: File) {
-        await setImagePreviews((prevImages) => {
+    async function upload(idx: number, file: File): Promise<boolean> {
+        setImagePreviews((prevImages) => {
             let _images = [...prevImages];
             _images[idx].uploading = true;
             _images[idx].uploadComplete = false;
@@ -206,50 +207,50 @@ const UploadImages = () => {
 
         if (!token) {
             console.error("Token is null");
-            return;
+            return false;
         }
-        return await FileUploadService.upload(file, {
-            name: imagePreviews[idx].name,
-            collection: collection,
-            album: album,
-            collectionImage: collectionImage === file.name,
-            albumImage: albumImage === file.name,
-            description: imagePreviews[idx].description,
-            orientation: String(imagePreviews[idx].orientation ?? 0),
-            isDeleted: imagePreviews[idx].isDeleted ?? false,
-            size: imagePreviews[idx].size,
-            type: imagePreviews[idx].type,
-        } as UploadPhoto, token, (event) => {
-            if (event.total && event.loaded) {
-                let progress = Math.round((100 * event.loaded) / event.total);
+        try {
+            await FileUploadService.upload(file, {
+                name: imagePreviews[idx].name,
+                collection: collection,
+                album: album,
+                collectionImage: collectionImage === file.name,
+                albumImage: albumImage === file.name,
+                description: imagePreviews[idx].description,
+                orientation: String(imagePreviews[idx].orientation ?? 0),
+                isDeleted: imagePreviews[idx].isDeleted ?? false,
+                size: imagePreviews[idx].size,
+                type: imagePreviews[idx].type,
+            } as UploadPhoto, token, (event) => {
+                if (event.total && event.loaded) {
+                    let progress = Math.round((100 * event.loaded) / event.total);
 
-                setImagePreviews((prevImages) => {
-                    let _images = [...prevImages];
-                    _images[idx].uploadProgress = progress;
-                    return _images;
-                });
-            }
-        })
-            .then(() => {
-                setImagePreviews((prevImages) => {
-                    let _images = [...prevImages];
-                    _images[idx].uploading = false;
-                    _images[idx].uploadComplete = true;
-                    return _images;
-                });
-            })
-            .catch((e) => {
-                setImagePreviews((prevImages) => {
-                    let _images = [...prevImages];
-                    _images[idx].uploading = false;
-                    _images[idx].uploadComplete = true;
-                    _images[idx].uploadError = true;
-                    return _images;
-                });
-
-                setUploadCompleted(true);
-                setUploading(false)
+                    setImagePreviews((prevImages) => {
+                        let _images = [...prevImages];
+                        _images[idx].uploadProgress = progress;
+                        return _images;
+                    });
+                }
             });
+
+            setImagePreviews((prevImages) => {
+                let _images = [...prevImages];
+                _images[idx].uploading = false;
+                _images[idx].uploadComplete = true;
+                return _images;
+            });
+            return true;
+        } catch (e) {
+            console.error(`Upload failed for ${file.name}:`, e);
+            setImagePreviews((prevImages) => {
+                let _images = [...prevImages];
+                _images[idx].uploading = false;
+                _images[idx].uploadComplete = true;
+                _images[idx].uploadError = true;
+                return _images;
+            });
+            return false;
+        }
     };
 
     async function uploadImages() {
@@ -266,10 +267,11 @@ const UploadImages = () => {
 
         const files = Array.from(selectedFiles);
         let progress = 0;
+        let failures = 0;
 
         // Concurrency-limited upload pool. At most MAX_CONCURRENT_UPLOADS
-        // files are in-flight at once to avoid overwhelming the ACA Envoy
-        // proxy (which returns 503 after ~30 s on excess connections).
+        // files are in-flight at once to stay within the container's memory
+        // budget (each upload consumes ~32 MiB for multipart parsing).
         try {
             const queue = files.map((file, i) => ({ i, file }));
             let cursor = 0;
@@ -277,7 +279,8 @@ const UploadImages = () => {
             async function worker() {
                 while (cursor < queue.length) {
                     const job = queue[cursor++];
-                    await upload(job.i, job.file);
+                    const ok = await upload(job.i, job.file);
+                    if (!ok) failures += 1;
                     progress += 1;
                     setProgressMessage({ progess: progress, total: files.length });
                 }
@@ -292,7 +295,11 @@ const UploadImages = () => {
             setUploading(false);
             setUploadCompleted(true);
             setSelectedFiles(null);
-            navigate(`/${collection}`);
+
+            // Only navigate when every file uploaded successfully.
+            if (failures === 0) {
+                navigate(`/${collection}`);
+            }
         } catch {
             setUploading(false);
             setUploadCompleted(true);
