@@ -20,10 +20,11 @@ export interface NavItem {
 }
 
 /** Named top-level routes that are NOT part of the collections hierarchy */
-const nonCollectionPrefixes = ['/upload', '/albums'];
+const nonCollectionPrefixes = ['/upload', '/albums', '/people'];
 
 const navItems: NavItem[] = [
     { to: '/upload', label: 'upload', authRequired: true },
+    { to: '/people', label: 'people' },
     { to: '/albums', label: 'albums' },
     { to: '/', label: 'collections' },
 ];

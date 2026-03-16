@@ -47,6 +47,9 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, isAuthenticated, onClos
                 <li className="text-sm font-medium">
                     <a href="/albums" className={`${theme === 'dark' ? 'text-gray-300 hover:text-accent-light' : 'text-gray-600 hover:text-accent'}`}>albums</a>
                 </li>
+                <li className="text-sm font-medium">
+                    <a href="/people" className={`${theme === 'dark' ? 'text-gray-300 hover:text-accent-light' : 'text-gray-600 hover:text-accent'}`}>people</a>
+                </li>
                 <li>
                     <SignInAndOut />
                 </li>

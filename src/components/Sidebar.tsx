@@ -5,13 +5,13 @@
  */
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { IoMoon, IoSunny, IoFolderOpen, IoImages, IoCloudUpload, IoMenu, IoClose } from 'react-icons/io5';
+import { IoMoon, IoSunny, IoFolderOpen, IoImages, IoCloudUpload, IoPeople, IoMenu, IoClose } from 'react-icons/io5';
 import { useIsAuthenticated, useMsal, useAccount } from '@azure/msal-react';
 import { useTheme } from '../context/ThemeContext';
 import SignInAndOut from './SignInAndOut';
 
 /** Named top-level routes that are NOT part of the collections hierarchy */
-const nonCollectionPrefixes = ['/upload', '/albums'];
+const nonCollectionPrefixes = ['/upload', '/albums', '/people'];
 
 export default function Sidebar() {
     const [collapsed, setCollapsed] = useState(false);
@@ -27,10 +27,12 @@ export default function Sidebar() {
     );
 
     const isAlbumsRoute = location.pathname.toLowerCase().startsWith('/albums');
+    const isPeopleRoute = location.pathname.toLowerCase().startsWith('/people');
 
     const navItems = [
         { to: '/', label: 'collections', icon: IoFolderOpen, isActive: isCollectionsRoute },
         { to: '/albums', label: 'albums', icon: IoImages, isActive: isAlbumsRoute },
+        { to: '/people', label: 'people', icon: IoPeople, isActive: isPeopleRoute },
         ...(isAuthenticated ? [{ to: '/upload', label: 'upload', icon: IoCloudUpload, isActive: false }] : []),
     ];
 

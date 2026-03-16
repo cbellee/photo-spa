@@ -35,7 +35,7 @@ describe('NavLinks', () => {
     it('renders separators between links', () => {
         renderWithProviders(<NavLinks isAuthenticated={true} />);
         const separators = screen.getAllByText('I');
-        // 3 items = 2 separators
-        expect(separators.length).toBe(2);
+        // 4 items (upload, people, albums, collections) = 3 separators
+        expect(separators.length).toBe(3);
     });
 });

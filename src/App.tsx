@@ -7,6 +7,8 @@ import Collections from './components/Collections.tsx';
 import Albums from './components/AlbumCollections.tsx';
 import AllAlbums from './components/AllAlbums.tsx';
 import Photos from './components/Photos.tsx';
+import People from './components/People.tsx';
+import PersonPhotos from './components/PersonPhotos.tsx';
 import UploadImages from './components/Upload.tsx';
 import ErrorPage from "./components/ErrorPage.tsx";
 import { createBrowserRouter } from 'react-router-dom';
@@ -43,6 +45,16 @@ function App({ msalInstance}: { msalInstance: IPublicClientApplication }) {
             {
                 path: "/upload",
                 element: <UploadImages />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "/people",
+                element: <People />,
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: "/people/:personID",
+                element: <PersonPhotos />,
                 errorElement: <ErrorPage />,
             }
         ]

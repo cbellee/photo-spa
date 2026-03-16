@@ -110,3 +110,53 @@ export interface PhotoRouteParams extends Record<string, string | undefined> {
     collection: string;
     album: string;
 }
+
+// ── Face detection / People types ───────────────────────────────────
+
+/** Bounding box as percentages (0.0–1.0) of image dimensions. */
+export interface BBox {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+}
+
+/** A photo reference (collection/album/name). */
+export interface PhotoRef {
+    collection: string;
+    album: string;
+    name: string;
+}
+
+/** A person (grouped cluster of faces). */
+export interface Person {
+    personID: string;
+    name: string;
+    faceCount: number;
+    thumbnailFaceID: string;
+}
+
+/** A single detected face with recognition data. */
+export interface Face {
+    faceID: string;
+    personID: string;
+    photoRef: PhotoRef;
+    bbox: BBox;
+    landmarkFingerprint: number[];
+    faceHash: string;
+    confidence: number;
+    createdAt: string;
+}
+
+/** Minimal face overlay data returned for photo display. */
+export interface FaceOverlay {
+    faceID: string;
+    personID: string;
+    personName: string;
+    bbox: BBox;
+}
+
+/** Route params for person-level routes. */
+export interface PersonRouteParams extends Record<string, string | undefined> {
+    personID: string;
+}
