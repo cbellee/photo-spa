@@ -30,6 +30,7 @@ import type { Photo, PhotoRouteParams } from '../types';
 import LoadingSpinner from './LoadingSpinner';
 import Breadcrumb from './Breadcrumb';
 import LazyImage from './LazyImage';
+import FaceOverlayLayer from './FaceOverlayLayer';
 
 interface PhotoProps {
     collection: string;
@@ -294,16 +295,23 @@ const Photos: React.FC<PhotoProps> = () => {
                     slide: ({ slide }) => {
                         const photo = slide as Photo;
                         return (
-                            <img
-                                src={photo.src}
-                                alt={photo.description}
-                                style={{
-                                    maxWidth: '100%',
-                                    maxHeight: '100%',
-                                    objectFit: 'contain',
-                                    transform: photo.orientation ? `rotate(${photo.orientation}deg)` : undefined,
-                                }}
-                            />
+                            <div className="relative" style={{ maxWidth: '100%', maxHeight: '100%' }}>
+                                <img
+                                    src={photo.src}
+                                    alt={photo.description}
+                                    style={{
+                                        maxWidth: '100%',
+                                        maxHeight: '100%',
+                                        objectFit: 'contain',
+                                        transform: photo.orientation ? `rotate(${photo.orientation}deg)` : undefined,
+                                    }}
+                                />
+                                <FaceOverlayLayer
+                                    collection={photo.collection}
+                                    album={photo.album}
+                                    name={photo.name}
+                                />
+                            </div>
                         );
                     },
                     thumbnail: ({ slide }) => {
