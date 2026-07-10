@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { AxiosError } from 'axios';
+import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { apiConfig } from '../config/apiConfig';
 
 const MAX_RETRIES = 3;
@@ -11,10 +11,31 @@ function delay(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+/** Upgrade http:// → https:// when the page is served over HTTPS (blocks mixed content). */
+function enforceHttps(config: InternalAxiosRequestConfig): InternalAxiosRequestConfig {
+    if (
+        typeof window !== 'undefined' &&
+        window.location.protocol === 'https:' &&
+        config.url?.startsWith('http://')
+    ) {
+        config.url = 'https://' + config.url.slice(7);
+    }
+    if (
+        typeof window !== 'undefined' &&
+        window.location.protocol === 'https:' &&
+        config.baseURL?.startsWith('http://')
+    ) {
+        config.baseURL = 'https://' + config.baseURL.slice(7);
+    }
+    return config;
+}
+
 const apiClient = axios.create({
     baseURL: apiConfig.photoApiEndpoint,
     timeout: 60_000,
 });
+
+apiClient.interceptors.request.use(enforceHttps);
 
 apiClient.interceptors.response.use(
     (response) => response,
