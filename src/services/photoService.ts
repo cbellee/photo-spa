@@ -1,25 +1,42 @@
 import apiClient from './apiClient';
+import type { AxiosError } from 'axios';
 import type { CollectionPhoto, Photo, TagsResponse } from '../types';
+
+function isNotFound(error: unknown): boolean {
+    return Boolean((error as AxiosError)?.response?.status === 404);
+}
 
 export function fetchCollections(includeDeleted = false): Promise<CollectionPhoto[]> {
     return apiClient.get<CollectionPhoto[]>('', {
         params: includeDeleted ? { includeDeleted: 'true' } : undefined,
-    }).then(res => res.data);
+    }).then(res => res.data).catch((error) => {
+        if (isNotFound(error)) return [];
+        throw error;
+    });
 }
 
 export function fetchAlbums(collection: string, includeDeleted = false): Promise<CollectionPhoto[]> {
     const params = includeDeleted ? '?includeDeleted=true' : '';
-    return apiClient.get<CollectionPhoto[]>(`/${collection}${params}`).then(res => res.data);
+    return apiClient.get<CollectionPhoto[]>(`/${collection}${params}`).then(res => res.data).catch((error) => {
+        if (isNotFound(error)) return [];
+        throw error;
+    });
 }
 
 export function fetchPhotos(collection: string, album: string, includeDeleted = false): Promise<Photo[]> {
     const params = includeDeleted ? '?includeDeleted=true' : '';
-    return apiClient.get<Photo[]>(`/${collection}/${album}${params}`).then(res => res.data);
+    return apiClient.get<Photo[]>(`/${collection}/${album}${params}`).then(res => res.data).catch((error) => {
+        if (isNotFound(error)) return [];
+        throw error;
+    });
 }
 
 export function fetchAllAlbums(includeDeleted = false): Promise<CollectionPhoto[]> {
     const params = includeDeleted ? '?includeDeleted=true' : '';
-    return apiClient.get<CollectionPhoto[]>(`/albums${params}`).then(res => res.data);
+    return apiClient.get<CollectionPhoto[]>(`/albums${params}`).then(res => res.data).catch((error) => {
+        if (isNotFound(error)) return [];
+        throw error;
+    });
 }
 
 export function fetchTags(): Promise<TagsResponse> {
