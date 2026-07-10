@@ -1,9 +1,5 @@
 import apiClient from './apiClient';
-import axios from 'axios';
-import { apiConfig } from '../config/apiConfig';
 import type { Person, Face, FaceOverlay, PhotoRef } from '../types';
-
-const url = apiConfig.photoApiEndpoint;
 
 function authHeaders(token: string) {
     return {
@@ -66,8 +62,8 @@ export async function setPersonName(
     name: string,
     token: string,
 ): Promise<{ message: string; personID: string; name: string }> {
-    const res = await axios.put(
-        `${url}/people/${encodeURIComponent(personID)}/name`,
+    const res = await apiClient.put(
+        `/people/${encodeURIComponent(personID)}/name`,
         { name },
         { headers: authHeaders(token) },
     );
@@ -80,8 +76,8 @@ export async function mergePeople(
     targetPersonID: string,
     token: string,
 ): Promise<{ message: string; sourcePersonID: string; targetPersonID: string }> {
-    const res = await axios.post(
-        `${url}/people/merge`,
+    const res = await apiClient.post(
+        `/people/merge`,
         { sourcePersonID, targetPersonID },
         { headers: authHeaders(token) },
     );

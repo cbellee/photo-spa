@@ -1,8 +1,5 @@
-import axios from 'axios';
-import { apiConfig } from '../config/apiConfig';
+import apiClient from './apiClient';
 import type { RenameRequest, ThumbnailRequest, AdminResponse, Photo } from '../types';
-
-const url = apiConfig.photoApiEndpoint;
 
 function authHeaders(token: string) {
     return {
@@ -18,8 +15,8 @@ export async function renameCollection(
     token: string,
 ): Promise<AdminResponse> {
     const body: RenameRequest = { newName: newName.toLowerCase() };
-    const res = await axios.put<AdminResponse>(
-        `${url}/rename/${encodeURIComponent(collection)}`,
+    const res = await apiClient.put<AdminResponse>(
+        `/rename/${encodeURIComponent(collection)}`,
         body,
         { headers: authHeaders(token) },
     );
@@ -34,8 +31,8 @@ export async function renameAlbum(
     token: string,
 ): Promise<AdminResponse> {
     const body: RenameRequest = { newName: newName.toLowerCase() };
-    const res = await axios.put<AdminResponse>(
-        `${url}/rename/${encodeURIComponent(collection)}/${encodeURIComponent(album)}`,
+    const res = await apiClient.put<AdminResponse>(
+        `/rename/${encodeURIComponent(collection)}/${encodeURIComponent(album)}`,
         body,
         { headers: authHeaders(token) },
     );
@@ -47,8 +44,8 @@ export async function softDeleteCollection(
     collection: string,
     token: string,
 ): Promise<AdminResponse> {
-    const res = await axios.delete<AdminResponse>(
-        `${url}/${encodeURIComponent(collection)}`,
+    const res = await apiClient.delete<AdminResponse>(
+        `/${encodeURIComponent(collection)}`,
         { headers: authHeaders(token) },
     );
     return res.data;
@@ -60,8 +57,8 @@ export async function softDeleteAlbum(
     album: string,
     token: string,
 ): Promise<AdminResponse> {
-    const res = await axios.delete<AdminResponse>(
-        `${url}/${encodeURIComponent(collection)}/${encodeURIComponent(album)}`,
+    const res = await apiClient.delete<AdminResponse>(
+        `/${encodeURIComponent(collection)}/${encodeURIComponent(album)}`,
         { headers: authHeaders(token) },
     );
     return res.data;
@@ -73,8 +70,8 @@ export async function restoreAlbum(
     album: string,
     token: string,
 ): Promise<AdminResponse> {
-    const res = await axios.patch<AdminResponse>(
-        `${url}/${encodeURIComponent(collection)}/${encodeURIComponent(album)}`,
+    const res = await apiClient.patch<AdminResponse>(
+        `/${encodeURIComponent(collection)}/${encodeURIComponent(album)}`,
         {},
         { headers: authHeaders(token) },
     );
@@ -86,8 +83,8 @@ export async function restoreCollection(
     collection: string,
     token: string,
 ): Promise<AdminResponse> {
-    const res = await axios.patch<AdminResponse>(
-        `${url}/${encodeURIComponent(collection)}`,
+    const res = await apiClient.patch<AdminResponse>(
+        `/${encodeURIComponent(collection)}`,
         {},
         { headers: authHeaders(token) },
     );
@@ -100,8 +97,8 @@ export async function updateCollectionThumbnail(
     req: ThumbnailRequest,
     token: string,
 ): Promise<void> {
-    await axios.put(
-        `${url}/thumbnail/${encodeURIComponent(collection)}`,
+    await apiClient.put(
+        `/thumbnail/${encodeURIComponent(collection)}`,
         req,
         { headers: authHeaders(token) },
     );
@@ -114,8 +111,8 @@ export async function updateAlbumThumbnail(
     req: ThumbnailRequest,
     token: string,
 ): Promise<void> {
-    await axios.put(
-        `${url}/thumbnail/${encodeURIComponent(collection)}/${encodeURIComponent(album)}`,
+    await apiClient.put(
+        `/thumbnail/${encodeURIComponent(collection)}/${encodeURIComponent(album)}`,
         req,
         { headers: authHeaders(token) },
     );
@@ -125,8 +122,8 @@ export async function updateAlbumThumbnail(
 export async function fetchCollectionPhotos(
     collection: string,
 ): Promise<Photo[]> {
-    const res = await axios.get<Photo[]>(
-        `${url}/photos/${encodeURIComponent(collection)}`,
+    const res = await apiClient.get<Photo[]>(
+        `/photos/${encodeURIComponent(collection)}`,
     );
     return res.data;
 }

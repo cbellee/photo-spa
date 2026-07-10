@@ -1,8 +1,6 @@
-import axios, { AxiosRequestConfig, AxiosResponse, AxiosProgressEvent } from "axios";
-import { apiConfig } from "../config/apiConfig";
+import type { AxiosRequestConfig, AxiosResponse, AxiosProgressEvent } from "axios";
+import apiClient from "./apiClient";
 import type { Photo, UploadPhoto, UpdatePhoto } from '../types';
-
-let url = `${apiConfig.photoApiEndpoint}`;
 
 async function update(
     photoData: Photo,
@@ -24,8 +22,8 @@ async function update(
         "Authorization": `Bearer ${token}`,
     }
 
-    return await axios(
-        `${url}/update/${photoData.name}`,
+    return await apiClient(
+        `/update/${photoData.name}`,
         {
             method: "PUT",
             headers: headers,
@@ -53,11 +51,11 @@ async function upload(
         onUploadProgress,
     };
 
-    return await axios.post(`${url}/upload`, formData, config);
+    return await apiClient.post(`/upload`, formData, config);
 }
 
 const getFiles = (): Promise<AxiosResponse> => {
-    return axios.get("/files");
+    return apiClient.get("/files");
 };
 
 const FileUploadService = {
